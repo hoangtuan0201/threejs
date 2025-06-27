@@ -1,0 +1,22 @@
+{
+  "name": "Vite React Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:18-bullseye",
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "yarn install",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "openPreview"
+    }
+  }
+} 
