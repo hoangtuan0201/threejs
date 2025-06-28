@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Gltf, ScrollControls, useScroll } from "@react-three/drei";
 import { getProject, val } from "@theatre/core";
-import theatreState from "./theatreState.json";
+import theatreState from "./Fly Through.theatre-project-state.json";
 import studio from "@theatre/studio";
 import {
   SheetProvider,
@@ -32,12 +32,12 @@ function Scene() {
   const scroll = useScroll();
 
   // our callback will run on every animation frame
-  // useFrame(() => {
-  //   // the length of our sequence
-  //   const sequenceLength = val(sheet.sequence.pointer.length);
-  //   // update the "position" of the playhead in the sequence, as a fraction of its whole length
-  //   sheet.sequence.position = scroll.offset * sequenceLength;
-  // });
+  useFrame(() => {
+    // the length of our sequence
+    const sequenceLength = val(sheet.sequence.pointer.length);
+    // update the "position" of the playhead in the sequence, as a fraction of its whole length
+    sheet.sequence.position = scroll.offset * sequenceLength;
+  });
 
   const bgColor = "#84a4f4";
 
