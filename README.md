@@ -1,50 +1,63 @@
-# Animate a camera fly-through on scroll using Theatre.js and React Three Fiber
+# Hướng dẫn chạy model mới với Theatre.js + React Three Fiber
 
-Display a 3D scene, and fly a camera through it as the user scrolls, using Theatre.js and React Three Fiber, in 50 lines of code.
+## Lưu ý khi chạy một model mới
 
+**Mỗi khi bạn muốn chạy một model mới, hãy làm theo các bước sau:**
 
-https://user-images.githubusercontent.com/2991360/218591424-2bc3f476-6288-4999-941e-da5263064d31.mp4
+1. **Xóa localStorage của trình duyệt**
+   - Mở DevTools (F12) → Application → Local Storage → Xóa toàn bộ key liên quan tới dự án Theatre.js.
+   - Hoặc chạy lệnh sau trong console trình duyệt:
+     ```js
+     localStorage.clear()
+     ```
+   - Việc này giúp tránh xung đột state cũ khi load model mới.
 
+2. **Đổi tên file model và state**
+   - Nếu dùng model `HouseCombined.glb`, hãy chắc chắn sử dụng file state `Fly Through.theatre-project-state1.json`.
+   - Nếu dùng model `HouseCombined2.glb`, hãy chắc chắn sử dụng file state `Fly Through.theatre-project-state2.json`.
+   - Đảm bảo đường dẫn và tên file trong code trùng khớp với model và state bạn muốn sử dụng.
 
+3. **Cập nhật code nếu cần**
+   - Đổi tên file model trong prop `src` của component `<Gltf />`:
+     ```jsx
+     <Gltf src="/HouseCombined.glb" ... /> // dùng state1
+     <Gltf src="/HouseCombined2.glb" ... /> // dùng state2
+     ```
+   - Import đúng file state tương ứng:
+     ```js
+     import theatreState from "./Fly Through.theatre-project-state1.json";
+     // hoặc
+     import theatreState from "./Fly Through.theatre-project-state2.json";
+     ```
 
-[Article on Codrops](https://tympanus.net/codrops/?p=70449)
+4. **Khởi động lại server nếu cần**
+   - Nếu bạn đổi file model hoặc state, hãy khởi động lại server để đảm bảo mọi thứ được load lại từ đầu.
 
-[Demo](http://tympanus.net/Development/CameraFlyThrough/)
+---
 
-## Installation
+## Ví dụ cấu hình cho từng model
 
-Install dependencies:
-
+**HouseCombined.glb:**
+```js
+import theatreState from "./Fly Through.theatre-project-state.json";
+// ...
+<Gltf src="/HouseCombined.glb" ... />
 ```
-yarn
+
+**HouseCombined2.glb:**
+```js
+import theatreState from "./Fly Through.theatre-project-state2.json";
+// ...
+<Gltf src="/HouseCombined2.glb" ... />
 ```
 
-Compile the code for development and start a local server:
+---
 
-```
-yarn dev
-```
+## Tóm tắt
 
-Create the build:
+- **Luôn xóa localStorage khi đổi model/state.**
+- **Đảm bảo tên file model và file state khớp nhau.**
+- **Cập nhật code đúng đường dẫn model và state.**
 
-```
-yarn build
-```
+---
 
-## Credits
-
-- 3D model: [Low poly environment](https://sketchfab.com/3d-models/low-poly-environment-2e18c1baa9164093ad2e99e0a904363a) by [BigPo](https://sketchfab.com/BigPo)
-
-## Misc
-
-Follow Andrew Prifer: [Twitter](https://twitter.com/AndrewPrifer), [GitHub](https://github.com/AndrewPrifer)
-
-Follow Theatre.js: [Twitter](https://twitter.com/theatre_js), [GitHub](https://github.com/theatre-js/theatre)
-
-Follow Codrops: [Twitter](http://www.twitter.com/codrops), [Facebook](http://www.facebook.com/codrops), [GitHub](https://github.com/codrops), [Instagram](https://www.instagram.com/codropsss/)
-
-## License
-
-[MIT](LICENSE)
-
-Made with :blue_heart: by [Codrops](http://www.codrops.com)
