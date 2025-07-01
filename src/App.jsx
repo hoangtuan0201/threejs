@@ -1,28 +1,48 @@
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { getProject } from "@theatre/core";
-import theatreState from "./states/Fly Through.theatre-project-state2.json";
-import studio from "@theatre/studio";
 import { SheetProvider } from "@theatre/r3f";
-import { ScrollControls } from "@react-three/drei";
-import { Scene } from "./components/Scene"; 
+import { getProject } from "@theatre/core";
+import studio from "@theatre/studio";
+import extension from "@theatre/r3f/dist/extension";
+import theatreState from "./theatreState.json";
+import { Scene } from "./components/Scene";
+import ControlPanel from "./components/ControlPanel";
+
+const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
+
+if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  studio.initialize();
+  studio.extend(extension);
+  window.__THEATRE_ALREADY_INIT__ = true;
+}
 
 export default function App() {
-  // Bạn có thể đổi theatreState tại đây để dùng animation khác
-  const sheet = getProject("Fly Through", { state: theatreState }).sheet(
-    "Scene"
-  );
+  const [isExploring, setIsExploring] = useState(false);
 
-  // if (import.meta.env.DEV) {
-  //   studio.initialize();
-  // }
+  const startTour = () => {
+    setIsExploring(true);
+  };
+
+  const endTour = () => {
+    setIsExploring(false);
+  };
 
   return (
-    <Canvas gl={{ preserveDrawingBuffer: true }} style={{ height: "100vh" }}>
-      <ScrollControls pages={5} damping={0.3}>
+    <>
+      {!isExploring && <ControlPanel onExplore={startTour} />}
+      <Canvas
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 1,
+        }}
+        shadows
+      >
         <SheetProvider sheet={sheet}>
-          <Scene />
+          <Scene isExploring={isExploring} onTourEnd={endTour} />
         </SheetProvider>
-      </ScrollControls>
-    </Canvas>
+      </Canvas>
+    </>
   );
 }
