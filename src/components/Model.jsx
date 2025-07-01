@@ -4,6 +4,18 @@ import { useEffect } from "react";
 export function Model({ sequenceChapters, onChapterClick }) {
   const { scene } = useGLTF("/House Combined2.glb");
 
+  // Traverse the model and enable shadows for all meshes
+  useEffect(() => {
+    if (scene) {
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }
+  }, [scene]);
+
   useEffect(() => {
     if (!scene || !sequenceChapters) return;
 

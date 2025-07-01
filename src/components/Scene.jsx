@@ -1,49 +1,11 @@
-
 import { Suspense, useState, useEffect, useRef } from "react";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { Html } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 
 import { Model } from "./Model";
+import { sequenceChapters } from "../data/sequenceChapters";
 
-const sequenceChapters = [
-  {
-    id: "start",
-    range: [0, 0.1],
-    position: [0, 5, 8],
-    title: "Chào mừng đến với AirSmart",
-    description: "Khám phá hệ thống điều hòa thông minh tiên tiến nhất.",
-  },
-  {
-    id: "geom393", 
-    range: [0.1, 1],
-    position: [29.5, 5, -22],
-    title: "Thiết bị Điều hòa Thông minh",
-    description:
-      "Tự động điều chỉnh nhiệt độ và luồng gió để tối ưu hóa sự thoải mái.",
-  },
-  {
-    id: "indoor",
-    range: [1, 2],
-    position: [35, 5, -18],
-    title: "Indoor Unit",
-    description: "Thiết bị nội bộ cấp khí mát cho phòng với công nghệ tiết kiệm năng lượng.",
-  },
-  // {
-  //   id: "outdoor",
-  //   range: [2, 3],
-  //   position: [25, 8, -30],
-  //   title: "Outdoor Unit",
-  //   description: "Đơn vị ngoài trời với hiệu suất cao và hoạt động êm ái.",
-  // },
-  // {
-  //   id: "control",
-  //   range: [3, 4],
-  //   position: [15, 6, -15],
-  //   title: "Hệ thống Điều khiển",
-  //   description: "Điều khiển thông minh từ xa qua ứng dụng di động.",
-  // },
-];
 
 export function Scene({ isExploring, onTourEnd }) {
   const sheet = useCurrentSheet();
@@ -52,8 +14,8 @@ export function Scene({ isExploring, onTourEnd }) {
   const [isAnimating, setIsAnimating] = useState(false);
   const { gl } = useThree();
   
-  const scrollTimeoutRef = useRef(null);
   const lastScrollTimeRef = useRef(0);
+  const animationRef = useRef(null);
 
   // Effect để bắt đầu và reset tour
   useEffect(() => {
@@ -67,192 +29,143 @@ export function Scene({ isExploring, onTourEnd }) {
       setCurrentChapterIndex(-1);
       setActiveChapter(null);
       setIsAnimating(false);
+      // Cancel animation nếu đang chạy
+      if (animationRef.current) {
+        animationRef.current.stop();
+        animationRef.current = null;
+      }
       // Reset camera về vị trí ban đầu
       sheet.sequence.position = 0;
     }
   }, [isExploring]);
 
-  // Hàm di chuyển camera đến chapter với hỗ trợ cuộn tới cuộn về
-  const moveToChapter = async (chapterIndex, direction = 'forward') => {
+  // Hàm di chuyển camera đến chapter (tiến và lùi)
+  const moveToChapter = async (chapterIndex) => {
     if (chapterIndex < 0 || chapterIndex >= sequenceChapters.length) return;
-    
+
+    if (animationRef.current) {
+      animationRef.current.stop();
+      animationRef.current = null;
+    }
+
     setIsAnimating(true);
-    setActiveChapter(null); // Ẩn tooltip hiện tại
-    
+    setActiveChapter(null);
+
     const chapter = sequenceChapters[chapterIndex];
-    
+    const currentPos = sheet.sequence.position;
+    const targetPos = chapter.range[1]; // The end of the target chapter's range
+
+    // Determine animation range and direction
+    const range = [Math.min(currentPos, targetPos), Math.max(currentPos, targetPos)];
+    const direction = currentPos < targetPos ? 'normal' : 'reverse';
+
+    console.log(`Moving to chapter ${chapterIndex}: from ${currentPos} to ${targetPos}`);
+
     try {
-      // Xác định hướng di chuyển cho animation
-      const playDirection = direction === 'forward' ? 'normal' : 'reverse';
-      const currentPos = sheet.sequence.position;
-      const targetRange = chapter.range;
-      
-      // Nếu cuộn về, di chuyển từ vị trí hiện tại về target
-      if (direction === 'reverse' && currentPos > targetRange[1]) {
-        await sheet.sequence.play({ 
-          range: [currentPos, targetRange[1]],
-          rate: 1.2,
-          direction: 'normal'
-        });
-      }
-      // Nếu cuộn tới, di chuyển từ vị trí hiện tại đến target  
-      else if (direction === 'forward' && currentPos < targetRange[0]) {
-        await sheet.sequence.play({ 
-          range: [currentPos, targetRange[1]],
-          rate: 1.2,
-          direction: 'normal'
-        });
-      }
-      // Nếu đã ở gần target, chỉ cần đi đến đúng vị trí
-      else {
-        await sheet.sequence.play({ 
-          range: targetRange,
-          rate: 1,
-          direction: playDirection
-        });
-      }
-      
-      // Hiển thị tooltip sau khi animation hoàn thành
+      animationRef.current = sheet.sequence.play({
+        range: range,
+        rate: 1.5,
+        direction: direction
+      });
+
+      await animationRef.current;
+
+      // Animation hoàn thành, hiển thị tooltip
       setActiveChapter(chapter);
+      console.log(`Successfully moved to chapter ${chapterIndex}`);
+
     } catch (error) {
       console.warn("Animation interrupted:", error);
+      // On interruption, snap to the target position and show the chapter
+      sheet.sequence.position = targetPos;
+      setActiveChapter(chapter);
     } finally {
       setIsAnimating(false);
+      animationRef.current = null;
     }
   };
 
-  // Thêm keyboard support để test
+  // Keyboard navigation
   useEffect(() => {
     if (!isExploring) return;
 
     const handleKeyDown = (event) => {
       if (isAnimating) return;
-      
-      let newIndex = currentChapterIndex;
-      let direction = 'forward';
-      
+
       if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
         event.preventDefault();
-        newIndex = Math.min(currentChapterIndex + 1, sequenceChapters.length - 1);
-        direction = 'forward';
+        handleNext();
       } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
         event.preventDefault();
-        newIndex = Math.max(currentChapterIndex - 1, 0);
-        direction = 'reverse';
+        handlePrevious();
       } else if (event.key === 'Escape') {
         event.preventDefault();
         onTourEnd();
-        return;
-      }
-      
-      if (newIndex !== currentChapterIndex) {
-        console.log(`Keyboard navigation: ${currentChapterIndex} -> ${newIndex} (${direction})`);
-        setCurrentChapterIndex(newIndex);
-        moveToChapter(newIndex, direction);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isExploring, currentChapterIndex, isAnimating, onTourEnd]);
 
-  // Xử lý sự kiện cuộn chuột
+  // Xử lý scroll (tiến và lùi)
   useEffect(() => {
     if (!isExploring) return;
 
     const handleWheel = (event) => {
       event.preventDefault();
       event.stopPropagation();
-      
-      console.log('Wheel event detected:', event.deltaY); // Debug log
-      
-      // Không xử lý nếu đang animate
+
       if (isAnimating) {
         console.log('Ignoring scroll - currently animating');
         return;
       }
-      
+
       const now = Date.now();
       const timeSinceLastScroll = now - lastScrollTimeRef.current;
-      
-      // Throttle scroll events (giảm xuống 50ms để responsive hơn)
-      if (timeSinceLastScroll < 50) return;
-      
+
+      // Throttle scroll events
+      if (timeSinceLastScroll < 300) {
+        return;
+      }
+
       lastScrollTimeRef.current = now;
-      
+
       const deltaY = event.deltaY;
-      let newIndex = currentChapterIndex;
-      let direction = 'forward';
-      
-      if (Math.abs(deltaY) > 10) { // Chỉ xử lý khi scroll đủ mạnh
-        if (deltaY > 0 && currentChapterIndex < sequenceChapters.length - 1) {
-          // Cuộn xuống - di chuyển đến chapter tiếp theo
-          newIndex = currentChapterIndex + 1;
-          direction = 'forward';
-        } else if (deltaY < 0 && currentChapterIndex > 0) {
-          // Cuộn lên - di chuyển đến chapter trước
-          newIndex = currentChapterIndex - 1;
-          direction = 'reverse';
-        }
-        
-        if (newIndex !== currentChapterIndex) {
-          console.log(`Moving from chapter ${currentChapterIndex} to ${newIndex} (${direction})`);
-          setCurrentChapterIndex(newIndex);
-          moveToChapter(newIndex, direction);
-        }
+
+      if (deltaY > 20) { // Scroll down
+        handleNext();
+      } else if (deltaY < -20) { // Scroll up
+        handlePrevious();
       }
     };
 
-    // Thêm event listener cho nhiều elements
     const canvas = gl.domElement;
-    const container = canvas.parentElement;
-    
-    // Thêm listener cho canvas và container
     canvas.addEventListener('wheel', handleWheel, { passive: false });
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-    }
-    
-    // Thêm listener cho document để đảm bảo capture mọi scroll
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    
-    console.log('Scroll listeners added for exploring mode');
-    
-    // Cleanup
+
     return () => {
       canvas.removeEventListener('wheel', handleWheel);
-      if (container) {
-        container.removeEventListener('wheel', handleWheel);
-      }
-      document.removeEventListener('wheel', handleWheel);
-      
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      
-      console.log('Scroll listeners removed');
     };
   }, [isExploring, currentChapterIndex, isAnimating, gl.domElement]);
 
   const isLastChapter = currentChapterIndex === sequenceChapters.length - 1;
   const isFirstChapter = currentChapterIndex === 0;
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (isAnimating) return;
     if (currentChapterIndex < sequenceChapters.length - 1) {
       const newIndex = currentChapterIndex + 1;
       setCurrentChapterIndex(newIndex);
-      moveToChapter(newIndex, 'forward');
+      await moveToChapter(newIndex);
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = async () => {
+    if (isAnimating) return;
     if (currentChapterIndex > 0) {
       const newIndex = currentChapterIndex - 1;
       setCurrentChapterIndex(newIndex);
-      moveToChapter(newIndex, 'reverse');
+      await moveToChapter(newIndex);
     }
   };
 
@@ -305,6 +218,61 @@ export function Scene({ isExploring, onTourEnd }) {
               {activeChapter.description}
             </p>
             
+            {/* Floating video - hiển thị nếu chapter có videoSrc */}
+            {activeChapter.videoSrc && (
+              <div style={{
+                margin: "8px 0",
+                borderRadius: "8px",
+                overflow: "hidden",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.25)"
+              }}>
+                <video
+                  key={activeChapter.videoSrc} // Key giúp React re-render video khi src thay đổi
+                  src={activeChapter.videoSrc}
+                  width={280}
+                  height={158}
+                  controls={false} // Tắt controls để giống màn hình TV
+                  autoPlay
+                  muted // Autoplay thường yêu cầu muted
+                  loop
+                  style={{ display: "block", background: "#000" }}
+                >
+                  Trình duyệt của bạn không hỗ trợ video.
+                </video>
+              </div>
+            )}
+
+            {/* Hotspot button - hiển thị nếu chapter có hotspotLink */}
+            {activeChapter.hotspotLink && (
+              <div style={{ marginTop: "4px" }}>
+                <button
+                  onClick={() => window.open(activeChapter.hotspotLink, '_blank')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    padding: '8px 16px',
+                    fontSize: '12px',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{
+                    display: 'inline-block', width: '16px', height: '16px',
+                    borderRadius: '50%', border: '1.5px solid white',
+                    textAlign: 'center', lineHeight: '14px',
+                    fontWeight: 'bold', fontFamily: 'monospace'
+                  }}>i</span>
+                  Xem thông số kỹ thuật
+                </button>
+              </div>
+            )}
+
             {/* Navigation buttons */}
             <div style={{
               display: "flex",
@@ -314,14 +282,15 @@ export function Scene({ isExploring, onTourEnd }) {
               {!isFirstChapter && (
                 <button 
                   onClick={handlePrevious}
+                  disabled={isAnimating}
                   style={{
                     padding: "8px 16px",
                     fontSize: "12px",
-                    background: "rgba(255, 255, 255, 0.2)",
-                    color: "white",
+                    background: isAnimating ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)",
+                    color: isAnimating ? "rgba(255, 255, 255, 0.5)" : "white",
                     border: "1px solid rgba(255, 255, 255, 0.3)",
                     borderRadius: "6px",
-                    cursor: "pointer",
+                    cursor: isAnimating ? "not-allowed" : "pointer",
                     flex: 1
                   }}
                 >
@@ -348,14 +317,15 @@ export function Scene({ isExploring, onTourEnd }) {
               ) : (
                 <button 
                   onClick={handleNext}
+                  disabled={isAnimating}
                   style={{
                     padding: "8px 16px",
                     fontSize: "12px",
-                    background: "#007BFF",
+                    background: isAnimating ? "#555" : "#007BFF",
                     color: "white",
                     border: "none",
                     borderRadius: "6px",
-                    cursor: "pointer",
+                    cursor: isAnimating ? "not-allowed" : "pointer",
                     flex: 1
                   }}
                 >
@@ -377,7 +347,7 @@ export function Scene({ isExploring, onTourEnd }) {
         </Html>
       )}
 
-      {/* Loading indicator khi đang animate */}
+      {/* Loading indicator */}
       {isAnimating && (
         <Html center>
           <div style={{
@@ -413,33 +383,9 @@ export function Scene({ isExploring, onTourEnd }) {
         </Html>
       )}
 
-      {/* Debug info - có thể xóa sau khi test */}
-      {isExploring && (
-        <Html
-          position={[-15, 8, 0]}
-          center
-        >
-          <div style={{
-            background: "rgba(0, 0, 0, 0.8)",
-            color: "white",
-            padding: "8px 12px",
-            borderRadius: "4px",
-            fontSize: "10px",
-            fontFamily: "monospace"
-          }}>
-            <div>Current: {currentChapterIndex + 1}/{sequenceChapters.length}</div>
-            <div>Animating: {isAnimating ? 'Yes' : 'No'}</div>
-            <div>Active: {activeChapter ? activeChapter.title : 'None'}</div>
-          </div>
-        </Html>
-      )}
-
       {/* Progress bar */}
       {isExploring && (
-        <Html
-          position={[0, -12, 0]}
-          center
-        >
+        <Html position={[0, -12, 0]} center>
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -475,12 +421,9 @@ export function Scene({ isExploring, onTourEnd }) {
         </Html>
       )}
 
-      {/* Scroll hint cho người dùng */}
+      {/* Scroll hint */}
       {isExploring && !isAnimating && !activeChapter && (
-        <Html
-          position={[0, -8, 0]}
-          center
-        >
+        <Html position={[0, -8, 0]} center>
           <div style={{
             color: "white",
             fontSize: "14px",
