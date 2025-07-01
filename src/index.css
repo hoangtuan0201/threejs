@@ -5,3 +5,9 @@
   height: 100vh;
   overflow: hidden;
 }
+/* Đảm bảo Theatre UI hiển thị trên cùng */
+#theatreJS-ui-root {
+  z-index: 9999 !important;
+  position: fixed !important;
+  pointer-events: auto !important;
+}
