@@ -9,16 +9,26 @@ export default defineConfig({
       "@theatre/core",
       "@theatre/studio",
       "@theatre/r3f",
+      "@theatre/r3f/dist/extension",
       "@react-three/fiber",
       "@react-three/drei",
-      "three"
-    ]
+      "three",
+      "react",
+      "react-dom",
+      "@mui/material",
+      "@mui/icons-material",
+      "@emotion/react",
+      "@emotion/styled"
+    ],
+    exclude: []
   },
   build: {
     rollupOptions: {
-      input: {
-        main: "./index.html"
-      }
+      input: "./index.html"
     }
+  },
+  server: {
+    host: true,
+    port: 5174
   }
 });

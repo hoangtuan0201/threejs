@@ -68,13 +68,12 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot })
   );
 };
 
-export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowControlPanel }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
-
-
+  const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
 
   const { gl } = useThree();
 
@@ -113,20 +112,19 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
     });
   });
 
-  // Effect to reset when exiting explore mode
-  useEffect(() => {
-    if (!isExploring) {
-      // Reset state when tour ends
-      setActiveChapter(null);
-      // Reset camera to initial position
-      sheet.sequence.position = 0;
-      setTargetPosition(0);
-      // Show ControlPanel again when exiting explore mode
-      if (onShowControlPanel) {
-        onShowControlPanel();
-      }
+  // Reset function for tour end
+  const resetScene = () => {
+    setActiveChapter(null);
+    setSelectedHotspot(null);
+    setShowVideoScreen(null);
+    // Reset camera to initial position
+    sheet.sequence.position = 0;
+    setTargetPosition(0);
+    // Show ControlPanel again
+    if (onShowControlPanel) {
+      onShowControlPanel();
     }
-  }, [isExploring]);
+  };
 
   // Initialize targetPosition
   useEffect(() => {
@@ -144,18 +142,19 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
 
   // Keyboard navigation for escape key
   useEffect(() => {
-    if (!isExploring) return;
-
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onTourEnd();
+        resetScene();
+        if (onTourEnd) {
+          onTourEnd();
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isExploring, onTourEnd]);
+  }, [onTourEnd]);
 
   // Handle scroll for both preview and explore modes
   useEffect(() => {
@@ -211,7 +210,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       document.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
     };
-  }, [gl.domElement]);
+  }, [gl.domElement, onHideControlPanel, onShowControlPanel]);
 
   return (
     <>
@@ -239,70 +238,84 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         selectedHotspot={selectedHotspot}
         onHotspotClick={(chapterId) => {
           console.log(`Hotspot clicked for chapter: ${chapterId}`);
-          // Find the chapter and show hotspot details
+          // Find the chapter and show hotspot details + video screen
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
           if (chapter && chapter.hotspot) {
             setSelectedHotspot(chapter);
+            // Show video screen when hotspot is clicked
+            if (chapter.videoScreen) {
+              setShowVideoScreen(chapter);
+            }
           }
         }}
       />
 
-      {/* Video Screen for Thermostat - show automatically when in Geom3D_393 chapter */}
-      {activeChapter && activeChapter.id === "Geom3D_393" && activeChapter.videoScreen && (
+      {/* Video Screen - show only when hotspot is clicked */}
+      {showVideoScreen && showVideoScreen.videoScreen && (
         <VideoScreen
-          position={activeChapter.videoScreen.position}
-          videoId={activeChapter.videoScreen.videoId}
-          title={activeChapter.videoScreen.title}
-          size={activeChapter.videoScreen.size}
-        />
-      )}
-
-      {/* Video Screen for Linear Grille - show automatically when in indoor chapter */}
-      {activeChapter && activeChapter.id === "indoor" && activeChapter.videoScreen && (
-        <VideoScreen
-          position={activeChapter.videoScreen.position}
-          videoId={activeChapter.videoScreen.videoId}
-          title={activeChapter.videoScreen.title}
-          size={activeChapter.videoScreen.size}
+          position={showVideoScreen.videoScreen.position}
+          rotation={showVideoScreen.videoScreen.rotation}
+          videoId={showVideoScreen.videoScreen.videoId}
+          title={showVideoScreen.videoScreen.title}
+          size={showVideoScreen.videoScreen.size}
         />
       )}
 
       {/* Hotspot Detail Popup */}
       {selectedHotspot && selectedHotspot.hotspot && (
-        <Html position={[
-          selectedHotspot.hotspot.position[0],
-          selectedHotspot.hotspot.position[1] + 0.4,
-          selectedHotspot.hotspot.position[2]
-        ]} center>
+        <group
+          position={[
+            selectedHotspot.hotspot.position[0] ,
+            selectedHotspot.hotspot.position[1] + 0.5,
+            selectedHotspot.hotspot.position[2] -0.3
+          ]}
+          rotation={selectedHotspot.hotspot.rotation || [0, Math.PI / 1.8, 0]}
+        >
+          <Html
+            position={[0, 0, 0]}
+            center
+            distanceFactor={2}
+            transform
+            occlude
+          >
           <div
             style={{
               background: "rgba(0, 0, 0, 0.95)",
               color: "white",
-              padding: "20px",
-              borderRadius: "12px",
-              maxWidth: "400px",
-              minWidth: "320px",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
-              border: "2px solid rgba(255, 255, 255, 0.2)",
+              padding: "7px",
+              borderRadius: "8px",
+              minWidth: "200px", // Minimum width
+              maxWidth: "250px", // Maximum width
+              width: "auto", // Auto width based on content
+              height: "auto", // Auto height based on content
+              minHeight: "80px", // Minimum height
+              maxHeight: "180px", // Maximum height
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.6)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
               position: "relative",
               zIndex: 1000,
+              overflow: "hidden",
+              wordWrap: "break-word", // Break long words
             }}
           >
             {/* Close button */}
             <button
-              onClick={() => setSelectedHotspot(null)}
+              onClick={() => {
+                setSelectedHotspot(null);
+                setShowVideoScreen(null); // Also hide video screen
+              }}
               style={{
                 position: "absolute",
-                top: "10px",
-                right: "10px",
+                top: "6px",
+                right: "6px",
                 background: "rgba(255, 255, 255, 0.2)",
                 border: "none",
                 color: "white",
-                width: "30px",
-                height: "30px",
+                width: "20px", // Smaller button
+                height: "18px",
                 borderRadius: "50%",
                 cursor: "pointer",
-                fontSize: "16px",
+                fontSize: "12px", // Smaller font
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -313,8 +326,8 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
 
             {/* Title */}
             <h3 style={{
-              margin: "0 0 12px 0",
-              fontSize: "20px",
+              margin: "0 0 6px 0", // Smaller margin
+              fontSize: "9px", // Smaller font
               fontWeight: "bold",
               color: "#fff"
             }}>
@@ -323,10 +336,13 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
 
             {/* Description */}
             <p style={{
-              fontSize: "14px",
-              lineHeight: "1.6",
-              margin: "0 0 16px 0",
-              opacity: 0.9
+              fontSize: "7px",
+              lineHeight: "1.4",
+              margin: "0 0 12px 0",
+              opacity: 0.9,
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+              hyphens: "auto"
             }}>
               {selectedHotspot.hotspot.description}
             </p>
@@ -334,8 +350,9 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
             {/* Action Buttons */}
             <div style={{
               display: "flex",
-              gap: "12px",
-              flexDirection: "column"
+              gap: "6px",
+              flexDirection: "column",
+              marginTop: "8px" // Natural flow instead of absolute positioning
             }}>
               {/* Technical Specifications Link */}
               {selectedHotspot.hotspot.link && (
@@ -347,14 +364,14 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
+                    gap: '4px', // Even smaller gap
                     width: '100%',
-                    padding: '12px 16px',
-                    fontSize: '14px',
+                    padding: '6px 8px', // Even smaller padding
+                    fontSize: '10px', // Even smaller font
                     background: 'rgba(255, 255, 255, 0.15)',
                     color: 'white',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: '8px',
+                    borderRadius: '4px', // Smaller border radius
                     cursor: 'pointer',
                     fontWeight: '600',
                     transition: 'all 0.3s ease',
@@ -366,18 +383,8 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
                     e.target.style.background = 'rgba(255, 255, 255, 0.15)';
                   }}
                 >
-                  <span style={{
-                    display: 'inline-block',
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    border: '2px solid white',
-                    textAlign: 'center',
-                    lineHeight: '14px',
-                    fontWeight: 'bold',
-                    fontSize: '12px'
-                  }}>i</span>
-                  View Technical Specifications
+         
+                  Specification
                 </button>
               )}
 
@@ -399,6 +406,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
             />
           </div>
         </Html>
+        </group>
       )}
 
       <PerspectiveCamera

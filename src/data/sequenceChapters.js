@@ -14,14 +14,17 @@ export const sequenceChapters = [
     description: "Automatically adjusts temperature and airflow to optimize comfort.",
     // Hotspot data for when geometry is clicked
     hotspot: {
-      position: [27.78, 4.43, -22.5],
+      position: [27.78, 4.5, -22.5],
+      rotation: [0, Math.PI / 1.8, 0], // Custom rotation for this hotspot
       title: "Smart Thermostat",
+      link: "https://www.youtube.com/watch?v=mC1Ket54DW8",
       description: "Intelligent temperature control with AI that automatically learns your usage habits. The system automatically adjusts temperature based on usage patterns and weather.",
       videoId: "mC1Ket54DW8"
-    },  
+    },
     // Video screen for this chapter
     videoScreen: {
-      position: [27.78, 4.43, -21.2],
+      position: [27.78, 4.7, -21.2],
+      rotation: [0, Math.PI / 1.8, 0], // Custom rotation for video screen
       videoId: "mC1Ket54DW8",
       title: "Smart Thermostat Demo",
       size: { width: 320, height: 180 }
@@ -36,13 +39,16 @@ export const sequenceChapters = [
     // Hotspot data for when geometry is clicked
     hotspot: {
       position: [31.4, 6.35, -20.7],
+      rotation: [0.1, Math.PI / 1, 0], // Different rotation for this hotspot
       title: "Linear Grille",
+      link: "https://www.youtube.com/watch?v=mC1Ket54DW8",
       description: "Premium linear grille with adjustable airflow direction. The sleek design integrates seamlessly with modern interiors while providing optimal air distribution.",
       videoId: "Ks-_Mh1QhMc"
     },
     // Video screen for this chapter
     videoScreen: {
-      position: [27.8, 6.7, -21.7],
+      position: [29.7 , 7.5, -20.3],
+      rotation: [-0.1, Math.PI / 1, 0], // Different rotation for this video screen
       videoId: "Ks-_Mh1QhMc",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 }

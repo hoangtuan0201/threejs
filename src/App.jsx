@@ -7,41 +7,36 @@ import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
 import ControlPanel from "./components/ControlPanel";
-import { IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+
 
 
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  //   studio.initialize();
-  //   studio.extend(extension);
-  //   window.__THEATRE_ALREADY_INIT__ = true;
-  // }
+  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+    studio.initialize();
+    studio.extend(extension);
+    window.__THEATRE_ALREADY_INIT__ = true;
+  }
 
 export default function App() {
-  const [isExploring, setIsExploring] = useState(false);
   const [showControlPanel, setShowControlPanel] = useState(true);
 
-  const startTour = () => setIsExploring(true);
+  const startTour = () => {
+    setShowControlPanel(false);
+  };
+
   const endTour = () => {
-    setIsExploring(false);
-    setShowControlPanel(true); // Show ControlPanel again when exiting explore
+    setShowControlPanel(true);
   };
 
   useEffect(() => {
-    if (isExploring) {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = 'hidden'; };
-    } else {
-      document.body.style.overflow = 'hidden';
-    }
-  }, [isExploring]);
+    document.body.style.overflow = 'hidden';
+  }, []);
 
   return (
     <>
-      {!isExploring && showControlPanel && <ControlPanel onExplore={startTour} />}
+      {showControlPanel && <ControlPanel onExplore={startTour} />}
 
       {/* Navigation Guide - HIDDEN */}
       {/* {isExploring && (
@@ -73,26 +68,7 @@ export default function App() {
         </Paper>
       )} */}
 
-      {isExploring && (
-        <IconButton
-          onClick={endTour}
-          sx={{
-            position: "absolute",
-            top: 24,
-            right: 24,
-            zIndex: 100,
-            bgcolor: "#111",
-            color: "#fff",
-            width: 48,
-            height: 48,
-            "&:hover": { bgcolor: "#333" },
-            boxShadow: 3,
-          }}
-          title="Exit Tour"
-        >
-          <CloseIcon fontSize="large" />
-        </IconButton>
-      )}
+
 
       <Canvas
         style={{
@@ -109,7 +85,6 @@ export default function App() {
       >
         <SheetProvider sheet={sheet}>
           <Scene
-            isExploring={isExploring}
             onTourEnd={endTour}
             onHideControlPanel={() => setShowControlPanel(false)}
             onShowControlPanel={() => setShowControlPanel(true)}
