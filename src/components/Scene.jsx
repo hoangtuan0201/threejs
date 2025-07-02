@@ -163,7 +163,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       event.preventDefault();
       event.stopPropagation();
 
-      console.log('Scroll detected:', event.deltaY, 'targetPosition:', targetPosition); // Debug log
+      // console.log('Scroll detected:', event.deltaY, 'targetPosition:', targetPosition); // Debug log
 
       // Hide ControlPanel when starting to scroll
       if (onHideControlPanel) {
@@ -187,7 +187,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         // Limit within range [0, 6] (entire sequence)
         newPosition = Math.max(0, Math.min(6, newPosition));
 
-        console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
+        // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 
         // Show ControlPanel again if scrolled back to initial position
         if (newPosition === 0 && onShowControlPanel) {

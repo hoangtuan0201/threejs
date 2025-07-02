@@ -77,19 +77,14 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
   useEffect(() => {
     if (!scene || !sequenceChapters) return;
 
-    console.log("=== Setting up chapter click handlers ===");
+    // Only set up click handlers for objects that actually exist in the 3D model
     sequenceChapters.forEach((chapter) => {
       const object = scene.getObjectByName(chapter.id);
-      console.log(`Looking for chapter: ${chapter.id}, found object:`, object);
       if (object) {
         object.userData.onClick = (e) => {
           e.stopPropagation();
-          console.log(`Chapter clicked: ${chapter.id}`);
           onChapterClick(chapter.id);
         };
-        console.log(`✅ Click handler set for: ${chapter.id}`);
-      } else {
-        console.log(`❌ Object not found for chapter: ${chapter.id}`);
       }
     });
 

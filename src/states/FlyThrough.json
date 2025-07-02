@@ -14,7 +14,7 @@
       },
       "sequence": {
         "subUnitsPerUnit": 30,
-        "length": 4.29,
+        "length": 4.2,
         "type": "PositionalSequence",
         "tracksByObject": {
           "Camera": {
@@ -57,20 +57,20 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 32.54427713438402
                   },
                   {
                     "id": "olvQEj2rFE",
-                    "position": 2.767,
+                    "position": 2.9,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 25.67158177080749
@@ -81,7 +81,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0.5
                     ],
@@ -90,7 +90,20 @@
                   },
                   {
                     "id": "H2DLh4B0-r",
-                    "position": 3.967,
+                    "position": 4.067,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": 19.723646731309366
+                  },
+                  {
+                    "id": "dujZtqTuvp",
+                    "position": 4.167,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -99,7 +112,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": 19.723646731309366
+                    "value": 18.870190867794076
                   }
                 ]
               },
@@ -141,20 +154,20 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 6.525865209722041
                   },
                   {
                     "id": "BK2hH1VBM6",
-                    "position": 2.767,
+                    "position": 2.9,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 5.750532633889008
@@ -165,7 +178,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0.5
                     ],
@@ -174,7 +187,20 @@
                   },
                   {
                     "id": "_mxuM3z1KX",
-                    "position": 3.967,
+                    "position": 4.067,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": 5.136019462015722
+                  },
+                  {
+                    "id": "Nc-5EmrcVx",
+                    "position": 4.133,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -212,20 +238,20 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -21.83230082011602
                   },
                   {
                     "id": "9WPzLFdxmq",
-                    "position": 2.767,
+                    "position": 2.9,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -25.850459136425542
@@ -236,7 +262,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0.5
                     ],
@@ -245,7 +271,20 @@
                   },
                   {
                     "id": "RNYbg3Kokb",
-                    "position": 3.967,
+                    "position": 4.067,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": -28.824957525424114
+                  },
+                  {
+                    "id": "f0PugWmEa7",
+                    "position": 4.1,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -254,7 +293,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": -28.824957525424114
+                    "value": -29.162308065447952
                   }
                 ]
               },
@@ -270,20 +309,20 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -3.141592653589793
                   },
                   {
                     "id": "eTm6aAUnUw",
-                    "position": 2.767,
+                    "position": 2.9,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -0.6135320369602133
@@ -294,7 +333,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -315,20 +354,20 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 1.3488986321128276
                   },
                   {
                     "id": "0XK-sRXR8q",
-                    "position": 2.767,
+                    "position": 2.9,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0.6573519392409085
@@ -339,7 +378,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -360,20 +399,20 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 3.141592653589793
                   },
                   {
                     "id": "RZ_BlnZhTJ",
-                    "position": 2.767,
+                    "position": 2.9,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0.3516460612402405
@@ -384,7 +423,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -409,6 +448,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "g8JeX1zCJVvQ3rux",
     "X7yr-6Bd3pzAVRrK",
     "uFPq8LoZU8eLrGyx",
     "F7UE052gykdt4nHQ",

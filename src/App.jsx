@@ -33,9 +33,9 @@ export default function App() {
   useEffect(() => {
     if (isExploring) {
       document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = 'hidden'; }; // Keep hidden so scroll works in canvas
+      return () => { document.body.style.overflow = 'hidden'; };
     } else {
-      document.body.style.overflow = 'hidden'; // Always hidden so scroll works in canvas
+      document.body.style.overflow = 'hidden';
     }
   }, [isExploring]);
 
