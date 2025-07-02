@@ -15,17 +15,37 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
         "Geom3D_35",
         "Geom3D_101",
         "Geom3D__71",
+        "Geom3D__70",
         "Geom3D_264",
         "Geom3D_266",
         "Geom3D__29",
         "Geom3D__124",
         "Geom3D__145",
+        "Geom3D__146",
         "Geom3D__98",
         "Geom3D__96",
         "Geom3D__103",
         "Geom3D_35",
         "Geom3D__99",
         "Geom3D_611",
+        "Geom3D_Naamloos_1", //lò vi sóng
+        "Geom3D_Naamloos",
+        "Geom3D_Naamloos_2",
+        "Geom3D_100",
+        "Geom3D_154",
+        "Geom3D_153",
+        "Geom3D_152",
+        "Geom3D_151",
+        "Geom3D_144",
+        "Geom3D_21",
+        "Geom3D_148",
+        "Geom3D_149",
+        "Geom3D_150",
+        "Geom3D_147",
+        "Geom3D_146",
+        "Geom3D_145",
+        "Geom3D__257",
+        "Geom3D_609",
       ];
 
       scene.traverse((child) => {
@@ -36,13 +56,13 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
           // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
           if (transparentObjects.includes(child.name)) {
-            if (sequencePosition > 2.4) {
+            if (sequencePosition > 2.8) {
               console.log(`Making ${child.name} transparent (sequence > 2.5)`);
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
                 child.material.transparent = true;
-                child.material.opacity = 0.3; // 30% opacity
+                child.material.opacity = 0.2; // 30% opacity
                 console.log(`✅ ${child.name} is now transparent`);
               }
             } else {

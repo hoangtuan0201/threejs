@@ -14,16 +14,15 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-    studio.initialize();
-    studio.extend(extension);
-    window.__THEATRE_ALREADY_INIT__ = true;
-  }
+  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  //   studio.initialize();
+  //   studio.extend(extension);
+  //   window.__THEATRE_ALREADY_INIT__ = true;
+  // }
 
 export default function App() {
   const [isExploring, setIsExploring] = useState(false);
   const [showControlPanel, setShowControlPanel] = useState(true);
-  const [positionPickerEnabled, setPositionPickerEnabled] = useState(false);
 
   const startTour = () => setIsExploring(true);
   const endTour = () => {
@@ -74,32 +73,6 @@ export default function App() {
         </Paper>
       )} */}
 
-      {/* Position Picker Toggle Button - only show in explore mode */}
-      {isExploring && (
-        <IconButton
-          onClick={() => setPositionPickerEnabled(!positionPickerEnabled)}
-          sx={{
-            position: "absolute",
-            top: 24,
-            right: 80,
-            zIndex: 100,
-            bgcolor: positionPickerEnabled ? "#4CAF50" : "#111",
-            color: "#fff",
-            width: 48,
-            height: 48,
-            "&:hover": { 
-              bgcolor: positionPickerEnabled ? "#45a049" : "#333",
-              transform: "scale(1.05)"
-            },
-            boxShadow: 3,
-            transition: "all 0.3s ease"
-          }}
-          title={positionPickerEnabled ? "Disable Position Picker" : "Enable Position Picker"}
-        >
-          <span style={{ fontSize: "20px" }}>📍</span>
-        </IconButton>
-      )}
-
       {isExploring && (
         <IconButton
           onClick={endTour}
@@ -140,7 +113,6 @@ export default function App() {
             onTourEnd={endTour}
             onHideControlPanel={() => setShowControlPanel(false)}
             onShowControlPanel={() => setShowControlPanel(true)}
-            positionPickerEnabled={positionPickerEnabled}
           />
         </SheetProvider>
       </Canvas>

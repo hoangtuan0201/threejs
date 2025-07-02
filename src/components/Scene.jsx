@@ -5,12 +5,11 @@ import { useThree, useFrame } from "@react-three/fiber";
 
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
-import { PositionPicker } from "./PositionPicker";
 import { sequenceChapters } from "../data/sequenceChapters";
 
 
 // Hotspots component - separated and always rendered as 3D objects
-const HotspotsRenderer = ({ sequenceChapters, onHotspotClick }) => {
+const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot }) => {
   return (
     <>
       {sequenceChapters && sequenceChapters.length > 0 && (
@@ -40,26 +39,28 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick }) => {
                 </mesh>
               </group>
 
-              {/* HTML label attached to the 3D "i" - show hotspot title */}
-              <Html distanceFactor={10} position={[0, 0.3, 0]}>
-                <div
-                  style={{
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    pointerEvents: 'none',
-                    whiteSpace: 'nowrap',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    opacity: 0.8,
-                  }}
-                >
-                  {chapter.hotspot.title || chapter.title || `H${chapter.id}`}
-                </div>
-              </Html>
+              {/* HTML label attached to the 3D "i" - show hotspot title only when not selected */}
+              {(!selectedHotspot || selectedHotspot.id !== chapter.id) && (
+                <Html distanceFactor={10} position={[0, 0.3, 0]}>
+                  <div
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.8)',
+                      color: 'white',
+                      padding: '1px 4px', // Smaller padding
+                      borderRadius: '3px', // Smaller border radius
+                      fontSize: '8px', // Smaller font size
+                      fontWeight: 'bold',
+                      pointerEvents: 'none',
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.3)', // Smaller shadow
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      opacity: 0.8,
+                    }}
+                  >
+                    {chapter.hotspot.title || chapter.title || `H${chapter.id}`}
+                  </div>
+                </Html>
+              )}
             </group>
           ))
       )}
@@ -67,17 +68,13 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick }) => {
   );
 };
 
-export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowControlPanel, positionPickerEnabled }) {
+export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowControlPanel }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
 
-  // Handle position picked from PositionPicker
-  const handlePositionPicked = (position) => {
-    console.log('Position picked:', position);
-    // You can add this position to your sequenceChapters or use it for hotspot placement
-  };
+
 
   const { gl } = useThree();
 
@@ -85,7 +82,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
   useFrame(() => {
     if (targetPosition !== sheet.sequence.position) {
       const diff = targetPosition - sheet.sequence.position;
-      const speed = 0.05; // Smooth scrolling speed
+      const speed = 0.03; // Smooth scrolling speed
 
       if (Math.abs(diff) > 0.001) {
         sheet.sequence.position += diff * speed;
@@ -174,7 +171,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       }
 
       const deltaY = event.deltaY;
-      const scrollSensitivity = 0.003; // Scroll sensitivity
+      const scrollSensitivity = 0.002; // Scroll sensitivity
 
       // Use functional update to ensure latest value
       setTargetPosition(prevTarget => {
@@ -239,11 +236,8 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}
       <HotspotsRenderer
         sequenceChapters={sequenceChapters}
+        selectedHotspot={selectedHotspot}
         onHotspotClick={(chapterId) => {
-          // Nếu là Thermostat thì mở video lớn
-          if (chapterId === "Geom3D_393") {
-            window.open("https://www.youtube.com/watch?v=mC1Ket54DW8", "_blank");
-          }
           console.log(`Hotspot clicked for chapter: ${chapterId}`);
           // Find the chapter and show hotspot details
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
@@ -275,7 +269,11 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
 
       {/* Hotspot Detail Popup */}
       {selectedHotspot && selectedHotspot.hotspot && (
-        <Html position={selectedHotspot.hotspot.position} center>
+        <Html position={[
+          selectedHotspot.hotspot.position[0],
+          selectedHotspot.hotspot.position[1] + 0.4,
+          selectedHotspot.hotspot.position[2]
+        ]} center>
           <div
             style={{
               background: "rgba(0, 0, 0, 0.95)",
@@ -383,39 +381,6 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
                 </button>
               )}
 
-              {/* YouTube Video Link */}
-              {selectedHotspot.hotspot.videoId && (
-                <button
-                  onClick={() => {
-                    const videoId = selectedHotspot.hotspot.videoId;
-                    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    width: '100%',
-                    padding: '12px 16px',
-                    fontSize: '14px',
-                    background: 'rgba(255, 0, 0, 0.8)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 0, 0, 0.9)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 0, 0, 0.8)';
-                  }}
-                >
-                  📺 Watch Demo Video
-                </button>
-              )}
             </div>
 
             {/* Arrow pointer */}
@@ -443,13 +408,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         fov={60}
       />
 
-      {/* Position Picker - show only in explore mode */}
-      {isExploring && (
-        <PositionPicker
-          isEnabled={positionPickerEnabled}
-          onPositionPicked={handlePositionPicked}
-        />
-      )}
+
     </>
   );
 }

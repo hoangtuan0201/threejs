@@ -21,7 +21,7 @@ export function VideoScreen({ position, videoId, title = "Video Demo", size = { 
   const embedUrl = `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`;
 
   return (
-    <group position={position} rotation={[0, Math.PI / 2, 0]}>
+    <group position={position} rotation={[0, Math.PI / 1.8, 0]}>
       {/* TV screen as HTML plane */}
       <Html distanceFactor={2} position={[0, 0, 0]} transform occlude>
         <div
