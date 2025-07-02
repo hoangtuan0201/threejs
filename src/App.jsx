@@ -14,11 +14,11 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  //   studio.initialize();
-  //   studio.extend(extension);
-  //   window.__THEATRE_ALREADY_INIT__ = true;
-  // }
+  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+    studio.initialize();
+    studio.extend(extension);
+    window.__THEATRE_ALREADY_INIT__ = true;
+  }
 
 export default function App() {
   const [isExploring, setIsExploring] = useState(false);

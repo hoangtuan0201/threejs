@@ -12,6 +12,8 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
       // List of objects to make transparent only after sequence 2
       const transparentObjects = [
+        "Geom3D_35",
+        "Geom3D_101",
         "Geom3D__71",
         "Geom3D_264",
         "Geom3D_266",
@@ -21,7 +23,9 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
         "Geom3D__98",
         "Geom3D__96",
         "Geom3D__103",
-        "Geom3D_35"
+        "Geom3D_35",
+        "Geom3D__99",
+        "Geom3D_611",
       ];
 
       scene.traverse((child) => {
@@ -32,13 +36,13 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
           // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
           if (transparentObjects.includes(child.name)) {
-            if (sequencePosition > 2.3) {
+            if (sequencePosition > 2.4) {
               console.log(`Making ${child.name} transparent (sequence > 2.5)`);
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
                 child.material.transparent = true;
-                child.material.opacity = 0.2; // 30% opacity
+                child.material.opacity = 0.3; // 30% opacity
                 console.log(`✅ ${child.name} is now transparent`);
               }
             } else {

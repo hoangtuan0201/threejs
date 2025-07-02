@@ -71,6 +71,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
+  const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
 
   // Handle position picked from PositionPicker
   const handlePositionPicked = (position) => {
@@ -240,6 +241,11 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         sequenceChapters={sequenceChapters}
         onHotspotClick={(chapterId) => {
           console.log(`Hotspot clicked for chapter: ${chapterId}`);
+          // Find the chapter and show hotspot details
+          const chapter = sequenceChapters.find(ch => ch.id === chapterId);
+          if (chapter && chapter.hotspot) {
+            setSelectedHotspot(chapter);
+          }
         }}
       />
 
@@ -263,10 +269,168 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         />
       )}
 
+      {/* Hotspot Detail Popup */}
+      {selectedHotspot && selectedHotspot.hotspot && (
+        <Html position={selectedHotspot.hotspot.position} center>
+          <div
+            style={{
+              background: "rgba(0, 0, 0, 0.95)",
+              color: "white",
+              padding: "20px",
+              borderRadius: "12px",
+              maxWidth: "400px",
+              minWidth: "320px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
+              border: "2px solid rgba(255, 255, 255, 0.2)",
+              position: "relative",
+              zIndex: 1000,
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setSelectedHotspot(null)}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                background: "rgba(255, 255, 255, 0.2)",
+                border: "none",
+                color: "white",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                cursor: "pointer",
+                fontSize: "16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ×
+            </button>
 
+            {/* Title */}
+            <h3 style={{
+              margin: "0 0 12px 0",
+              fontSize: "20px",
+              fontWeight: "bold",
+              color: "#fff"
+            }}>
+              {selectedHotspot.hotspot.title}
+            </h3>
 
-      
-      
+            {/* Description */}
+            <p style={{
+              fontSize: "14px",
+              lineHeight: "1.6",
+              margin: "0 0 16px 0",
+              opacity: 0.9
+            }}>
+              {selectedHotspot.hotspot.description}
+            </p>
+
+            {/* Action Buttons */}
+            <div style={{
+              display: "flex",
+              gap: "12px",
+              flexDirection: "column"
+            }}>
+              {/* Technical Specifications Link */}
+              {selectedHotspot.hotspot.link && (
+                <button
+                  onClick={() => {
+                    window.open(selectedHotspot.hotspot.link, '_blank');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    padding: '12px 16px',
+                    fontSize: '14px',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                  }}
+                >
+                  <span style={{
+                    display: 'inline-block',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    border: '2px solid white',
+                    textAlign: 'center',
+                    lineHeight: '14px',
+                    fontWeight: 'bold',
+                    fontSize: '12px'
+                  }}>i</span>
+                  View Technical Specifications
+                </button>
+              )}
+
+              {/* YouTube Video Link */}
+              {selectedHotspot.hotspot.videoId && (
+                <button
+                  onClick={() => {
+                    const videoId = selectedHotspot.hotspot.videoId;
+                    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    padding: '12px 16px',
+                    fontSize: '14px',
+                    background: 'rgba(255, 0, 0, 0.8)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 0, 0, 0.9)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 0, 0, 0.8)';
+                  }}
+                >
+                  📺 Watch Demo Video
+                </button>
+              )}
+            </div>
+
+            {/* Arrow pointer */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "-8px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "0",
+                height: "0",
+                borderLeft: "8px solid transparent",
+                borderRight: "8px solid transparent",
+                borderTop: "8px solid rgba(0, 0, 0, 0.95)",
+              }}
+            />
+          </div>
+        </Html>
+      )}
 
       <PerspectiveCamera
         theatreKey="Camera"
