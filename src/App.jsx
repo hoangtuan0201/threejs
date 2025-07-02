@@ -4,11 +4,13 @@ import { SheetProvider } from "@theatre/r3f";
 import { getProject } from "@theatre/core";
 import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
-import theatreState from "./theatreState.json";
+import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
 import ControlPanel from "./components/ControlPanel";
 import { Box, Paper, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+
+
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
@@ -20,22 +22,26 @@ const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
 export default function App() {
   const [isExploring, setIsExploring] = useState(false);
+  const [showControlPanel, setShowControlPanel] = useState(true);
 
   const startTour = () => setIsExploring(true);
-  const endTour = () => setIsExploring(false);
+  const endTour = () => {
+    setIsExploring(false);
+    setShowControlPanel(true); // Hiển thị lại ControlPanel khi thoát explore
+  };
 
   useEffect(() => {
     if (isExploring) {
       document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = 'auto'; };
+      return () => { document.body.style.overflow = 'hidden'; }; // Giữ hidden để scroll hoạt động trong canvas
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = 'hidden'; // Luôn hidden để scroll hoạt động trong canvas
     }
   }, [isExploring]);
 
   return (
     <>
-      {!isExploring && <ControlPanel onExplore={startTour} />}
+      {!isExploring && showControlPanel && <ControlPanel onExplore={startTour} />}
 
       {isExploring && (
         <Paper
@@ -55,13 +61,13 @@ export default function App() {
           }}
         >
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-            🎯 Hướng dẫn điều hướng
+            🎯 Navigation Guide
           </Typography>
           <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-            • <b>Cuộn chuột</b> lên/xuống để di chuyển giữa các điểm<br />
-            • <b>Phím mũi tên</b> ←→↑↓ để điều hướng<br />
-            • <b>ESC</b> để thoát tour<br />
-            • Sử dụng nút "Tiếp theo" / "Trước" trong tooltip
+            • <b>Mouse wheel</b> up/down to move between points<br />
+            • <b>Arrow keys</b> ←→↑↓ to navigate<br />
+            • <b>ESC</b> to exit tour<br />
+            • Use "Next" / "Previous" buttons in tooltip
           </Typography>
         </Paper>
       )}
@@ -97,12 +103,16 @@ export default function App() {
           height: "100vh"
         }}
         shadows
-        // Giới hạn device pixel ratio để cải thiện hiệu suất trên màn hình HiDPI
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 10], fov: 60 }}
       >
         <SheetProvider sheet={sheet}>
-          <Scene isExploring={isExploring} onTourEnd={endTour} />
+          <Scene
+            isExploring={isExploring}
+            onTourEnd={endTour}
+            onHideControlPanel={() => setShowControlPanel(false)}
+            onShowControlPanel={() => setShowControlPanel(true)}
+          />
         </SheetProvider>
       </Canvas>
     </>

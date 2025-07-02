@@ -2,36 +2,46 @@ export const sequenceChapters = [
   {
     id: "start",
     range: [0, 0.3],
-    position: [0, 5, 8],
-    title: "Chào mừng đến với AirSmart",
-    description: "Khám phá hệ thống điều hòa thông minh tiên tiến nhất.",
+    position: [27.97, 5, -23],
+    title: "Welcome to AirSmart",
+    description: "Explore the most advanced smart air conditioning system.",
   },
   {
-    id: "geom393",
+    id: "Geom3D_393",
     range: [0.3, 1],
-    position: [29.5, 5, -22],
-    title: "Thiết bị Điều hòa Thông minh",
-    description:
-      "Tự động điều chỉnh nhiệt độ và luồng gió để tối ưu hóa sự thoải mái.",
-    hotspotLink: "/brochures/linear_grille_specs.pdf",
-    videoSrc:
-      "https://www.youtube.com/watch?v=mC1Ket54DW8&list=RDKyqmaTzoZpo&index=3",
+    position: [27.5, 4.7, -21.08],
+    title: "Thermostat",
+    description: "Automatically adjusts temperature and airflow to optimize comfort.",
+    hotspotLink: "",
+    // Hotspot data for when geometry is clicked
+    hotspot: {
+      position: [26.61, 4.1, -22.7],
+      title: "Smart Thermostat",
+      description: "Intelligent temperature control with AI that automatically learns your usage habits. The system automatically adjusts temperature based on usage patterns and weather.",
+      link: "/brochures/thermostat_specs.pdf",
+      videoId: "mC1Ket54DW8"
+    },  
+    // Video screen for this chapter
+    videoScreen: {
+      position: [25.5, 6, -21],
+      videoId: "mC1Ket54DW8",
+      title: "Smart Thermostat Demo",
+      size: { width: 320, height: 180 }
+    }
   },
   {
     id: "indoor",
     range: [1, 2],
     position: [22, 5, -21],
     title: "Linear Grille",
-    description:
-      "Thiết kế tinh tế, hòa hợp với mọi không gian nội thất, giúp phân phối không khí đều khắp phòng.",
+    description: "Elegant design that blends with any interior space, helping to distribute air evenly throughout the room.",
     hotspotLink: "/brochures/linear_grille_specs.pdf",
   },
   {
     id: "end",
     range: [2, 3],
     position: [22, 5, -21],
-    title: "Kết thúc Tour",
-    description:
-      "Cảm ơn bạn đã tham gia tour khám phá hệ thống điều hòa AirSmart!",
+    title: "Tour Complete",
+    description: "Thank you for exploring the AirSmart air conditioning system!",
   },
 ];
