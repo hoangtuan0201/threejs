@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Html } from "@react-three/drei";
 
-export function VideoScreen({ position, videoId, title = "Video Demo", size = { width: 320, height: 180 } }) {
+export function VideoScreen({ position, videoId, title = "Video Demo", size = { width: 80, height: 45 } }) {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -21,44 +21,54 @@ export function VideoScreen({ position, videoId, title = "Video Demo", size = { 
   const embedUrl = `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`;
 
   return (
-    <group position={position}>
-      {/* 3D Sphere to replace video screen */}
-      <mesh
-        onPointerEnter={() => setIsHovered(true)}
-        onPointerLeave={() => setIsHovered(false)}
-        onClick={() => {
-          // Open video in new tab when sphere is clicked
-          window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank');
-        }}
-      >
-        <sphereGeometry args={[0.3, 32, 32]} />
-        <meshBasicMaterial
-          color={isHovered ? "#ff6b6b" : "#4dabf7"}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-
-      {/* HTML label for the sphere */}
-      <Html distanceFactor={10} position={[0, 0.5, 0]}>
+    <group position={position} rotation={[0, Math.PI / 2, 0]}>
+      {/* TV screen as HTML plane */}
+      <Html distanceFactor={2} position={[0, 0, 0]} transform occlude>
         <div
           style={{
-            background: "rgba(0, 0, 0, 0.8)",
-            color: "white",
-            padding: "4px 8px",
-            borderRadius: "4px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            pointerEvents: "none",
-            whiteSpace: "nowrap",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.2)",
-            textAlign: "center",
-            transform: isHovered ? "scale(1.1)" : "scale(1)",
-            transition: "transform 0.3s ease",
+            width: size.width,
+            height: size.height,
+            background: '#111',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
+            border: '3px solid #444',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            position: 'relative',
           }}
+          onClick={() => window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank')}
+          title="Xem video lớn"
         >
-          🎥 {title}
+          <iframe
+            width={size.width}
+            height={size.height}
+            src={embedUrl}
+            title={title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 8,
+              left: 0,
+              width: '100%',
+              textAlign: 'center',
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: 16,
+              textShadow: '0 2px 8px #000',
+              pointerEvents: 'none',
+            }}
+          >
+            {title}
+          </div>
         </div>
       </Html>
     </group>

@@ -22,7 +22,7 @@ export const sequenceChapters = [
     },  
     // Video screen for this chapter
     videoScreen: {
-      position: [25.5, 6, -21],
+      position: [27.78, 4.43, -22.0],
       videoId: "mC1Ket54DW8",
       title: "Smart Thermostat Demo",
       size: { width: 320, height: 180 }

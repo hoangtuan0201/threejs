@@ -239,6 +239,10 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       <HotspotsRenderer
         sequenceChapters={sequenceChapters}
         onHotspotClick={(chapterId) => {
+          // Nếu là Thermostat thì mở video lớn
+          if (chapterId === "Geom3D_393") {
+            window.open("https://www.youtube.com/watch?v=mC1Ket54DW8", "_blank");
+          }
           console.log(`Hotspot clicked for chapter: ${chapterId}`);
         }}
       />
