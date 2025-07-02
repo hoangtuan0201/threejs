@@ -213,7 +213,7 @@ export function Hotspot({
                     fontWeight: '500',
                   }}
                 >
-                  📺 Xem Video YouTube
+                  📺 Watch Youtube Video
                 </button>
               )}
 
@@ -245,7 +245,7 @@ export function Hotspot({
                     textAlign: 'center', lineHeight: '14px',
                     fontWeight: 'bold', fontFamily: 'monospace'
                   }}>i</span>
-                  Xem thông số kỹ thuật
+                  View Technical Specifications
                 </button>
               )}
             </div>

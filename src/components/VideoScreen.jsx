@@ -17,8 +17,8 @@ export function VideoScreen({ position, videoId, title = "Video Demo", size = { 
 
   const finalVideoId = extractVideoId(videoId);
   
-  // YouTube embed URL with autoplay and loop
-  const embedUrl = `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=1&controls=1&rel=0&modestbranding=1`;
+  // YouTube embed URL with autoplay, loop, and audio enabled
+  const embedUrl = `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`;
 
   return (
     <Html position={position} center>

@@ -36,6 +36,21 @@ export const sequenceChapters = [
     title: "Linear Grille",
     description: "Elegant design that blends with any interior space, helping to distribute air evenly throughout the room.",
     hotspotLink: "/brochures/linear_grille_specs.pdf",
+    // Hotspot data for when geometry is clicked
+    hotspot: {
+      position: [22, 5.5, -13],
+      title: "Linear Grille",
+      description: "Premium linear grille with adjustable airflow direction. The sleek design integrates seamlessly with modern interiors while providing optimal air distribution.",
+      link: "/brochures/linear_grille_specs.pdf",
+      videoId: "Ks-_Mh1QhMc"
+    },
+    // Video screen for this chapter
+    videoScreen: {
+      position: [20.5, 8.5, -19.8],
+      videoId: "Ks-_Mh1QhMc",
+      title: "Linear Grille Demo",
+      size: { width: 320, height: 180 }
+    }
   },
   {
     id: "end",

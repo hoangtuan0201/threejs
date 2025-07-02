@@ -229,7 +229,7 @@ export function ThermostatTooltip({
                 fontWeight: 'bold', 
                 fontSize: '12px'
               }}>i</span>
-              Xem thông số kỹ thuật
+              View Technical Specifications
             </button>
           )}
         </div>

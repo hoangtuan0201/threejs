@@ -27,15 +27,15 @@ export default function App() {
   const startTour = () => setIsExploring(true);
   const endTour = () => {
     setIsExploring(false);
-    setShowControlPanel(true); // Hiển thị lại ControlPanel khi thoát explore
+    setShowControlPanel(true); // Show ControlPanel again when exiting explore
   };
 
   useEffect(() => {
     if (isExploring) {
       document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = 'hidden'; }; // Giữ hidden để scroll hoạt động trong canvas
+      return () => { document.body.style.overflow = 'hidden'; }; // Keep hidden so scroll works in canvas
     } else {
-      document.body.style.overflow = 'hidden'; // Luôn hidden để scroll hoạt động trong canvas
+      document.body.style.overflow = 'hidden'; // Always hidden so scroll works in canvas
     }
   }, [isExploring]);
 
@@ -87,7 +87,7 @@ export default function App() {
             "&:hover": { bgcolor: "#333" },
             boxShadow: 3,
           }}
-          title="Thoát tour"
+          title="Exit Tour"
         >
           <CloseIcon fontSize="large" />
         </IconButton>

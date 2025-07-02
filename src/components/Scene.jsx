@@ -17,6 +17,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
   const [scrollDebug, setScrollDebug] = useState(""); // Debug scroll events
   const [showThermostatTooltip, setShowThermostatTooltip] = useState(false); // Show tooltip when mesh is clicked
+  const [showLinearGrilleTooltip, setShowLinearGrilleTooltip] = useState(false); // Show tooltip for Linear Grille
 
   // Debug log for state changes
   useEffect(() => {
@@ -29,11 +30,22 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
   const lastScrollTimeRef = useRef(0);
   const animationRef = useRef(null);
 
-  // Smooth scrolling với useFrame - DISABLED FOR SEQUENCE CREATION
+  // Helper function to check if current position is within a chapter's range (extended by +0.5)
+  const isWithinChapterRange = (chapterId) => {
+    const chapter = sequenceChapters.find(ch => ch.id === chapterId);
+    if (!chapter) return false;
+
+    const currentPosition = sheet.sequence.position;
+    const [start, end] = chapter.range;
+    // Extend the range by +0.5 to keep elements visible longer
+    return currentPosition >= start && currentPosition <= (end + 0.2);
+  };
+
+  // Smooth scrolling with useFrame - DISABLED FOR SEQUENCE CREATION
   useFrame(() => {
     if (!isExploring && targetPosition !== sheet.sequence.position) {
       const diff = targetPosition - sheet.sequence.position;
-      const speed = 0.05; // Tốc độ smooth scrolling
+      const speed = 0.05; // Smooth scrolling speed
 
       if (Math.abs(diff) > 0.001) {
         sheet.sequence.position += diff * speed;
@@ -41,37 +53,69 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         sheet.sequence.position = targetPosition;
       }
     }
+
+    // Auto-show/hide tooltips and elements based on scroll position in preview mode
+    if (!isExploring) {
+      const currentPosition = sheet.sequence.position;
+
+      sequenceChapters.forEach((chapter) => {
+        const [start, end] = chapter.range;
+        const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
+
+        // Auto-show tooltips when entering sequence range
+        if (isInRange) {
+          if (chapter.id === "Geom3D_393" && !showThermostatTooltip) {
+            setShowThermostatTooltip(true);
+            // Set active chapter for tooltip display
+            setActiveChapter(chapter);
+          }
+          if (chapter.id === "indoor" && !showLinearGrilleTooltip) {
+            setShowLinearGrilleTooltip(true);
+            // Set active chapter for tooltip display
+            setActiveChapter(chapter);
+          }
+        } else {
+          // Auto-hide tooltips when leaving sequence range
+          if (chapter.id === "Geom3D_393" && showThermostatTooltip) {
+            setShowThermostatTooltip(false);
+          }
+          if (chapter.id === "indoor" && showLinearGrilleTooltip) {
+            setShowLinearGrilleTooltip(false);
+          }
+        }
+      });
+    }
   });
 
-  // Effect để bắt đầu và reset tour
+  // Effect to start and reset tour
   useEffect(() => {
     if (isExploring) {
       setCurrentChapterIndex(0);
       setActiveChapter(null);
-      // Di chuyển đến chapter đầu tiên
+      // Move to first chapter
       moveToChapter(0);
     } else {
-      // Reset trạng thái khi tour kết thúc
+      // Reset state when tour ends
       setCurrentChapterIndex(-1);
       setActiveChapter(null);
       setIsAnimating(false);
 
-      // Cancel animation nếu đang chạy
+      // Cancel animation if running
       if (animationRef.current) {
         animationRef.current.stop();
         animationRef.current = null;
       }
-      // Reset camera về vị trí ban đầu
+      // Reset camera to initial position
       sheet.sequence.position = 0;
       setTargetPosition(0);
-      // Hiển thị lại ControlPanel khi thoát explore mode
+      // Show ControlPanel again when exiting explore mode
       if (onShowControlPanel) {
         onShowControlPanel();
       }
     }
   }, [isExploring]);
 
-  // Khởi tạo targetPosition
+  // Initialize targetPosition
   useEffect(() => {
     const currentPos = sheet.sequence.position;
     console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'type:', typeof currentPos);
@@ -85,7 +129,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
     }
   }, [sheet.sequence]);
 
-  // Hàm di chuyển camera đến chapter (tiến và lùi)
+  // Function to move camera to chapter (forward and backward)
   const moveToChapter = async (chapterIndex) => {
     if (chapterIndex < 0 || chapterIndex >= sequenceChapters.length) return;
 
@@ -117,7 +161,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
 
       await animationRef.current;
 
-      // Animation hoàn thành, hiển thị tooltip
+      // Animation completed, show tooltip
       setActiveChapter(chapter);
       console.log(`Successfully moved to chapter ${chapterIndex}`);
 
@@ -155,9 +199,9 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isExploring, currentChapterIndex, isAnimating, onTourEnd]);
 
-  // Xử lý scroll cho chế độ preview (trước khi explore)
+  // Handle scroll for preview mode (before explore)
   useEffect(() => {
-    if (isExploring) return; // Chỉ hoạt động khi KHÔNG explore
+    if (isExploring) return; // Only active when NOT exploring
 
     const handleWheel = (event) => {
       event.preventDefault();
@@ -166,31 +210,31 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       console.log('Preview scroll detected:', event.deltaY, 'targetPosition:', targetPosition); // Debug log
       setScrollDebug(`Scroll: ${event.deltaY} at ${Date.now()}`);
 
-      // Ẩn ControlPanel khi bắt đầu scroll trong preview mode
+      // Hide ControlPanel when starting to scroll in preview mode
       if (onHideControlPanel) {
         onHideControlPanel();
       }
 
       const deltaY = event.deltaY;
-      const scrollSensitivity = 0.003; // Giảm độ nhạy scroll để phù hợp với speed mới
+      const scrollSensitivity = 0.003; // Reduce scroll sensitivity to match new speed
 
-      // Sử dụng functional update để đảm bảo có giá trị mới nhất
+      // Use functional update to ensure latest value
       setTargetPosition(prevTarget => {
-        // Kiểm tra targetPosition trước khi tính toán
+        // Check targetPosition before calculation
         if (isNaN(prevTarget)) {
           console.warn('prevTarget is NaN, resetting to 0');
           return 0;
         }
 
-        // Tính toán vị trí mới dựa trên targetPosition hiện tại
+        // Calculate new position based on current targetPosition
         let newPosition = prevTarget + (deltaY * scrollSensitivity);
 
-        // Giới hạn trong khoảng [0, 6] (toàn bộ sequence)
+        // Limit within range [0, 6] (entire sequence)
         newPosition = Math.max(0, Math.min(6, newPosition));
 
         console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 
-        // Hiển thị lại ControlPanel nếu scroll về vị trí ban đầu
+        // Show ControlPanel again if scrolled back to initial position
         if (newPosition === 0 && onShowControlPanel) {
           onShowControlPanel();
         }
@@ -199,11 +243,11 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       });
     };
 
-    // Thêm listener cho cả document và canvas để đảm bảo capture được scroll
+    // Add listener for both document and canvas to ensure scroll capture
     const canvas = gl.domElement;
     console.log('Adding preview scroll listener'); // Debug log
 
-    // Thử cả document và canvas
+    // Try both document and canvas
     document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
     canvas.addEventListener('wheel', handleWheel, { passive: false, capture: true });
 
@@ -214,9 +258,9 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
     };
   }, [isExploring, gl.domElement]);
 
-  // Xử lý scroll cho chế độ explore (step-by-step)
+  // Handle scroll for explore mode (step-by-step)
   useEffect(() => {
-    if (!isExploring) return; // Chỉ hoạt động khi explore
+    if (!isExploring) return; // Only active when exploring
 
     const handleWheel = (event) => {
       event.preventDefault();
@@ -299,6 +343,9 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
             }
           }}
           onMeshClick={(meshName) => {
+            // Only allow mesh clicks in explore mode, not in preview mode
+            if (!isExploring) return;
+
             console.log(`Mesh clicked: ${meshName}, current tooltip state:`, showThermostatTooltip);
             // Toggle tooltip when Geom3D_393 is clicked
             if (meshName === "Geom3D_393") {
@@ -310,15 +357,55 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         />
       </Suspense>
 
-      {/* Info Button - show when in Geom3D_393 chapter and tooltip is not visible */}
-      {activeChapter && activeChapter.id === "Geom3D_393" && !showThermostatTooltip && (
-
+      {/* Info Button for Thermostat - show when in Geom3D_393 chapter and tooltip is not visible and within range */}
+      {activeChapter && activeChapter.id === "Geom3D_393" && !showThermostatTooltip &&
+       (!isExploring ? isWithinChapterRange("Geom3D_393") : true) && (
         <Html position={activeChapter.hotspot.position} center>
           <button
             onClick={() => {
               console.log("Info button clicked - current state:", showThermostatTooltip);
               setShowThermostatTooltip(true);
               console.log("Setting tooltip to true");
+            }}
+            style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              background: "rgba(255, 255, 255, 0.9)",
+              border: "2px solid white",
+              color: "#007BFF",
+              fontSize: "16px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+              animation: "pulse 2s infinite",
+            }}
+            title="Click for information"
+          >
+            i
+          </button>
+          <style jsx>{`
+            @keyframes pulse {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.1); }
+              100% { transform: scale(1); }
+            }
+          `}</style>
+        </Html>
+      )}
+
+      {/* Info Button for Linear Grille - show when in indoor chapter and tooltip is not visible and within range */}
+      {activeChapter && activeChapter.id === "indoor" && !showLinearGrilleTooltip &&
+       (!isExploring ? isWithinChapterRange("indoor") : true) && (
+        <Html position={activeChapter.hotspot.position} center>
+          <button
+            onClick={() => {
+              console.log("Linear Grille info button clicked - current state:", showLinearGrilleTooltip);
+              setShowLinearGrilleTooltip(true);
+              console.log("Setting Linear Grille tooltip to true");
             }}
             style={{
               width: "32px",
@@ -365,10 +452,23 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         />
       )}
 
+      {/* Linear Grille Tooltip - show when mesh is clicked and in indoor chapter */}
+      {activeChapter && activeChapter.id === "indoor" && (
+        <ThermostatTooltip
+          position={[
+             activeChapter.hotspot.position[0] , 
+            activeChapter.hotspot.position[1] + 1, 
+            activeChapter.hotspot.position[2] -1.25
+          ]}
+          chapterData={activeChapter}
+          isVisible={showLinearGrilleTooltip}
+          onClose={() => setShowLinearGrilleTooltip(false)}
+        />
+      )}
 
-
-      {/* Video Screen - show automatically when in Geom3D_393 chapter */}
-      {activeChapter && activeChapter.id === "Geom3D_393" && activeChapter.videoScreen && (
+      {/* Video Screen for Thermostat - show automatically when in Geom3D_393 chapter and within range */}
+      {activeChapter && activeChapter.id === "Geom3D_393" && activeChapter.videoScreen &&
+       (!isExploring ? isWithinChapterRange("Geom3D_393") : true) && (
         <VideoScreen
           position={activeChapter.videoScreen.position}
           videoId={activeChapter.videoScreen.videoId}
@@ -377,10 +477,19 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         />
       )}
 
+      {/* Video Screen for Linear Grille - show automatically when in indoor chapter and within range */}
+      {activeChapter && activeChapter.id === "indoor" && activeChapter.videoScreen &&
+       (!isExploring ? isWithinChapterRange("indoor") : true) && (
+        <VideoScreen
+          position={activeChapter.videoScreen.position}
+          videoId={activeChapter.videoScreen.videoId}
+          title={activeChapter.videoScreen.title}
+          size={activeChapter.videoScreen.size}
+        />
+      )}
 
-
-      {/* Hiển thị tooltip khi có chapter active */}
-      {activeChapter && !isAnimating && (
+      {/* Show tooltip when chapter is active - only show in explore mode */}
+      {activeChapter && !isAnimating && isExploring && (
         <Html position={activeChapter.position} center>
           <div
             style={{
@@ -397,15 +506,16 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
               backdropFilter: "blur(10px)",
             }}
           >
-            <h3 style={{ 
-              margin: 0, 
+            {/* Show title and description in explore mode */}
+            <h3 style={{
+              margin: 0,
               fontSize: "18px",
               fontWeight: "bold"
             }}>
               {activeChapter.title}
             </h3>
-            <p style={{ 
-              margin: 0, 
+            <p style={{
+              margin: 0,
               fontSize: "14px",
               lineHeight: "1.5",
               opacity: 0.9
@@ -413,7 +523,7 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
               {activeChapter.description}
             </p>
             
-            {/* Floating video - hiển thị nếu chapter có videoSrc */}
+            {/* Floating video - show if chapter has videoSrc */}
             {activeChapter.videoSrc && (
               <div style={{
                 margin: "8px 0",
@@ -438,66 +548,68 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
 
             
 
-            {/* Navigation buttons */}
-            <div style={{
-              display: "flex",
-              gap: "8px",
-              marginTop: "8px"
-            }}>
-              {!isFirstChapter && (
-                <button 
-                  onClick={handlePrevious}
-                  disabled={isAnimating}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "12px",
-                    background: isAnimating ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)",
-                    color: isAnimating ? "rgba(255, 255, 255, 0.5)" : "white",
-                    border: "1px solid rgba(255, 255, 255, 0.3)",
-                    borderRadius: "6px",
-                    cursor: isAnimating ? "not-allowed" : "pointer",
-                    flex: 1
-                  }}
-                >
-                  ← Previous
-                </button>
-              )}
-              
-              {isLastChapter ? (
-                <button 
-                  onClick={handleFinish}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "12px",
-                    background: "#007BFF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    flex: 1
-                  }}
-                >
-                  Finish
-                </button>
-              ) : (
-                <button 
-                  onClick={handleNext}
-                  disabled={isAnimating}
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "12px",
-                    background: isAnimating ? "#555" : "#007BFF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: isAnimating ? "not-allowed" : "pointer",
-                    flex: 1
-                  }}
-                >
-                  Next →
-                </button>
-              )}
-            </div>
+            {/* Navigation buttons - only show in explore mode */}
+            {isExploring && (
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                marginTop: "8px"
+              }}>
+                {!isFirstChapter && (
+                  <button
+                    onClick={handlePrevious}
+                    disabled={isAnimating}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "12px",
+                      background: isAnimating ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)",
+                      color: isAnimating ? "rgba(255, 255, 255, 0.5)" : "white",
+                      border: "1px solid rgba(255, 255, 255, 0.3)",
+                      borderRadius: "6px",
+                      cursor: isAnimating ? "not-allowed" : "pointer",
+                      flex: 1
+                    }}
+                  >
+                    ← Previous
+                  </button>
+                )}
+
+                {isLastChapter ? (
+                  <button
+                    onClick={handleFinish}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "12px",
+                      background: "#007BFF",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      flex: 1
+                    }}
+                  >
+                    Finish
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleNext}
+                    disabled={isAnimating}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "12px",
+                      background: isAnimating ? "#555" : "#007BFF",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: isAnimating ? "not-allowed" : "pointer",
+                      flex: 1
+                    }}
+                  >
+                    Next →
+                  </button>
+                )}
+              </div>
+            )}
             
             {/* Progress indicator */}
             <div style={{
