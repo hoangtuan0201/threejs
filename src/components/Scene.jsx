@@ -6,10 +6,65 @@ import { useThree, useFrame } from "@react-three/fiber";
 import { Model } from "./Model";
 import { ThermostatTooltip } from "./ThermostatTooltip";
 import { VideoScreen } from "./VideoScreen";
+import { PositionPicker } from "./PositionPicker";
 import { sequenceChapters } from "../data/sequenceChapters";
 
 
-export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowControlPanel }) {
+// Hotspots component - separated and always rendered as 3D objects
+const HotspotsRenderer = ({ sequenceChapters, onHotspotClick }) => {
+  return (
+    <>
+      {sequenceChapters && sequenceChapters.length > 0 && (
+        sequenceChapters
+          .filter(chapter => chapter.hotspot) // Only chapters with hotspot data
+          .map((chapter) => (
+            <mesh 
+              key={`hotspot-${chapter.id}`}
+              position={chapter.hotspot.position || [0, 0, 0]}
+              onClick={(e) => {
+                e.stopPropagation();
+                onHotspotClick(chapter.id);
+              }}
+            >
+              {/* 3D sphere for hotspot */}
+              <sphereGeometry args={[0.1, 16, 16]} />
+              <meshBasicMaterial color="#1976d2" />
+              
+              {/* HTML label attached to the 3D sphere */}
+              <Html distanceFactor={10}>
+                <div 
+                  style={{
+                    background: 'rgba(25, 118, 210, 0.9)',
+                    color: 'white',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    pointerEvents: 'none',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    animation: 'pulse 2s infinite',
+                  }}
+                >
+                  {chapter.hotspot.title || chapter.title || `H${chapter.id}`}
+                </div>
+                <style jsx>{`
+                  @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); }
+                  }
+                `}</style>
+              </Html>
+            </mesh>
+          ))
+      )}
+    </>
+  );
+};
+
+export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowControlPanel, positionPickerEnabled }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(-1);
@@ -24,6 +79,11 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
     console.log("showThermostatTooltip state changed to:", showThermostatTooltip);
   }, [showThermostatTooltip]);
 
+  // Handle position picked from PositionPicker
+  const handlePositionPicked = (position) => {
+    console.log('Position picked:', position);
+    // You can add this position to your sequenceChapters or use it for hotspot placement
+  };
 
   const { gl } = useThree();
 
@@ -54,7 +114,8 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
       }
     }
 
-    // Auto-show/hide tooltips and elements based on scroll position in preview mode
+    // Auto-show/hide active chapter based on scroll position in preview mode
+    // BUT DO NOT auto-show tooltips - only show info buttons
     if (!isExploring) {
       const currentPosition = sheet.sequence.position;
 
@@ -62,24 +123,21 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         const [start, end] = chapter.range;
         const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
 
-        // Auto-show tooltips when entering sequence range
+        // Set active chapter when entering sequence range (for info button display)
         if (isInRange) {
-          if (chapter.id === "Geom3D_393" && !showThermostatTooltip) {
-            setShowThermostatTooltip(true);
-            // Set active chapter for tooltip display
-            setActiveChapter(chapter);
-          }
-          if (chapter.id === "indoor" && !showLinearGrilleTooltip) {
-            setShowLinearGrilleTooltip(true);
-            // Set active chapter for tooltip display
+          if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
             setActiveChapter(chapter);
           }
         } else {
-          // Auto-hide tooltips when leaving sequence range
-          if (chapter.id === "Geom3D_393" && showThermostatTooltip) {
+          // Clear active chapter when leaving sequence range
+          if (chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") {
+            setActiveChapter(null);
+            // Also hide tooltips when leaving range
             setShowThermostatTooltip(false);
           }
-          if (chapter.id === "indoor" && showLinearGrilleTooltip) {
+          if (chapter.id === "indoor" && activeChapter?.id === "indoor") {
+            setActiveChapter(null);
+            // Also hide tooltips when leaving range
             setShowLinearGrilleTooltip(false);
           }
         }
@@ -357,110 +415,43 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         />
       </Suspense>
 
-      {/* Info Button for Thermostat - show when in Geom3D_393 chapter and tooltip is not visible and within range */}
-      {activeChapter && activeChapter.id === "Geom3D_393" && !showThermostatTooltip &&
-       (!isExploring ? isWithinChapterRange("Geom3D_393") : true) && (
-        <Html position={activeChapter.hotspot.position} center>
-          <button
-            onClick={() => {
-              console.log("Info button clicked - current state:", showThermostatTooltip);
-              setShowThermostatTooltip(true);
-              console.log("Setting tooltip to true");
-            }}
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "50%",
-              background: "rgba(255, 255, 255, 0.9)",
-              border: "2px solid white",
-              color: "#007BFF",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-              animation: "pulse 2s infinite",
-            }}
-            title="Click for information"
-          >
-            i
-          </button>
-          <style jsx>{`
-            @keyframes pulse {
-              0% { transform: scale(1); }
-              50% { transform: scale(1.1); }
-              100% { transform: scale(1); }
-            }
-          `}</style>
-        </Html>
-      )}
-
-      {/* Info Button for Linear Grille - show when in indoor chapter and tooltip is not visible and within range */}
-      {activeChapter && activeChapter.id === "indoor" && !showLinearGrilleTooltip &&
-       (!isExploring ? isWithinChapterRange("indoor") : true) && (
-        <Html position={activeChapter.hotspot.position} center>
-          <button
-            onClick={() => {
-              console.log("Linear Grille info button clicked - current state:", showLinearGrilleTooltip);
-              setShowLinearGrilleTooltip(true);
-              console.log("Setting Linear Grille tooltip to true");
-            }}
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "50%",
-              background: "rgba(255, 255, 255, 0.9)",
-              border: "2px solid white",
-              color: "#007BFF",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-              animation: "pulse 2s infinite",
-            }}
-            title="Click for information"
-          >
-            i
-          </button>
-          <style jsx>{`
-            @keyframes pulse {
-              0% { transform: scale(1); }
-              50% { transform: scale(1.1); }
-              100% { transform: scale(1); }
-            }
-          `}</style>
-        </Html>
-      )}
+      {/* Render all hotspots from sequenceChapters - always visible when model loads */}
+      <HotspotsRenderer 
+        sequenceChapters={sequenceChapters} 
+        onHotspotClick={(chapterId) => {
+          console.log(`Hotspot clicked for chapter: ${chapterId}`);
+          if (chapterId === "Geom3D_393") {
+            setShowThermostatTooltip(true);
+          } else if (chapterId === "indoor") {
+            setShowLinearGrilleTooltip(true);
+          }
+        }}
+      />
 
       {/* Thermostat Tooltip - show when mesh is clicked and in Geom3D_393 chapter */}
-      {activeChapter && activeChapter.id === "Geom3D_393" && (
-        console.log("Rendering ThermostatTooltip component - activeChapter:", activeChapter.id, "showThermostatTooltip:", showThermostatTooltip),
+      {showThermostatTooltip && (
+        console.log("Rendering ThermostatTooltip component - showThermostatTooltip:", showThermostatTooltip),
         <ThermostatTooltip
           position={[
-             activeChapter.hotspot.position[0] , // Offset to the right
-            activeChapter.hotspot.position[1] + 1, // Slightly higher
-            activeChapter.hotspot.position[2] -1.25    // Slightly forward
+             sequenceChapters.find(ch => ch.id === "Geom3D_393")?.hotspot.position[0] , // Offset to the right
+            sequenceChapters.find(ch => ch.id === "Geom3D_393")?.hotspot.position[1] + 1, // Slightly higher
+            sequenceChapters.find(ch => ch.id === "Geom3D_393")?.hotspot.position[2] -1.25    // Slightly forward
           ]}
-          chapterData={activeChapter}
+          chapterData={sequenceChapters.find(ch => ch.id === "Geom3D_393")}
           isVisible={showThermostatTooltip}
           onClose={() => setShowThermostatTooltip(false)}
         />
       )}
 
       {/* Linear Grille Tooltip - show when mesh is clicked and in indoor chapter */}
-      {activeChapter && activeChapter.id === "indoor" && (
+      {showLinearGrilleTooltip && (
         <ThermostatTooltip
           position={[
-             activeChapter.hotspot.position[0] , 
-            activeChapter.hotspot.position[1] + 1, 
-            activeChapter.hotspot.position[2] -1.25
+             sequenceChapters.find(ch => ch.id === "indoor")?.hotspot.position[0] , 
+            sequenceChapters.find(ch => ch.id === "indoor")?.hotspot.position[1] + 1, 
+            sequenceChapters.find(ch => ch.id === "indoor")?.hotspot.position[2] -1.25
           ]}
-          chapterData={activeChapter}
+          chapterData={sequenceChapters.find(ch => ch.id === "indoor")}
           isVisible={showLinearGrilleTooltip}
           onClose={() => setShowLinearGrilleTooltip(false)}
         />
@@ -633,6 +624,14 @@ export function Scene({ isExploring, onTourEnd, onHideControlPanel, onShowContro
         position={[0, 0, 10]}
         fov={60}
       />
+
+      {/* Position Picker - show only in explore mode and when not animating */}
+      {isExploring && !isAnimating && (
+        <PositionPicker 
+          isEnabled={positionPickerEnabled}
+          onPositionPicked={handlePositionPicked}
+        />
+      )}
     </>
   );
 }
