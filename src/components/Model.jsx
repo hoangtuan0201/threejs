@@ -7,8 +7,6 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
   // Traverse the model and enable shadows for all meshes + make specific objects transparent when sequence > 2
   useEffect(() => {
     if (scene) {
-      console.log("=== Model Mesh Names ===");
-      console.log("Current sequence position:", sequencePosition);
 
       // List of objects to make transparent only after sequence 2
       const transparentObjects = [
@@ -50,35 +48,29 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
       scene.traverse((child) => {
         if (child.isMesh) {
-          console.log("Mesh found:", child.name, "Position:", child.position);
           child.castShadow = true;
           child.receiveShadow = true;
 
           // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
           if (transparentObjects.includes(child.name)) {
             if (sequencePosition > 2.8) {
-              console.log(`Making ${child.name} transparent (sequence > 2.5)`);
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
                 child.material.transparent = true;
                 child.material.opacity = 0.2; // 30% opacity
-                console.log(`✅ ${child.name} is now transparent`);
               }
             } else {
-              console.log(`Keeping ${child.name} opaque (sequence <= 2)`);
               if (child.material) {
                 // Restore opacity when sequence <= 2
                 child.material = child.material.clone();
                 child.material.transparent = false;
                 child.material.opacity = 1.0; // Full opacity
-                console.log(`✅ ${child.name} is now opaque`);
               }
             }
           }
         }
       });
-      console.log("=== End Mesh List ===");
     }
   }, [scene, sequencePosition]);
 
@@ -104,16 +96,11 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
     // Set up mesh click handler for Geom3D_393
     const geom393 = scene.getObjectByName("Geom3D_393");
-    console.log("Looking for Geom3D_393 mesh:", geom393);
     if (geom393 && onMeshClick) {
       geom393.userData.onMeshClick = (e) => {
         e.stopPropagation();
-        console.log("Geom3D_393 mesh clicked - calling onMeshClick");
         onMeshClick("Geom3D_393");
       };
-      console.log("✅ Mesh click handler set for Geom3D_393");
-    } else {
-      console.log("❌ Failed to set mesh click handler - geom393:", geom393, "onMeshClick:", onMeshClick);
     }
   }, [scene, sequenceChapters, onChapterClick, onMeshClick]);
 
