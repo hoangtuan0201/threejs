@@ -1,4 +1,4 @@
-import { Paper, Typography, Button, Stack, Box, Chip } from "@mui/material";
+import { Paper, Typography, Button, Stack } from "@mui/material";
 
 export default function ControlPanel({ onExplore }) {
   const handleClick = (type) => {
@@ -48,8 +48,8 @@ export default function ControlPanel({ onExplore }) {
         },
       }}
     >
-      {/* Logo/Brand Section */}
-      <Box sx={{ textAlign: "center", mb: 1 }}>
+      {/* Logo/Brand Section - HIDDEN */}
+      {/* <Box sx={{ textAlign: "center", mb: 1 }}>
         <Typography
           variant="h3"
           fontWeight={800}
@@ -95,17 +95,7 @@ export default function ControlPanel({ onExplore }) {
         >
           Smarter Comfort Starts Here
         </Typography>
-
-        <Box
-          sx={{
-            width: 60,
-            height: 3,
-            background: "linear-gradient(90deg, transparent, #111, transparent)",
-            margin: "0 auto",
-            borderRadius: 2,
-          }}
-        />
-      </Box>
+      </Box> */}
       <Stack spacing={3} width="100%">
         <Button
           variant="contained"

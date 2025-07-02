@@ -7,18 +7,18 @@ import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
 import ControlPanel from "./components/ControlPanel";
-import { Box, Paper, Typography, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-    studio.initialize();
-    studio.extend(extension);
-    window.__THEATRE_ALREADY_INIT__ = true;
-  }
+  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  //   studio.initialize();
+  //   studio.extend(extension);
+  //   window.__THEATRE_ALREADY_INIT__ = true;
+  // }
 
 export default function App() {
   const [isExploring, setIsExploring] = useState(false);
@@ -44,7 +44,8 @@ export default function App() {
     <>
       {!isExploring && showControlPanel && <ControlPanel onExplore={startTour} />}
 
-      {isExploring && (
+      {/* Navigation Guide - HIDDEN */}
+      {/* {isExploring && (
         <Paper
           elevation={6}
           sx={{
@@ -65,13 +66,13 @@ export default function App() {
             🎯 Navigation Guide
           </Typography>
           <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-            • <b>Mouse wheel</b> up/down to move between points<br />
-            • <b>Arrow keys</b> ←→↑↓ to navigate<br />
+            • <b>Mouse wheel</b> to scroll through the experience<br />
             • <b>ESC</b> to exit tour<br />
-            • Use "Next" / "Previous" buttons in tooltip
+            • Click on white "i" hotspots for information<br />
+            • Click on blue spheres to watch videos
           </Typography>
         </Paper>
-      )}
+      )} */}
 
       {/* Position Picker Toggle Button - only show in explore mode */}
       {isExploring && (

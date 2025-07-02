@@ -12,10 +12,9 @@ export const sequenceChapters = [
     position: [27.5, 4.7, -21.08],
     title: "Thermostat",
     description: "Automatically adjusts temperature and airflow to optimize comfort.",
-    hotspotLink: "",
     // Hotspot data for when geometry is clicked
     hotspot: {
-      position: [26.61, 4.1, -22.7],
+      position: [27.78, 4.43, -22.5],
       title: "Smart Thermostat",
       description: "Intelligent temperature control with AI that automatically learns your usage habits. The system automatically adjusts temperature based on usage patterns and weather.",
       link: "/brochures/thermostat_specs.pdf",
@@ -35,10 +34,9 @@ export const sequenceChapters = [
     position: [22, 5, -21],
     title: "Linear Grille",
     description: "Elegant design that blends with any interior space, helping to distribute air evenly throughout the room.",
-    hotspotLink: "/brochures/linear_grille_specs.pdf",
     // Hotspot data for when geometry is clicked
     hotspot: {
-      position: [22, 5.5, -13],
+      position: [31.4, 6.35, -20.7],
       title: "Linear Grille",
       description: "Premium linear grille with adjustable airflow direction. The sleek design integrates seamlessly with modern interiors while providing optimal air distribution.",
       link: "/brochures/linear_grille_specs.pdf",

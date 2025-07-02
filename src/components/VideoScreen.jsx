@@ -16,89 +16,51 @@ export function VideoScreen({ position, videoId, title = "Video Demo", size = { 
   };
 
   const finalVideoId = extractVideoId(videoId);
-  
+
   // YouTube embed URL with autoplay, loop, and audio enabled
   const embedUrl = `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`;
 
   return (
-    <Html position={position} center>
-      <div
-        style={{
-          position: "relative",
-          background: "rgba(0, 0, 0, 0.9)",
-          borderRadius: "12px",
-          padding: "8px",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-          border: "2px solid rgba(255, 255, 255, 0.2)",
-          transform: isHovered ? "scale(1.02)" : "scale(1)",
-          transition: "transform 0.3s ease",
+    <group position={position}>
+      {/* 3D Sphere to replace video screen */}
+      <mesh
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
+        onClick={() => {
+          // Open video in new tab when sphere is clicked
+          window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank');
         }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Screen frame */}
+        <sphereGeometry args={[0.3, 32, 32]} />
+        <meshBasicMaterial
+          color={isHovered ? "#ff6b6b" : "#4dabf7"}
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
+
+      {/* HTML label for the sphere */}
+      <Html distanceFactor={10} position={[0, 0.5, 0]}>
         <div
           style={{
-            width: `${size.width}px`,
-            height: `${size.height}px`,
-            background: "#000",
-            borderRadius: "8px",
-            overflow: "hidden",
-            position: "relative",
-            border: "3px solid #333",
+            background: "rgba(0, 0, 0, 0.8)",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            textAlign: "center",
+            transform: isHovered ? "scale(1.1)" : "scale(1)",
+            transition: "transform 0.3s ease",
           }}
         >
-          {/* Video iframe */}
-          <iframe
-            width="100%"
-            height="100%"
-            src={embedUrl}
-            title={title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{
-              border: "none",
-              borderRadius: "4px",
-            }}
-          />
-          
-          {/* Overlay with title */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "0",
-              left: "0",
-              right: "0",
-              background: "linear-gradient(transparent, rgba(0, 0, 0, 0.8))",
-              color: "white",
-              padding: "5px 8px",
-              fontSize: "12px",
-              fontWeight: "500",
-              opacity: isHovered ? 1 : 0.7,
-              transition: "opacity 0.3s ease",
-            }}
-          >
-            {title}
-          </div>
+          🎥 {title}
         </div>
-
-        
-
-        {/* CSS for animations */}
-        <style>
-          {`
-            @keyframes pulse {
-              0%, 100% {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(255, 68, 68, 0.7);
-              }
-              50% {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 8px rgba(255, 68, 68, 0);
-              }
-            }
-          `}
-        </style>
-      </div>
-    </Html>
+      </Html>
+    </group>
   );
 }

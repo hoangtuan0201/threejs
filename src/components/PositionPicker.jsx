@@ -57,13 +57,13 @@ export function PositionPicker({ isEnabled = false, onPositionPicked }) {
 
   return (
     <>
-      {/* Click handler - invisible mesh covering the scene */}
+      {/* Click handler - invisible sphere covering the scene */}
       <mesh
         onClick={handleModelClick}
         visible={false}
         position={[0, 0, 0]}
       >
-        <boxGeometry args={[1000, 1000, 1000]} />
+        <sphereGeometry args={[1000, 32, 32]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
 
