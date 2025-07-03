@@ -44,9 +44,17 @@ const shimmer = keyframes`
   }
 `;
 
+const spin = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
 export default function Homepage({ onExplore }) {
   const [isVisible, setIsVisible] = useState(false);
-
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -118,17 +126,27 @@ export default function Homepage({ onExplore }) {
             }}
           >
             {/* Logo */}
-            <Typography
-              variant="h6"
-              sx={{
-                color: "rgba(255, 255, 255, 0.9)",
-                fontWeight: 600,
-                fontSize: "1.2rem",
-                letterSpacing: "1px",
-              }}
-            >
-              AirSmart
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <img
+                src="/airsmart.svg"
+                alt="AirSmart Logo"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "rgba(255, 255, 255, 0.9)",
+                  fontWeight: 600,
+                  fontSize: "1.2rem",
+                  letterSpacing: "1px",
+                }}
+              >
+                AirSmart
+              </Typography>
+            </Box>
 
             {/* Navigation Menu */}
             <Stack direction="row" spacing={3} sx={{ display: { xs: "none", md: "flex" } }}>
@@ -193,26 +211,9 @@ export default function Homepage({ onExplore }) {
               textShadow: "0 0 40px rgba(255, 255, 255, 0.1)",
             }}
           >
-            Better Climate. Better Control.
-            <br />
-            Better
-            <Box
-              component="span"
-              sx={{
-                background: `
-                  linear-gradient(90deg, transparent calc(50% - 58px), rgb(255, 255, 255) 50%, transparent calc(50% + 58px)),
-                  linear-gradient(rgba(181, 181, 181, 0.643), rgba(181, 181, 181, 0.643))
-                `,
-                backgroundSize: "200% 100%",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                animation: `${shimmer} 8s ease-in-out infinite 2s`,
-              }}
-            >
-              {" "}Experience
-            </Box>
-            .
+            Smarter Comfort Starts Here
+  
+          
           </Typography>
 
           {/* Subtitle */}

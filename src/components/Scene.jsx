@@ -68,7 +68,7 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot })
   );
 };
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
@@ -93,20 +93,31 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Auto-show/hide active chapter based on scroll position
     const currentPosition = sheet.sequence.position;
 
-    sequenceChapters.forEach((chapter) => {
-      const [start, end] = chapter.range;
-      const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
+    // Manual range definitions since removed from data
+    const chapterRanges = {
+      "Geom3D_393": [0.3, 1],
+      "indoor": [1, 2],
+      "Air Purification": [2, 4],
+      "Outdoor": [4, 5]
+    };
 
-      // Set active chapter when entering sequence range
-      if (isInRange) {
-        if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
-          setActiveChapter(chapter);
-        }
-      } else {
-        // Clear active chapter when leaving sequence range
-        if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
-            (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
-          setActiveChapter(null);
+    sequenceChapters.forEach((chapter) => {
+      const range = chapterRanges[chapter.id];
+      if (range) {
+        const [start, end] = range;
+        const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
+
+        // Set active chapter when entering sequence range
+        if (isInRange) {
+          if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
+            setActiveChapter(chapter);
+          }
+        } else {
+          // Clear active chapter when leaving sequence range
+          if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
+              (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
+            setActiveChapter(null);
+          }
         }
       }
     });
@@ -233,6 +244,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           onMeshClick={(meshName) => {
             console.log(`Mesh clicked: ${meshName}`);
           }}
+          onModelLoaded={onModelLoaded}
         />
       </Suspense>
 
@@ -268,12 +280,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Hotspot Detail Popup */}
       {selectedHotspot && selectedHotspot.hotspot && (
         <group
-          position={[
-            selectedHotspot.hotspot.position[0] ,
-            selectedHotspot.hotspot.position[1] + 0.5,
-            selectedHotspot.hotspot.position[2] -0.3
-          ]}
-          rotation={selectedHotspot.hotspot.rotation || [0, Math.PI / 1.8, 0]}
+          position={selectedHotspot.hotspot.detailPosition || selectedHotspot.hotspot.position}
+          rotation={selectedHotspot.hotspot.detailRotation || selectedHotspot.hotspot.rotation || [0, Math.PI / 1.8, 0]}
         >
           <Html
             position={[0, 0, 0]}
@@ -331,7 +339,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             {/* Title */}
             <h3 style={{
               margin: "0 0 6px 0", // Smaller margin
-              fontSize: "9px", // Smaller font
+              fontSize: "11px", // Smaller font
               fontWeight: "bold",
               color: "#fff"
             }}>
@@ -340,7 +348,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
             {/* Description */}
             <p style={{
-              fontSize: "7px",
+              fontSize: "8px",
               lineHeight: "1.4",
               margin: "0 0 12px 0",
               opacity: 0.9,

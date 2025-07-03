@@ -14,7 +14,7 @@
       },
       "sequence": {
         "subUnitsPerUnit": 30,
-        "length": 4.22,
+        "length": 4.93,
         "type": "PositionalSequence",
         "tracksByObject": {
           "Camera": {
@@ -42,7 +42,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0.5
                     ],
@@ -77,7 +77,7 @@
                   },
                   {
                     "id": "AdHJH9yL1R",
-                    "position": 3.633,
+                    "position": 3.533,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -90,7 +90,7 @@
                   },
                   {
                     "id": "dujZtqTuvp",
-                    "position": 4.2,
+                    "position": 4,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -98,8 +98,21 @@
                       0.5,
                       0
                     ],
+                    "type": "hold",
+                    "value": 16.572914469859594
+                  },
+                  {
+                    "id": "j5ZZFpVYmT",
+                    "position": 4.2,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
                     "type": "bezier",
-                    "value": 18.870190867794076
+                    "value": 22.02568514876556
                   }
                 ]
               },
@@ -126,7 +139,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0.5
                     ],
@@ -161,7 +174,7 @@
                   },
                   {
                     "id": "yPN7dwQE50",
-                    "position": 3.633,
+                    "position": 3.533,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -173,21 +186,8 @@
                     "value": 4.423350123950952
                   },
                   {
-                    "id": "_mxuM3z1KX",
-                    "position": 4,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.5,
-                      0.5
-                    ],
-                    "type": "bezier",
-                    "value": 5.136019462015722
-                  },
-                  {
                     "id": "Nc-5EmrcVx",
-                    "position": 4.2,
+                    "position": 4,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -195,8 +195,21 @@
                       0.5,
                       0
                     ],
+                    "type": "hold",
+                    "value": 5.282095836630216
+                  },
+                  {
+                    "id": "nA3rd550Aa",
+                    "position": 4.2,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
                     "type": "bezier",
-                    "value": 5.136019462015722
+                    "value": 5.478668730039088
                   }
                 ]
               },
@@ -245,7 +258,7 @@
                   },
                   {
                     "id": "L6jQVQKnG9",
-                    "position": 3.633,
+                    "position": 3.533,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -257,21 +270,8 @@
                     "value": -26.61127649438601
                   },
                   {
-                    "id": "RNYbg3Kokb",
-                    "position": 4,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.5,
-                      0.5
-                    ],
-                    "type": "bezier",
-                    "value": -28.824957525424114
-                  },
-                  {
                     "id": "f0PugWmEa7",
-                    "position": 4.2,
+                    "position": 4,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -279,8 +279,21 @@
                       0.5,
                       0
                     ],
+                    "type": "hold",
+                    "value": -30.47514349568364
+                  },
+                  {
+                    "id": "vpViiDoHKz",
+                    "position": 4.2,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
                     "type": "bezier",
-                    "value": -29.162308065447952
+                    "value": -14.159144425840068
                   }
                 ]
               },
@@ -329,7 +342,20 @@
                   },
                   {
                     "id": "QtolRIJCfy",
-                    "position": 3.633,
+                    "position": 3.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": -3.139894953508637e-17
+                  },
+                  {
+                    "id": "yVHeklO9jg",
+                    "position": 4,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -338,7 +364,33 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": -3.139894953508637e-17
+                    "value": -0.06598768124503729
+                  },
+                  {
+                    "id": "tM0QI-2SWz",
+                    "position": 4.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": -0.06685190973383111
+                  },
+                  {
+                    "id": "blqWRK5yKI",
+                    "position": 4.9,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -0.06750649151453264
                   }
                 ]
               },
@@ -387,7 +439,20 @@
                   },
                   {
                     "id": "JpNNya3zlk",
-                    "position": 3.633,
+                    "position": 3.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": 0.5386964839792135
+                  },
+                  {
+                    "id": "IjClVuJzVi",
+                    "position": 4,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -396,7 +461,33 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": 0.5386964839792135
+                    "value": -0.044308851677566326
+                  },
+                  {
+                    "id": "A_Wi8Y37qg",
+                    "position": 4.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": 0.16679111216070103
+                  },
+                  {
+                    "id": "vljPq9NsrF",
+                    "position": 4.9,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -0.21687390657890213
                   }
                 ]
               },
@@ -445,7 +536,20 @@
                   },
                   {
                     "id": "brv_snNA0d",
-                    "position": 3.633,
+                    "position": 3.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": 1.3105568154168739e-17
+                  },
+                  {
+                    "id": "8ifESvVQ_6",
+                    "position": 4,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -454,7 +558,33 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": 1.3105568154168739e-17
+                    "value": -0.005819404361773342
+                  },
+                  {
+                    "id": "AKik3o_OeA",
+                    "position": 4.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0.5
+                    ],
+                    "type": "bezier",
+                    "value": 0.008222502095173096
+                  },
+                  {
+                    "id": "TnCqKBk3Ic",
+                    "position": 4.9,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      0.5,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -0.01743926001703306
                   }
                 ]
               }
@@ -474,6 +604,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "CP7Tqmf2dXYIU85g",
     "U5ajB2FusdsMypg6",
     "IaF9afsfAHyeAlOu",
     "42jUG5AhP2YRPl8a",

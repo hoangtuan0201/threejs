@@ -1,11 +1,25 @@
 import { useGLTF } from "@react-three/drei";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
 
-export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequencePosition }) {
+export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequencePosition, onModelLoaded }) {
   const { scene } = useGLTF("/House Combined2.glb");
 
   const originalMaterials = useRef(new Map());
+  const [modelReady, setModelReady] = useState(false);
+
+  // Notify when model is loaded
+  useEffect(() => {
+    if (scene && !modelReady) {
+      setModelReady(true);
+      if (onModelLoaded) {
+        // Add small delay to ensure model is fully processed
+        setTimeout(() => {
+          onModelLoaded();
+        }, 500);
+      }
+    }
+  }, [scene, modelReady, onModelLoaded]);
 
   // Traverse the model and enable shadows for all meshes + make specific objects transparent when sequence > 2
   useEffect(() => {
@@ -13,7 +27,7 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
       // List of objects to make transparent only after sequence 2
       const transparentObjects = [
-        
+
       ];
 
       scene.traverse((child) => {
@@ -26,9 +40,9 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
             originalMaterials.current.set(child.name, child.material.clone());
           }
 
-          // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
+          // Make specific objects transparent only when sequence position > 3 and <= 4 (during sequence 4 only)
           if (hiddenObjects.includes(child.name)) {
-            if (sequencePosition > 3) {
+            if (sequencePosition > 3 && sequencePosition <= 4.15) {
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
@@ -37,7 +51,7 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
               }
             } else {
               if (child.material) {
-                // Restore opacity when sequence <= 3
+                // Restore opacity when sequence <= 3 or > 4
                 child.material = child.material.clone();
                 child.material.transparent = false;
                 child.material.opacity = 1.0; // Full opacity

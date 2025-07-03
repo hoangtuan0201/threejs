@@ -7,6 +7,7 @@ import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
 import Homepage from "./components/Homepage";
+import LoadingScreen from "./components/LoadingScreen";
 
 
 
@@ -21,13 +22,23 @@ const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
 export default function App() {
   const [showControlPanel, setShowControlPanel] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   const startTour = () => {
+    setIsLoading(true);
     setShowControlPanel(false);
   };
 
   const endTour = () => {
     setShowControlPanel(true);
+    setIsLoading(false);
+    setModelLoaded(false);
+  };
+
+  const handleModelLoaded = () => {
+    setModelLoaded(true);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -38,8 +49,11 @@ export default function App() {
     <>
       {showControlPanel && <Homepage onExplore={startTour} />}
 
+      {/* Loading Screen */}
+      {isLoading && !modelLoaded && <LoadingScreen />}
+
       {/* Navigation Guide - Fixed position outside Canvas */}
-      {!showControlPanel && (
+      {!showControlPanel && !isLoading && modelLoaded && (
         <div
           style={{
             position: 'fixed',
@@ -71,7 +85,8 @@ export default function App() {
         </div>
       )}
 
-
+      {/* Canvas - only show when not loading or model loaded */}
+      {(!showControlPanel || modelLoaded) && (
       <Canvas
         style={{
           position: "absolute",
@@ -84,6 +99,7 @@ export default function App() {
         shadows
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 10], fov: 60 }}
+        gl={{ preserveDrawingBuffer: true }}
       >
         <SheetProvider sheet={sheet}>
           <Scene
@@ -91,9 +107,11 @@ export default function App() {
             onHideControlPanel={() => setShowControlPanel(false)}
             onShowControlPanel={() => setShowControlPanel(true)}
             isExploreMode={!showControlPanel}
+            onModelLoaded={handleModelLoaded}
           />
         </SheetProvider>
       </Canvas>
+      )}
     </>
   );
 }
