@@ -1,8 +1,11 @@
 import { useGLTF } from "@react-three/drei";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { hiddenObjects } from "../data/hiddenObjects";
 
 export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequencePosition }) {
   const { scene } = useGLTF("/House Combined2.glb");
+
+  const originalMaterials = useRef(new Map());
 
   // Traverse the model and enable shadows for all meshes + make specific objects transparent when sequence > 2
   useEffect(() => {
@@ -10,40 +13,7 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
       // List of objects to make transparent only after sequence 2
       const transparentObjects = [
-        "Geom3D_35",
-        "Geom3D_101",
-        "Geom3D__71",
-        "Geom3D__70",
-        "Geom3D_264",
-        "Geom3D_266",
-        "Geom3D__29",
-        "Geom3D__124",
-        "Geom3D__145",
-        "Geom3D__146",
-        "Geom3D__98",
-        "Geom3D__96",
-        "Geom3D__103",
-        "Geom3D_35",
-        "Geom3D__99",
-        "Geom3D_611",
-        "Geom3D_Naamloos_1", //lò vi sóng
-        "Geom3D_Naamloos",
-        "Geom3D_Naamloos_2",
-        "Geom3D_100",
-        "Geom3D_154",
-        "Geom3D_153",
-        "Geom3D_152",
-        "Geom3D_151",
-        "Geom3D_144",
-        "Geom3D_21",
-        "Geom3D_148",
-        "Geom3D_149",
-        "Geom3D_150",
-        "Geom3D_147",
-        "Geom3D_146",
-        "Geom3D_145",
-        "Geom3D__257",
-        "Geom3D_609",
+        
       ];
 
       scene.traverse((child) => {
@@ -51,9 +21,32 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
           child.castShadow = true;
           child.receiveShadow = true;
 
+          // Store original material if not already stored
+          if (!originalMaterials.current.has(child.name) && child.material) {
+            originalMaterials.current.set(child.name, child.material.clone());
+          }
+
           // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
-          if (transparentObjects.includes(child.name)) {
-            if (sequencePosition > 2.8) {
+          if (hiddenObjects.includes(child.name)) {
+            if (sequencePosition > 3) {
+              if (child.material) {
+                // Clone material to avoid affecting other objects
+                child.material = child.material.clone();
+                child.material.transparent = true;
+                child.material.opacity = 0.2; // 30% opacity
+              }
+            } else {
+              if (child.material) {
+                // Restore opacity when sequence <= 3
+                child.material = child.material.clone();
+                child.material.transparent = false;
+                child.material.opacity = 1.0; // Full opacity
+              }
+            }
+          }
+          // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
+          else if (transparentObjects.includes(child.name)) {
+            if (sequencePosition > 3) {
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
@@ -67,6 +60,13 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
                 child.material.transparent = false;
                 child.material.opacity = 1.0; // Full opacity
               }
+            }
+          }
+          // Restore original material
+          else {
+            const originalMaterial = originalMaterials.current.get(child.name);
+            if (originalMaterial) {
+              child.material = originalMaterial.clone();
             }
           }
         }
@@ -99,11 +99,15 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
     }
   }, [scene, sequenceChapters, onChapterClick, onMeshClick]);
 
+
+
   return (
     <primitive
       object={scene}
       onClick={(e) => {
-        console.log("Model clicked - object:", e.object?.name, "userData:", e.object?.userData);
+        e.stopPropagation();
+        console.log("Model clicked - object:", e.object?.name);
+
         // Handle both chapter clicks and mesh clicks
         e.object?.userData?.onClick?.(e);
         e.object?.userData?.onMeshClick?.(e);

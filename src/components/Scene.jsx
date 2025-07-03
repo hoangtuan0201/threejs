@@ -68,7 +68,7 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot })
   );
 };
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
@@ -156,9 +156,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel }) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onTourEnd]);
 
-  // Handle scroll for both preview and explore modes
+  // Handle scroll only in explore mode
   useEffect(() => {
     const handleWheel = (event) => {
+      // Only allow scroll if in explore mode
+      if (!isExploreMode) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -188,10 +193,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel }) {
 
         // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 
-        // Show ControlPanel again if scrolled back to initial position
-        if (newPosition === 0 && onShowControlPanel) {
-          onShowControlPanel();
-        }
+
 
         return newPosition;
       });
@@ -210,7 +212,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel }) {
       document.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
     };
-  }, [gl.domElement, onHideControlPanel, onShowControlPanel]);
+  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode]);
 
   return (
     <>
@@ -218,6 +220,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel }) {
       <ambientLight intensity={0.5} />
       <directionalLight position={[-5, 5, -5]} intensity={1.5} />
       <fog attach="fog" color="#84a4f4" near={0} far={40} />
+
+
 
       <Suspense fallback={null}>
         <Model

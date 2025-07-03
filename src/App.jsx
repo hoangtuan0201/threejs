@@ -6,7 +6,7 @@ import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
-import ControlPanel from "./components/ControlPanel";
+import Homepage from "./components/Homepage";
 
 
 
@@ -36,38 +36,40 @@ export default function App() {
 
   return (
     <>
-      {showControlPanel && <ControlPanel onExplore={startTour} />}
+      {showControlPanel && <Homepage onExplore={startTour} />}
 
-      {/* Navigation Guide - HIDDEN */}
-      {/* {isExploring && (
-        <Paper
-          elevation={6}
-          sx={{
-            position: "absolute",
-            top: 24,
-            left: 24,
-            zIndex: 100,
-            bgcolor: "#fff",
-            color: "#111",
-            p: 2,
-            borderRadius: 2,
-            maxWidth: 340,
-            boxShadow: 6,
-            opacity: 0.97,
+      {/* Navigation Guide - Fixed position outside Canvas */}
+      {!showControlPanel && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            left: '24px',
+            zIndex: 1000,
+            pointerEvents: 'none',
+            userSelect: 'none',
           }}
         >
-          <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-            🎯 Navigation Guide
-          </Typography>
-          <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-            • <b>Mouse wheel</b> to scroll through the experience<br />
-            • <b>ESC</b> to exit tour<br />
-            • Click on white "i" hotspots for information<br />
-            • Click on blue spheres to watch videos
-          </Typography>
-        </Paper>
-      )} */}
-
+          <div
+            style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              color: 'white',
+              padding: '12px 20px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '500',
+              textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            🖱️ Scroll to navigate • ⌨️ Press ESC to exit
+          </div>
+        </div>
+      )}
 
 
       <Canvas
@@ -88,6 +90,7 @@ export default function App() {
             onTourEnd={endTour}
             onHideControlPanel={() => setShowControlPanel(false)}
             onShowControlPanel={() => setShowControlPanel(true)}
+            isExploreMode={!showControlPanel}
           />
         </SheetProvider>
       </Canvas>
