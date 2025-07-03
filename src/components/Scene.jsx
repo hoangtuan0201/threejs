@@ -186,7 +186,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       const deltaY = event.deltaY;
-      const scrollSensitivity = 0.002; // Scroll sensitivity
+      const scrollSensitivity = window.innerWidth < 768 ? 0.003 : 0.002; // More sensitive on mobile
 
       // Use functional update to ensure latest value
       setTargetPosition(prevTarget => {
@@ -210,18 +210,57 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       });
     };
 
-    // Add listener for both document and canvas to ensure scroll capture
-    const canvas = gl.domElement;
-    console.log('Adding scroll listener'); // Debug log
+    // Touch handling for mobile devices
+    let touchStartY = 0;
 
-    // Try both document and canvas
+    const handleTouchStart = (event) => {
+      if (!isExploreMode) return;
+      touchStartY = event.touches[0].clientY;
+    };
+
+    const handleTouchMove = (event) => {
+      if (!isExploreMode) return;
+
+      event.preventDefault();
+
+      const touchY = event.touches[0].clientY;
+      const deltaY = touchStartY - touchY;
+      const touchSensitivity = 0.005; // Touch sensitivity
+
+      if (Math.abs(deltaY) > 10) { // Minimum threshold for touch movement
+        setTargetPosition(prevTarget => {
+          if (isNaN(prevTarget)) {
+            return 0;
+          }
+
+          let newPosition = prevTarget + (deltaY * touchSensitivity);
+          newPosition = Math.max(0, Math.min(6, newPosition));
+
+          return newPosition;
+        });
+
+        touchStartY = touchY; // Reset for continuous scrolling
+      }
+    };
+
+    // Add listeners for both mouse and touch
+    const canvas = gl.domElement;
+    console.log('Adding scroll and touch listeners');
+
+    // Mouse wheel events
     document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
     canvas.addEventListener('wheel', handleWheel, { passive: false, capture: true });
 
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+
     return () => {
-      console.log('Removing scroll listener'); // Debug log
+      console.log('Removing scroll and touch listeners');
       document.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
     };
   }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode]);
 

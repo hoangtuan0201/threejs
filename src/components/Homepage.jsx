@@ -87,6 +87,9 @@ export default function Homepage({ onExplore }) {
         justifyContent: "center",
         zIndex: 1000,
         overflow: "hidden",
+        // Responsive padding
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 1, sm: 2 },
         "&::before": {
           content: '""',
           position: "absolute",
@@ -113,7 +116,8 @@ export default function Homepage({ onExplore }) {
           background: "rgba(255, 255, 255, 0.02)",
           backdropFilter: "blur(10px)",
           borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-          py: 2,
+          py: { xs: 1.5, sm: 2 },
+          px: { xs: 2, sm: 3, md: 4 },
           zIndex: 1001,
         }}
       >
@@ -126,13 +130,13 @@ export default function Homepage({ onExplore }) {
             }}
           >
             {/* Logo */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 2 } }}>
               <img
                 src="/airsmart.svg"
                 alt="AirSmart Logo"
                 style={{
-                  width: "32px",
-                  height: "32px",
+                  width: "28px",
+                  height: "28px",
                 }}
               />
               <Typography
@@ -140,39 +144,16 @@ export default function Homepage({ onExplore }) {
                 sx={{
                   color: "rgba(255, 255, 255, 0.9)",
                   fontWeight: 600,
-                  fontSize: "1.2rem",
+                  fontSize: { xs: "1rem", sm: "1.2rem" },
                   letterSpacing: "1px",
+                  display: { xs: "none", sm: "block" }, // Hide text on mobile
                 }}
               >
                 AirSmart
               </Typography>
             </Box>
 
-            {/* Navigation Menu */}
-            <Stack direction="row" spacing={3} sx={{ display: { xs: "none", md: "flex" } }}>
-              {["Product", "Pricing", "Docs", "Blog"].map((item) => (
-                <Button
-                  key={item}
-                  variant="text"
-                  sx={{
-                    color: "rgba(200, 200, 200, 0.8)",
-                    fontWeight: 500,
-                    fontSize: "0.9rem",
-                    textTransform: "none",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                    "&:hover": {
-                      bgcolor: "rgba(255, 255, 255, 0.05)",
-                      color: "rgba(255, 255, 255, 0.9)",
-                    },
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </Stack>
+          
 
             
           </Box>
@@ -181,7 +162,15 @@ export default function Homepage({ onExplore }) {
 
      
 
-      <Container maxWidth="lg" sx={{ textAlign: "center", px: 3, pt: 12 }}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          textAlign: "center",
+          px: { xs: 2, sm: 3, md: 4 },
+          pt: { xs: 8, sm: 10, md: 12 },
+          pb: { xs: 4, sm: 6 }
+        }}
+      >
         {/* Main content */}
         <Box
           sx={{
@@ -222,25 +211,29 @@ export default function Homepage({ onExplore }) {
             sx={{
               color: "rgba(200, 200, 200, 0.9)",
               fontWeight: 400,
-              mb: 6,
-              maxWidth: "600px",
+              mb: { xs: 4, sm: 6 },
+              maxWidth: { xs: "100%", sm: "600px" },
               mx: "auto",
               lineHeight: 1.6,
-              fontSize: { xs: "1.1rem", sm: "1.3rem", md: "1.5rem" },
+              fontSize: { xs: "1rem", sm: "1.2rem", md: "1.4rem" },
+              px: { xs: 1, sm: 0 },
             }}
           >
             The most powerful smart air conditioning platform
-            <br />
+            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+              <br />
+            </Box>
+            <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}> </Box>
             backed by the industry-leading climate control engine.
           </Typography>
 
           {/* Action Buttons */}
           <Stack
             direction={{ xs: "column", sm: "row" }}
-            spacing={3}
+            spacing={{ xs: 2, sm: 3 }}
             justifyContent="center"
             alignItems="center"
-            sx={{ mb: 6 }}
+            sx={{ mb: { xs: 4, sm: 6 } }}
           >
             <Button
               variant="contained"
@@ -256,12 +249,13 @@ export default function Homepage({ onExplore }) {
                 `,
                 color: "#fff",
                 fontWeight: 600,
-                fontSize: "1rem",
+                fontSize: { xs: "0.9rem", sm: "1rem" },
                 borderRadius: 2,
                 textTransform: "none",
-                px: 4,
-                py: 1.5,
-                minWidth: 200,
+                px: { xs: 3, sm: 4 },
+                py: { xs: 1.2, sm: 1.5 },
+                minWidth: { xs: 180, sm: 200 },
+                width: { xs: "100%", sm: "auto" },
                 position: "relative",
                 overflow: "hidden",
                 border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -293,12 +287,13 @@ export default function Homepage({ onExplore }) {
                 borderColor: "rgba(150, 150, 150, 0.4)",
                 borderWidth: 2,
                 fontWeight: 600,
-                fontSize: "1rem",
+                fontSize: { xs: "0.9rem", sm: "1rem" },
                 borderRadius: 2,
                 textTransform: "none",
-                px: 4,
-                py: 1.5,
-                minWidth: 200,
+                px: { xs: 3, sm: 4 },
+                py: { xs: 1.2, sm: 1.5 },
+                minWidth: { xs: 180, sm: 200 },
+                width: { xs: "100%", sm: "auto" },
                 background: "rgba(255, 255, 255, 0.03)",
                 backdropFilter: "blur(10px)",
                 "&:hover": {
@@ -320,10 +315,11 @@ export default function Homepage({ onExplore }) {
               sx={{
                 color: "rgba(180, 180, 180, 0.8)",
                 fontWeight: 600,
-                fontSize: "1rem",
+                fontSize: { xs: "0.9rem", sm: "1rem" },
                 borderRadius: 3,
                 textTransform: "none",
-                px: 4,
+                px: { xs: 3, sm: 4 },
+                width: { xs: "100%", sm: "auto" },
                 py: 2,
                 minWidth: 200,
                 "&:hover": {

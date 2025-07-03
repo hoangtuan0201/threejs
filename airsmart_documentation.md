@@ -10,18 +10,21 @@ AirSmart is an interactive 3D web application that showcases smart air condition
 - **Cinematic Camera Animation**: Smooth camera movements using Theatre.js animation sequences
 - **Interactive Hotspots**: Clickable information points with detailed component specifications
 - **Video Integration**: Embedded YouTube videos for product demonstrations
-- **Responsive Design**: Works across different screen sizes and devices
-- **Scroll-Based Navigation**: Intuitive scroll-to-explore functionality
+- **Responsive Design**: Optimized for mobile, tablet, and desktop with touch controls
+- **Multi-Input Navigation**: Mouse scroll, touch gestures, and keyboard controls
 - **Dynamic Material System**: Objects become transparent during specific sequences
+- **Loading Screen**: Professional loading experience with AirSmart branding
+- **Progressive Enhancement**: Graceful degradation across device capabilities
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── components/
-│   ├── App.jsx              # Main application component
-│   ├── Homepage.jsx         # Landing page with hero section
-│   ├── Scene.jsx            # Main 3D scene with camera and interactions
+│   ├── App.jsx              # Main application component with responsive Canvas
+│   ├── Homepage.jsx         # Responsive landing page with hero section
+│   ├── LoadingScreen.jsx    # Professional loading screen with AirSmart branding
+│   ├── Scene.jsx            # Main 3D scene with multi-input navigation
 │   ├── Model.jsx            # 3D model loader and material management
 │   └── VideoScreen.jsx      # YouTube video integration component
 ├── data/
@@ -51,27 +54,39 @@ src/
 
 ### App.jsx
 Main application orchestrator that manages:
-- Application state (control panel visibility)
-- Theatre.js initialization
-- Canvas setup with proper camera configuration
-- Navigation guide overlay
+- Application state (control panel visibility, loading states)
+- Theatre.js initialization and studio setup
+- Responsive Canvas setup with adaptive camera configuration
+- Dynamic navigation guide overlay (desktop vs mobile)
 - Keyboard shortcuts (ESC to exit)
+- Loading screen coordination with model loading
 
 ### Homepage.jsx
-Hero landing page featuring:
-- Animated gradient background
-- Typography with shimmer effects
-- Call-to-action buttons
-- Feature chips with staggered animations
-- Responsive design with Material-UI
+Responsive hero landing page featuring:
+- Animated gradient background with dynamic effects
+- Typography with shimmer effects and responsive scaling
+- Adaptive call-to-action buttons (full-width on mobile)
+- AirSmart logo integration with conditional text display
+- Mobile-first responsive design with Material-UI breakpoints
+- Optimized touch targets and spacing for mobile devices
+
+### LoadingScreen.jsx
+Professional loading experience:
+- Centered AirSmart logo with smooth animations
+- Responsive spinner and typography scaling
+- Dark gradient background matching brand aesthetics
+- Fade-in animations with staggered timing
+- Mobile-optimized sizing and spacing
 
 ### Scene.jsx
-The heart of the 3D experience:
-- **Camera Control**: Theatre.js animated camera with smooth transitions
-- **Scroll Navigation**: Wheel event handling for sequence progression
-- **Hotspot Management**: 3D information markers with HTML overlays
-- **Video Integration**: Dynamic video screen display
-- **Lighting Setup**: Ambient and directional lighting
+The heart of the responsive 3D experience:
+- **Adaptive Camera Control**: Theatre.js animated camera with responsive FOV
+- **Multi-Input Navigation**: Mouse wheel and touch gesture handling
+- **Responsive Scroll Sensitivity**: Adjusted sensitivity for mobile devices
+- **Touch Event Management**: Swipe gestures for mobile navigation
+- **Hotspot Management**: 3D information markers with responsive HTML overlays
+- **Video Integration**: Dynamic video screen display with adaptive sizing
+- **Lighting Setup**: Optimized ambient and directional lighting
 - **Fog Effects**: Atmospheric depth enhancement
 
 ### Model.jsx
@@ -128,16 +143,19 @@ Lists 3D objects to hide during specific animation sequences:
 ## 🎮 User Interactions
 
 ### Navigation Controls
-- **Mouse Scroll**: Navigate through animation sequences
-- **Hotspot Clicks**: Display detailed component information
-- **Video Screens**: Embedded YouTube demonstrations
+- **Desktop**: Mouse scroll wheel for sequence navigation
+- **Mobile**: Touch swipe gestures for intuitive navigation
+- **Hotspot Interactions**: Tap/click for detailed component information
+- **Video Screens**: Embedded YouTube demonstrations with touch controls
 - **Keyboard**: ESC key to exit and return to homepage
+- **Adaptive Sensitivity**: Optimized input sensitivity per device type
 
 ### Animation Sequences
 1. **Start (0-0.3)**: Initial camera position and welcome
-2. **Thermostat (0.3-1)**: Focus on smart thermostat component
-3. **Linear Grille (1-2)**: Showcase air distribution system
-4. **End (2-3)**: Tour completion and reset
+2. **Thermostat (0.3-1)**: Focus on smart thermostat component with interactive hotspot
+3. **Linear Grille (1-2)**: Showcase air distribution system with video demonstration
+4. **Air Purification (2-4)**: Advanced filtration system with detailed specifications
+5. **Outdoor Unit (4-5)**: External condenser unit with performance metrics
 
 ### Interactive Elements
 - **3D Hotspots**: Information markers with "i" icon design
@@ -168,14 +186,18 @@ Lists 3D objects to hide during specific animation sequences:
 ## 🔧 Configuration
 
 ### Animation Timing
-- **Scroll Sensitivity**: 0.002 (adjustable in Scene.jsx)
+- **Desktop Scroll Sensitivity**: 0.002 for precise control
+- **Mobile Touch Sensitivity**: 0.005 for responsive gestures
+- **Touch Threshold**: 10px minimum movement for activation
 - **Smooth Scrolling**: 0.03 interpolation speed
 - **Sequence Length**: 0-6 range (6 units total)
 
 ### Performance Settings
-- **Device Pixel Ratio**: [1, 1.5] for performance balance
-- **Shadow Quality**: Enabled for all meshes
+- **Device Pixel Ratio**: [1, 2] for high-quality retina displays
+- **Canvas Optimization**: High-performance WebGL context
+- **Shadow Quality**: Enabled for all meshes with optimized settings
 - **Fog Distance**: 0-40 units for atmospheric depth
+- **Touch Actions**: Disabled for custom gesture handling
 
 ### Video Settings
 - **Autoplay**: Enabled for demonstrations
@@ -214,16 +236,33 @@ yarn build
 
 ## 📱 Responsive Design
 
-### Breakpoints
-- **Mobile**: < 600px - Stacked layouts, touch-friendly
-- **Tablet**: 600px - 960px - Adapted spacing
-- **Desktop**: > 960px - Full experience
+### Breakpoints (Material-UI)
+- **xs (Mobile)**: 0px - 600px - Touch-optimized interface
+- **sm (Tablet)**: 600px - 900px - Adapted spacing and controls
+- **md (Laptop)**: 900px - 1200px - Enhanced features
+- **lg (Desktop)**: 1200px+ - Full experience with all features
 
 ### Mobile Optimizations
-- **Touch Controls**: Optimized for touch navigation
-- **Performance**: Reduced particle effects
-- **Layout**: Vertical button stacking
-- **Typography**: Responsive font scaling
+- **Touch Controls**: Swipe gestures for 3D navigation
+- **Adaptive Camera**: Wider FOV (70°) for better mobile viewing
+- **Touch Sensitivity**: Optimized touch event handling (0.005 sensitivity)
+- **UI Scaling**: Responsive typography and button sizing
+- **Layout**: Vertical button stacking with full-width design
+- **Navigation Guide**: Contextual instructions (swipe vs scroll)
+- **Loading Screen**: Mobile-optimized logo and spinner sizing
+
+### Desktop Enhancements
+- **Precision Controls**: Mouse wheel with fine sensitivity (0.002)
+- **Enhanced UI**: Larger interactive elements and spacing
+- **Multi-Column Layouts**: Horizontal button arrangements
+- **Advanced Features**: Full keyboard shortcuts and hover states
+- **High DPR Support**: Retina display optimization (up to 2x)
+
+### Canvas Responsiveness
+- **Dynamic FOV**: 60° desktop, 70° mobile for optimal viewing
+- **Touch Actions**: Disabled default touch behaviors for custom controls
+- **Performance Scaling**: Adaptive quality based on device capabilities
+- **Resize Handling**: Automatic camera adjustment on orientation change
 
 ## 🎭 Animation System
 
@@ -272,10 +311,12 @@ yarn build
 - Check browser autoplay policies
 - Ensure video is publicly accessible
 
-**Scroll Not Working**
-- Verify wheel event listeners are attached
-- Check isExploreMode state
-- Confirm Canvas element is receiving events
+**Navigation Not Working**
+- **Desktop**: Verify wheel event listeners are attached
+- **Mobile**: Check touch event handlers and preventDefault calls
+- **General**: Confirm isExploreMode state and Canvas element focus
+- **Touch Issues**: Verify touchAction: 'none' is set on Canvas
+- **Sensitivity**: Adjust scroll/touch sensitivity values for device type
 
 ## 🔄 Future Enhancements
 
@@ -326,5 +367,3 @@ yarn build
 This project is proprietary software. All rights reserved.
 
 ---
-
-*Documentation last updated: December 2024*

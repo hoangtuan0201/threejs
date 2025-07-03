@@ -42,16 +42,16 @@ export default function LoadingScreen() {
       {/* Logo */}
       <Box
         sx={{
-          mb: 4,
+          mb: { xs: 3, sm: 4 },
           animation: `${fadeIn} 1s ease-out 0.2s both`,
         }}
       >
-        <img 
-          src="/airsmart.svg" 
-          alt="AirSmart Logo" 
+        <img
+          src="/airsmart.svg"
+          alt="AirSmart Logo"
           style={{
-            width: "80px",
-            height: "80px",
+            width: "60px",
+            height: "60px",
           }}
         />
       </Box>
@@ -59,13 +59,13 @@ export default function LoadingScreen() {
       {/* Loading Spinner */}
       <Box
         sx={{
-          width: 40,
-          height: 40,
+          width: { xs: 32, sm: 40 },
+          height: { xs: 32, sm: 40 },
           border: "3px solid rgba(255, 255, 255, 0.1)",
           borderTop: "3px solid rgba(100, 150, 255, 0.8)",
           borderRadius: "50%",
           animation: `${spin} 1s linear infinite`,
-          mb: 3,
+          mb: { xs: 2, sm: 3 },
         }}
       />
 
@@ -74,10 +74,12 @@ export default function LoadingScreen() {
         variant="body2"
         sx={{
           color: "rgba(255, 255, 255, 0.6)",
-          fontSize: "0.9rem",
+          fontSize: { xs: "0.8rem", sm: "0.9rem" },
           fontWeight: 400,
           letterSpacing: "1px",
           animation: `${fadeIn} 1s ease-out 0.5s both`,
+          textAlign: "center",
+          px: 2,
         }}
       >
         Loading 3D Experience...

@@ -14,11 +14,11 @@ import LoadingScreen from "./components/LoadingScreen";
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-    studio.initialize();
-    studio.extend(extension);
-    window.__THEATRE_ALREADY_INIT__ = true;
-  }
+  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  //   studio.initialize();
+  //   studio.extend(extension);
+  //   window.__THEATRE_ALREADY_INIT__ = true;
+  // }
 
 export default function App() {
   const [showControlPanel, setShowControlPanel] = useState(true);
@@ -57,8 +57,8 @@ export default function App() {
         <div
           style={{
             position: 'fixed',
-            top: '24px',
-            left: '24px',
+            top: window.innerWidth < 768 ? '16px' : '24px',
+            left: window.innerWidth < 768 ? '16px' : '24px',
             zIndex: 1000,
             pointerEvents: 'none',
             userSelect: 'none',
@@ -68,19 +68,23 @@ export default function App() {
             style={{
               background: 'rgba(0, 0, 0, 0.8)',
               color: 'white',
-              padding: '12px 20px',
+              padding: window.innerWidth < 768 ? '8px 12px' : '12px 20px',
               borderRadius: '8px',
-              fontSize: '14px',
+              fontSize: window.innerWidth < 768 ? '12px' : '14px',
               fontWeight: '500',
               textAlign: 'center',
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
               fontFamily: 'system-ui, -apple-system, sans-serif',
-              whiteSpace: 'nowrap',
+              whiteSpace: window.innerWidth < 768 ? 'normal' : 'nowrap',
+              maxWidth: window.innerWidth < 768 ? '200px' : 'none',
             }}
           >
-            🖱️ Scroll to navigate • ⌨️ Press ESC to exit
+            {window.innerWidth < 768 ?
+              '👆 Swipe to navigate • ESC to exit' :
+              '🖱️ Scroll to navigate • ⌨️ Press ESC to exit'
+            }
           </div>
         </div>
       )}
@@ -94,12 +98,37 @@ export default function App() {
           left: 0,
           zIndex: 1,
           width: "100vw",
-          height: "100vh"
+          height: "100vh",
+          touchAction: "none", // Prevent default touch behaviors
         }}
         shadows
-        dpr={[1, 1.5]}
-        camera={{ position: [0, 0, 10], fov: 60 }}
-        gl={{ preserveDrawingBuffer: true }}
+        dpr={[1, 2]} // Higher DPR for better quality on retina displays
+        camera={{
+          position: [0, 0, 10],
+          fov: window.innerWidth < 768 ? 70 : 60, // Wider FOV on mobile
+          aspect: window.innerWidth / window.innerHeight,
+          near: 0.1,
+          far: 1000
+        }}
+        gl={{
+          preserveDrawingBuffer: true,
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: true
+        }}
+        onCreated={({ gl, camera }) => {
+          // Responsive camera adjustments
+          const handleResize = () => {
+            camera.fov = window.innerWidth < 768 ? 70 : 60;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+          };
+
+          window.addEventListener('resize', handleResize);
+          return () => window.removeEventListener('resize', handleResize);
+        }}
       >
         <SheetProvider sheet={sheet}>
           <Scene
