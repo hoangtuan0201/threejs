@@ -61,7 +61,7 @@ export const sequenceChapters = [
     hotspot: {
       position: [16.3, 4.3, -32.3],
       rotation: [0, Math.PI / 1, 0],
-      detailPosition: [15.6, 4.7, -32.3],
+      detailPosition: [15.2, 4.7, -32.3],
       detailRotation: [0, 0, 0],
       // Mobile-specific positioning
       mobileDetailPosition: [16.5, 4, -31.8],

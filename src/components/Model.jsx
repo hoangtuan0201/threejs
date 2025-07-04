@@ -126,6 +126,14 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
         e.object?.userData?.onClick?.(e);
         e.object?.userData?.onMeshClick?.(e);
       }}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        console.log("Model pointer down - object:", e.object?.name);
+
+        // Handle touch events for mobile
+        e.object?.userData?.onClick?.(e);
+        e.object?.userData?.onMeshClick?.(e);
+      }}
     />
   );
 }

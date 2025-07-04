@@ -22,6 +22,12 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
               position={chapter.hotspot.position || [0, 0, 0]}
               onClick={(e) => {
                 e.stopPropagation();
+                // console.log('Hotspot group clicked:', chapter.id);
+                onHotspotClick(chapter.id);
+              }}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                // console.log('Hotspot pointer down:', chapter.id);
                 onHotspotClick(chapter.id);
               }}
             >
@@ -105,12 +111,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     camera.fov = newFOV;
     camera.updateProjectionMatrix();
 
-    console.log('Scene Camera updated:', {
-      position: newPosition,
-      fov: newFOV,
-      isMobile: mobile.isMobile,
-      actualPosition: camera.position.toArray()
-    });
+    // console.log('Scene Camera updated:', {
+    //   position: newPosition,
+    //   fov: newFOV,
+    //   isMobile: mobile.isMobile,
+    //   actualPosition: camera.position.toArray()
+    // });
 
     // Force a re-render
     camera.updateMatrixWorld();
@@ -128,11 +134,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       camera.updateProjectionMatrix();
       camera.updateMatrixWorld();
 
-      console.log('Resize Camera updated:', {
-        position: newPosition,
-        fov: newFOV,
-        isMobile: mobile.isMobile
-      });
+      // console.log('Resize Camera updated:', {
+      //   position: newPosition,
+      //   fov: newFOV,
+      //   isMobile: mobile.isMobile
+      // });
     };
 
     window.addEventListener('resize', handleResize);
@@ -227,13 +233,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Initialize targetPosition
   useEffect(() => {
     const currentPos = sheet.sequence.position;
-    console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'type:', typeof currentPos);
+    // console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'type:', typeof currentPos);
 
     if (isNaN(currentPos) || currentPos === undefined) {
-      console.log('Setting targetPosition to 0 (fallback)');
+      // console.log('Setting targetPosition to 0 (fallback)');
       setTargetPosition(0);
     } else {
-      console.log('Setting targetPosition to:', currentPos);
+      // console.log('Setting targetPosition to:', currentPos);
       setTargetPosition(currentPos);
     }
   }, [sheet.sequence]);
@@ -303,6 +309,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     let lastTouchTime = 0;
     let touchVelocity = 0;
     let isTouching = false;
+    let hasMovedSignificantly = false;
 
     const handleTouchStart = (event) => {
       if (!isExploreMode) return;
@@ -313,18 +320,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       lastTouchTime = Date.now();
       touchVelocity = 0;
       isTouching = true;
+      hasMovedSignificantly = false;
 
-      console.log('Touch start:', { touchStartY, touchStartX }); // Debug log
+      // console.log('Touch start:', { touchStartY, touchStartX }); // Debug log
 
-      // Prevent default to avoid scrolling
-      event.preventDefault();
+      // Don't prevent default to allow object clicks
+      // event.preventDefault();
     };
 
     const handleTouchMove = (event) => {
       if (!isExploreMode || !isTouching) return;
-
-      event.preventDefault();
-      event.stopPropagation();
 
       const touch = event.touches[0];
       const touchY = touch.clientY;
@@ -339,13 +344,19 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         touchVelocity = deltaY / timeDelta;
       }
 
-      // Simplified touch sensitivity for better responsiveness
-      const touchSensitivity = mobile.isMobile ? 0.008 : 0.005; // Increased sensitivity
+      // Reduced touch sensitivity for mobile
+      const touchSensitivity = mobile.isMobile ? 0.002 : 0.003; // Lower sensitivity for mobile
 
-      console.log('Touch move:', { deltaY, deltaX, touchSensitivity }); // Debug log
+      // console.log('Touch move:', { deltaY, deltaX, touchSensitivity }); // Debug log
 
-      // Only process vertical swipes (ignore horizontal)
-      if (deltaX < 80 && Math.abs(deltaY) > 3) { // More lenient thresholds
+      // Only process vertical swipes (ignore horizontal) and only if significant movement
+      if (deltaX < 50 && Math.abs(deltaY) > 3) { // Very low threshold for swipe detection
+        hasMovedSignificantly = true;
+
+        // Only prevent default when we're actually scrolling
+        event.preventDefault();
+        event.stopPropagation();
+
         setTargetPosition(prevTarget => {
           if (isNaN(prevTarget)) {
             return 0;
@@ -354,7 +365,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           let newPosition = prevTarget + (deltaY * touchSensitivity);
           newPosition = Math.max(0, Math.min(6, newPosition));
 
-          console.log('Setting position from touch:', prevTarget, '->', newPosition); // Debug log
+          // console.log('Setting position from touch:', prevTarget, '->', newPosition); // Debug log
 
           return newPosition;
         });
@@ -365,16 +376,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
     };
 
-    const handleTouchEnd = (event) => {
+    const handleTouchEnd = () => {
       if (!isExploreMode) return;
 
-      event.preventDefault();
       isTouching = false;
 
-      console.log('Touch end, velocity:', touchVelocity); // Debug log
+      // console.log('Touch end, velocity:', touchVelocity, 'hasMovedSignificantly:', hasMovedSignificantly); // Debug log
 
-      // Add momentum scrolling for smooth experience
-      if (Math.abs(touchVelocity) > 0.05) { // Lower threshold for momentum
+      // Add momentum scrolling for smooth experience - only if we actually swiped
+      if (hasMovedSignificantly && Math.abs(touchVelocity) > 0.05) { // Lower threshold for momentum
         const momentum = touchVelocity * 0.5; // Increased momentum
         setTargetPosition(prevTarget => {
           if (isNaN(prevTarget)) {
@@ -384,7 +394,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           let newPosition = prevTarget + momentum;
           newPosition = Math.max(0, Math.min(6, newPosition));
 
-          console.log('Momentum scroll:', prevTarget, '->', newPosition); // Debug log
+          // console.log('Momentum scroll:', prevTarget, '->', newPosition); // Debug log
 
           return newPosition;
         });
@@ -395,19 +405,17 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
     // Add listeners for both mouse and touch
     const canvas = gl.domElement;
-    console.log('Adding scroll and touch listeners');
+    // console.log('Adding scroll and touch listeners');
 
     // Mouse wheel events
     document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
     canvas.addEventListener('wheel', handleWheel, { passive: false, capture: true });
 
-    // Touch events for mobile - add to both document and canvas for better coverage
-    if (mobile.isMobile) {
-      document.addEventListener('touchstart', handleTouchStart, { passive: false });
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd, { passive: false });
-      document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
-    }
+    // Touch events for mobile - add to both document and canvas for full coverage
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -415,17 +423,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     return () => {
-      console.log('Removing scroll and touch listeners');
+      // console.log('Removing scroll and touch listeners');
       document.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
 
-      // Remove document touch listeners if mobile
-      if (mobile.isMobile) {
-        document.removeEventListener('touchstart', handleTouchStart);
-        document.removeEventListener('touchmove', handleTouchMove);
-        document.removeEventListener('touchend', handleTouchEnd);
-        document.removeEventListener('touchcancel', handleTouchEnd);
-      }
+      // Remove document touch listeners
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchEnd);
 
       // Remove canvas touch listeners
       canvas.removeEventListener('touchstart', handleTouchStart);
@@ -449,10 +455,10 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           sequenceChapters={sequenceChapters}
           sequencePosition={sheet.sequence.position}
           onChapterClick={(chapterId) => {
-            console.log(`Model chapter clicked: ${chapterId}`);
+            // console.log(`Model chapter clicked: ${chapterId}`);
           }}
           onMeshClick={(meshName) => {
-            console.log(`Mesh clicked: ${meshName}`);
+            // console.log(`Mesh clicked: ${meshName}`);
           }}
           onModelLoaded={onModelLoaded}
         />
@@ -464,7 +470,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         selectedHotspot={selectedHotspot}
         mobile={mobile}
         onHotspotClick={(chapterId) => {
-          console.log(`Hotspot clicked for chapter: ${chapterId}`);
+          // console.log(`Hotspot clicked for chapter: ${chapterId}`);
           // Find the chapter and show hotspot details + video screen
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
           if (chapter && chapter.hotspot) {
