@@ -302,8 +302,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     let touchStartX = 0;
     let lastTouchTime = 0;
     let touchVelocity = 0;
-
-    // Use mobile hook for device detection
+    let isTouching = false;
 
     const handleTouchStart = (event) => {
       if (!isExploreMode) return;
@@ -313,13 +312,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       touchStartX = touch.clientX;
       lastTouchTime = Date.now();
       touchVelocity = 0;
+      isTouching = true;
+
+      console.log('Touch start:', { touchStartY, touchStartX }); // Debug log
 
       // Prevent default to avoid scrolling
       event.preventDefault();
     };
 
     const handleTouchMove = (event) => {
-      if (!isExploreMode) return;
+      if (!isExploreMode || !isTouching) return;
 
       event.preventDefault();
       event.stopPropagation();
@@ -337,12 +339,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         touchVelocity = deltaY / timeDelta;
       }
 
-      // Enhanced touch sensitivity based on device using mobile hook
-      const baseSensitivity = mobile.getTouchSensitivity();
-      const touchSensitivity = baseSensitivity * (1 + Math.abs(touchVelocity) * 0.1);
+      // Simplified touch sensitivity for better responsiveness
+      const touchSensitivity = mobile.isMobile ? 0.008 : 0.005; // Increased sensitivity
+
+      console.log('Touch move:', { deltaY, deltaX, touchSensitivity }); // Debug log
 
       // Only process vertical swipes (ignore horizontal)
-      if (deltaX < 50 && Math.abs(deltaY) > 5) {
+      if (deltaX < 80 && Math.abs(deltaY) > 3) { // More lenient thresholds
         setTargetPosition(prevTarget => {
           if (isNaN(prevTarget)) {
             return 0;
@@ -350,6 +353,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
           let newPosition = prevTarget + (deltaY * touchSensitivity);
           newPosition = Math.max(0, Math.min(6, newPosition));
+
+          console.log('Setting position from touch:', prevTarget, '->', newPosition); // Debug log
 
           return newPosition;
         });
@@ -364,10 +369,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       if (!isExploreMode) return;
 
       event.preventDefault();
+      isTouching = false;
+
+      console.log('Touch end, velocity:', touchVelocity); // Debug log
 
       // Add momentum scrolling for smooth experience
-      if (Math.abs(touchVelocity) > 0.1) {
-        const momentum = touchVelocity * 0.3;
+      if (Math.abs(touchVelocity) > 0.05) { // Lower threshold for momentum
+        const momentum = touchVelocity * 0.5; // Increased momentum
         setTargetPosition(prevTarget => {
           if (isNaN(prevTarget)) {
             return 0;
@@ -375,6 +383,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
           let newPosition = prevTarget + momentum;
           newPosition = Math.max(0, Math.min(6, newPosition));
+
+          console.log('Momentum scroll:', prevTarget, '->', newPosition); // Debug log
+
           return newPosition;
         });
       }
@@ -390,7 +401,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
     canvas.addEventListener('wheel', handleWheel, { passive: false, capture: true });
 
-    // Touch events for mobile
+    // Touch events for mobile - add to both document and canvas for better coverage
+    if (mobile.isMobile) {
+      document.addEventListener('touchstart', handleTouchStart, { passive: false });
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd, { passive: false });
+      document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+    }
+
     canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
     canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
@@ -400,12 +418,22 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       console.log('Removing scroll and touch listeners');
       document.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
+
+      // Remove document touch listeners if mobile
+      if (mobile.isMobile) {
+        document.removeEventListener('touchstart', handleTouchStart);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
+        document.removeEventListener('touchcancel', handleTouchEnd);
+      }
+
+      // Remove canvas touch listeners
       canvas.removeEventListener('touchstart', handleTouchStart);
       canvas.removeEventListener('touchmove', handleTouchMove);
       canvas.removeEventListener('touchend', handleTouchEnd);
       canvas.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode]);
+  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile]);
 
   return (
     <>
