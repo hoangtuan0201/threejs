@@ -39,8 +39,8 @@ export function HotspotDetail({ selectedHotspot, onClose }) {
             color: "white",
             padding: "7px",
             borderRadius: "8px",
-            minWidth: "200px", // Minimum width
-            maxWidth: "250px", // Maximum width
+            minWidth: "250px", // Minimum width
+            maxWidth: "300px", // Maximum width
             width: "auto", // Auto width based on content
             height: "auto", // Auto height based on content
             minHeight: "80px", // Minimum height
@@ -60,23 +60,34 @@ export function HotspotDetail({ selectedHotspot, onClose }) {
               e.stopPropagation();
             }}
             onTouchEnd={handleClose}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.4)';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+              e.target.style.transform = 'scale(1)';
+            }}
             style={{
               position: "absolute",
-              top: "6px",
-              right: "6px",
-              background: "rgba(255, 255, 255, 0.2)",
-              border: "none",
+              top: "8px",
+              right: "8px",
+              background: "rgba(255, 255, 255, 0.25)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
               color: "white",
-              width: mobile.isMobile ? "32px" : "14px", // Larger button on mobile for easier tap
-              height: mobile.isMobile ? "32px" : "14px",
+              width: mobile.isMobile ? "32px" : "20px", // Larger button on desktop for better usability
+              height: mobile.isMobile ? "32px" : "20px",
               borderRadius: "50%",
               cursor: "pointer",
-              fontSize: mobile.isMobile ? "18px" : "9px", // Larger font on mobile
+              fontSize: mobile.isMobile ? "18px" : "12px", // Larger font on desktop
+              fontWeight: "bold",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               zIndex: 10000, // Ensure button is always on top
               touchAction: "manipulation", // Improve touch responsiveness
+              transition: "all 0.2s ease", // Smooth hover animation
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)", // Add subtle shadow
             }}
           >
             ×
@@ -85,7 +96,7 @@ export function HotspotDetail({ selectedHotspot, onClose }) {
           {/* Title */}
           <h3 style={{
             margin: "0 0 6px 0",
-            fontSize: mobile.isMobile ? "14px" : "11px", // Keep original desktop font
+            fontSize: mobile.isMobile ? "16px" : "13px", // Larger font size for better readability
             fontWeight: "bold",
             color: "#fff"
           }}>
@@ -94,7 +105,7 @@ export function HotspotDetail({ selectedHotspot, onClose }) {
 
           {/* Description */}
           <p style={{
-            fontSize: mobile.isMobile ? "12px" : "8px", // Keep original desktop font
+            fontSize: mobile.isMobile ? "14px" : "10px", // Larger font size for better readability
             lineHeight: "1.4",
             margin: "0 0 12px 0",
             opacity: 0.9,
@@ -124,8 +135,8 @@ export function HotspotDetail({ selectedHotspot, onClose }) {
                   justifyContent: 'center',
                   gap: '4px', // Even smaller gap
                   width: '100%',
-                  padding: mobile.isMobile ? '10px 12px' : '3px 5px', // Very small padding on desktop
-                  fontSize: mobile.isMobile ? '14px' : '8px', // Very small font on desktop
+                  padding: mobile.isMobile ? '10px 12px' : '4px 6px', // Slightly larger padding on desktop
+                  fontSize: mobile.isMobile ? '14px' : '10px', // Larger font on desktop for better readability
                   background: 'rgba(255, 255, 255, 0.15)',
                   color: 'white',
                   border: '1px solid rgba(255, 255, 255, 0.3)',

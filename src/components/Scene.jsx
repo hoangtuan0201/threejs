@@ -49,14 +49,14 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
 
               {/* HTML label attached to the 3D "i" - show hotspot title only when not selected */}
               {(!selectedHotspot || selectedHotspot.id !== chapter.id) && (
-                <Html distanceFactor={10} position={[0, 0.3, 0]}>
+                <Html distanceFactor={10} position={[0, 0.3, 0]} occlude>
                   <div
                     style={{
                       background: 'rgba(0, 0, 0, 0.8)',
                       color: 'white',
-                      padding: mobile.isMobile ? '3px 8px' : '1px 4px', // Larger padding on mobile
-                      borderRadius: mobile.isMobile ? '6px' : '3px', // Larger border radius on mobile
-                      fontSize: mobile.isMobile ? '12px' : '8px', // Keep original desktop font
+                      padding: mobile.isMobile ? '4px 10px' : '2px 6px', // Larger padding for better readability
+                      borderRadius: mobile.isMobile ? '6px' : '4px', // Larger border radius on mobile
+                      fontSize: mobile.isMobile ? '14px' : '10px', // Larger font size for better readability
                       fontWeight: 'bold',
                       pointerEvents: 'auto', // Enable pointer events for clicking
                       whiteSpace: 'nowrap',
@@ -152,70 +152,70 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
   }, [camera, mobile]);
 
-  // Temporarily disabled useFrame for Theatre.js sequence editing
-  useFrame(({ camera }) => {
-    // Let Theatre.js control camera position, only override FOV for mobile
-    const targetFOV = mobile.getCameraFOV();
+  // // Temporarily disabled useFrame for Theatre.js sequence editing
+  // useFrame(({ camera }) => {
+  //   // Let Theatre.js control camera position, only override FOV for mobile
+  //   const targetFOV = mobile.getCameraFOV();
 
-    // Only update FOV, let Theatre.js handle position
-    if (camera.fov !== targetFOV) {
-      camera.fov = targetFOV;
-      camera.updateProjectionMatrix();
-    }
+  //   // Only update FOV, let Theatre.js handle position
+  //   if (camera.fov !== targetFOV) {
+  //     camera.fov = targetFOV;
+  //     camera.updateProjectionMatrix();
+  //   }
 
-    // Debug log current camera state (Theatre.js controlled position)
-    if (Math.floor(Date.now() / 1000) % 3 === 0 && Math.floor(Date.now() / 16) % 60 === 0) {
-      console.log('Camera State (Theatre.js position):', {
-        position: camera.position.toArray(),
-        fov: camera.fov,
-        isMobile: mobile.isMobile,
-        sequencePosition: sheet.sequence.position
-      });
-    }
+  //   // Debug log current camera state (Theatre.js controlled position)
+  //   if (Math.floor(Date.now() / 1000) % 3 === 0 && Math.floor(Date.now() / 16) % 60 === 0) {
+  //     console.log('Camera State (Theatre.js position):', {
+  //       position: camera.position.toArray(),
+  //       fov: camera.fov,
+  //       isMobile: mobile.isMobile,
+  //       sequencePosition: sheet.sequence.position
+  //     });
+  //   }
 
-    if (targetPosition !== sheet.sequence.position) {
-      const diff = targetPosition - sheet.sequence.position;
-      const speed = 0.03; // Smooth scrolling speed
+  //   if (targetPosition !== sheet.sequence.position) {
+  //     const diff = targetPosition - sheet.sequence.position;
+  //     const speed = 0.03; // Smooth scrolling speed
 
-      if (Math.abs(diff) > 0.001) {
-        sheet.sequence.position += diff * speed;
-      } else {
-        sheet.sequence.position = targetPosition;
-      }
-    }
+  //     if (Math.abs(diff) > 0.001) {
+  //       sheet.sequence.position += diff * speed;
+  //     } else {
+  //       sheet.sequence.position = targetPosition;
+  //     }
+  //   }
 
-    // Auto-show/hide active chapter based on scroll position
-    const currentPosition = sheet.sequence.position;
+  //   // Auto-show/hide active chapter based on scroll position
+  //   const currentPosition = sheet.sequence.position;
 
-    // Manual range definitions since removed from data
-    const chapterRanges = {
-      "Geom3D_393": [0.3, 1],
-      "indoor": [1, 2],
-      "Air Purification": [2, 4],
-      "Outdoor": [4, 5]
-    };
+  //   // Manual range definitions since removed from data
+  //   const chapterRanges = {
+  //     "Geom3D_393": [0.3, 1],
+  //     "indoor": [1, 2],
+  //     "Air Purification": [2, 4],
+  //     "Outdoor": [4, 5]
+  //   };
 
-    sequenceChapters.forEach((chapter) => {
-      const range = chapterRanges[chapter.id];
-      if (range) {
-        const [start, end] = range;
-        const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
+  //   sequenceChapters.forEach((chapter) => {
+  //     const range = chapterRanges[chapter.id];
+  //     if (range) {
+  //       const [start, end] = range;
+  //       const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
 
-        // Set active chapter when entering sequence range
-        if (isInRange) {
-          if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
-            setActiveChapter(chapter);
-          }
-        } else {
-          // Clear active chapter when leaving sequence range
-          if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
-              (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
-            setActiveChapter(null);
-          }
-        }
-      }
-    });
-  });
+  //       // Set active chapter when entering sequence range
+  //       if (isInRange) {
+  //         if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
+  //           setActiveChapter(chapter);
+  //         }
+  //       } else {
+  //         // Clear active chapter when leaving sequence range
+  //         if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
+  //             (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
+  //           setActiveChapter(null);
+  //         }
+  //       }
+  //     }
+  //   });
+  // });
 
   // Reset function for tour end
   const resetScene = () => {
@@ -231,19 +231,51 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   };
 
-  // Initialize targetPosition
+  // Initialize targetPosition and ensure proper sequence start
   useEffect(() => {
     const currentPos = sheet.sequence.position;
     // console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'type:', typeof currentPos);
 
     if (isNaN(currentPos) || currentPos === undefined) {
       // console.log('Setting targetPosition to 0 (fallback)');
+      sheet.sequence.position = 0; // Ensure Theatre.js sequence starts at 0
       setTargetPosition(0);
     } else {
       // console.log('Setting targetPosition to:', currentPos);
       setTargetPosition(currentPos);
     }
   }, [sheet.sequence]);
+
+  // Ensure proper initialization when entering explore mode
+  useEffect(() => {
+    if (isExploreMode) {
+      // Force Theatre.js sequence to start at position 0 when entering explore mode
+      // Add small delay to ensure Theatre.js is ready
+      setTimeout(() => {
+        sheet.sequence.position = 0;
+        setTargetPosition(0);
+        console.log('Explore mode entered - sequence reset to 0');
+      }, 50);
+    }
+  }, [isExploreMode, sheet.sequence]);
+
+  // Force initial sequence position when component mounts
+  useEffect(() => {
+    // Ensure sequence starts at 0 on mount
+    const initializeSequence = () => {
+      if (sheet && sheet.sequence) {
+        sheet.sequence.position = 0;
+        setTargetPosition(0);
+        console.log('Scene mounted - sequence initialized to 0');
+      }
+    };
+
+    // Run immediately and with a small delay to ensure Theatre.js is ready
+    initializeSequence();
+    const timer = setTimeout(initializeSequence, 100);
+
+    return () => clearTimeout(timer);
+  }, [sheet]);
 
   // Keyboard navigation for escape key
   useEffect(() => {
@@ -511,6 +543,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         theatreKey="Camera"
         makeDefault
         fov={mobile.getCameraFOV()}
+        position={[33.5381764274176, 5.205671442619433, -22.03415991352903]} // Initial position from Theatre.js state
       />
 
 

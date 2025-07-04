@@ -7,10 +7,10 @@ export const sequenceChapters = [
     hotspot: {
       position: [27.78, 4.5, -22.5],
       rotation: [0, Math.PI / 1.8, 0],
-      detailPosition: [27.78, 4.9, -22.5],
+      detailPosition: [27.78, 4.9, -22.7],
       detailRotation: [0, Math.PI / 1.8, 0],
       // Mobile-specific positioning
-      mobileDetailPosition: [27.78, 4.6, -22.1],
+      mobileDetailPosition: [27.78, 4.6, -22.3],
       mobileDetailRotation: [0, Math.PI / 1.8, 0],
       title: "Smart Thermostat",
       description: "Intelligent temperature control with AI that automatically learns your usage habits. The system automatically adjusts temperature based on usage patterns and weather.",
@@ -34,7 +34,7 @@ export const sequenceChapters = [
     hotspot: {
       position: [31.4, 6.35, -20.7],
       rotation: [0.1, Math.PI / 1, 0],
-      detailPosition: [31.1, 7, -20.3],
+      detailPosition: [31.3, 7, -20.3],
       detailRotation: [0, Math.PI / 1, 0],
       // Mobile-specific positioning
       mobileDetailPosition: [31, 7.3, -21.3],
@@ -61,7 +61,7 @@ export const sequenceChapters = [
     hotspot: {
       position: [16.3, 4.3, -32.3],
       rotation: [0, Math.PI / 1, 0],
-      detailPosition: [15.2, 4.7, -32.3],
+      detailPosition: [15.3, 4.7, -32.3],
       detailRotation: [0, 0, 0],
       // Mobile-specific positioning
       mobileDetailPosition: [16.5, 4, -31.8],
@@ -71,7 +71,7 @@ export const sequenceChapters = [
       link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     },
     videoScreen: {
-      position: [18, 4.9, -32.3],
+      position: [18, 4.7, -32.3],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
       mobilePosition: [17.15, 5, -31.8],

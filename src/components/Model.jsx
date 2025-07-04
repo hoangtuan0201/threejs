@@ -89,31 +89,41 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
   }, [scene, sequencePosition]);
 
   useEffect(() => {
-    if (!scene || !sequenceChapters) return;
+    if (!scene || !sequenceChapters || !onChapterClick) return;
 
-    // Only set up click handlers for objects that actually exist in the 3D model
-    sequenceChapters.forEach((chapter) => {
-      const object = scene.getObjectByName(chapter.id);
-      if (object) {
-        object.userData.onClick = (e) => {
+    try {
+      // Only set up click handlers for objects that actually exist in the 3D model
+      sequenceChapters.forEach((chapter) => {
+        if (!chapter || !chapter.id) return;
+
+        const object = scene.getObjectByName(chapter.id);
+        if (object && object.userData) {
+          object.userData.onClick = (e) => {
+            e.stopPropagation();
+            onChapterClick(chapter.id);
+          };
+        }
+      });
+
+      // Set up mesh click handler for Geom3D_393
+      const geom393 = scene.getObjectByName("Geom3D_393");
+      if (geom393 && geom393.userData && onMeshClick) {
+        geom393.userData.onMeshClick = (e) => {
           e.stopPropagation();
-          onChapterClick(chapter.id);
+          onMeshClick("Geom3D_393");
         };
       }
-    });
-
-
-    // Set up mesh click handler for Geom3D_393
-    const geom393 = scene.getObjectByName("Geom3D_393");
-    if (geom393 && onMeshClick) {
-      geom393.userData.onMeshClick = (e) => {
-        e.stopPropagation();
-        onMeshClick("Geom3D_393");
-      };
+    } catch (error) {
+      console.error("Error setting up click handlers:", error);
     }
   }, [scene, sequenceChapters, onChapterClick, onMeshClick]);
 
 
+
+  // Don't render if scene is not loaded
+  if (!scene) {
+    return null;
+  }
 
   return (
     <primitive
