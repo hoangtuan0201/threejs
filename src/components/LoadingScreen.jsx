@@ -36,7 +36,6 @@ export default function LoadingScreen() {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 9999,
-        animation: `${fadeIn} 0.5s ease-out`,
       }}
     >
       {/* Logo */}
