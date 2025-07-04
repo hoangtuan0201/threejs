@@ -6,8 +6,10 @@ import { useThree, useFrame } from "@react-three/fiber";
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
+import { HotspotLighting } from "./HotspotLighting";
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
+
 
 
 // Hotspots component - separated and always rendered as 3D objects
@@ -152,70 +154,70 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
   }, [camera, mobile]);
 
-  // // Temporarily disabled useFrame for Theatre.js sequence editing
-  // useFrame(({ camera }) => {
-  //   // Let Theatre.js control camera position, only override FOV for mobile
-  //   const targetFOV = mobile.getCameraFOV();
+  // Temporarily disabled useFrame for Theatre.js sequence editing
+  useFrame(({ camera }) => {
+    // Let Theatre.js control camera position, only override FOV for mobile
+    const targetFOV = mobile.getCameraFOV();
 
-  //   // Only update FOV, let Theatre.js handle position
-  //   if (camera.fov !== targetFOV) {
-  //     camera.fov = targetFOV;
-  //     camera.updateProjectionMatrix();
-  //   }
+    // Only update FOV, let Theatre.js handle position
+    if (camera.fov !== targetFOV) {
+      camera.fov = targetFOV;
+      camera.updateProjectionMatrix();
+    }
 
-  //   // Debug log current camera state (Theatre.js controlled position)
-  //   if (Math.floor(Date.now() / 1000) % 3 === 0 && Math.floor(Date.now() / 16) % 60 === 0) {
-  //     console.log('Camera State (Theatre.js position):', {
-  //       position: camera.position.toArray(),
-  //       fov: camera.fov,
-  //       isMobile: mobile.isMobile,
-  //       sequencePosition: sheet.sequence.position
-  //     });
-  //   }
+    // Debug log current camera state (Theatre.js controlled position)
+    if (Math.floor(Date.now() / 1000) % 3 === 0 && Math.floor(Date.now() / 16) % 60 === 0) {
+      console.log('Camera State (Theatre.js position):', {
+        position: camera.position.toArray(),
+        fov: camera.fov,
+        isMobile: mobile.isMobile,
+        sequencePosition: sheet.sequence.position
+      });
+    }
 
-  //   if (targetPosition !== sheet.sequence.position) {
-  //     const diff = targetPosition - sheet.sequence.position;
-  //     const speed = 0.03; // Smooth scrolling speed
+    if (targetPosition !== sheet.sequence.position) {
+      const diff = targetPosition - sheet.sequence.position;
+      const speed = 0.03; // Smooth scrolling speed
 
-  //     if (Math.abs(diff) > 0.001) {
-  //       sheet.sequence.position += diff * speed;
-  //     } else {
-  //       sheet.sequence.position = targetPosition;
-  //     }
-  //   }
+      if (Math.abs(diff) > 0.001) {
+        sheet.sequence.position += diff * speed;
+      } else {
+        sheet.sequence.position = targetPosition;
+      }
+    }
 
-  //   // Auto-show/hide active chapter based on scroll position
-  //   const currentPosition = sheet.sequence.position;
+    // Auto-show/hide active chapter based on scroll position
+    const currentPosition = sheet.sequence.position;
 
-  //   // Manual range definitions since removed from data
-  //   const chapterRanges = {
-  //     "Geom3D_393": [0.3, 1],
-  //     "indoor": [1, 2],
-  //     "Air Purification": [2, 4],
-  //     "Outdoor": [4, 5]
-  //   };
+    // Manual range definitions since removed from data
+    const chapterRanges = {
+      "Geom3D_393": [0.3, 1],
+      "indoor": [1, 2.4],
+      "Air Purification": [3, 4.3],
+      "Outdoor": [4.3, 6.5]
+    };
 
-  //   sequenceChapters.forEach((chapter) => {
-  //     const range = chapterRanges[chapter.id];
-  //     if (range) {
-  //       const [start, end] = range;
-  //       const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
+    sequenceChapters.forEach((chapter) => {
+      const range = chapterRanges[chapter.id];
+      if (range) {
+        const [start, end] = range;
+        const isInRange = currentPosition >= start && currentPosition <= (end + 0.2);
 
-  //       // Set active chapter when entering sequence range
-  //       if (isInRange) {
-  //         if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
-  //           setActiveChapter(chapter);
-  //         }
-  //       } else {
-  //         // Clear active chapter when leaving sequence range
-  //         if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
-  //             (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
-  //           setActiveChapter(null);
-  //         }
-  //       }
-  //     }
-  //   });
-  // });
+        // Set active chapter when entering sequence range
+        if (isInRange) {
+          if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
+            setActiveChapter(chapter);
+          }
+        } else {
+          // Clear active chapter when leaving sequence range
+          if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
+              (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
+            setActiveChapter(null);
+          }
+        }
+      }
+    });
+  });
 
   // Reset function for tour end
   const resetScene = () => {
@@ -326,7 +328,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         let newPosition = prevTarget + (deltaY * scrollSensitivity);
 
         // Limit within range [0, 6] (entire sequence)
-        newPosition = Math.max(0, Math.min(6, newPosition));
+        newPosition = Math.max(0, Math.min(6.7, newPosition));
 
         // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 
@@ -480,6 +482,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <ambientLight intensity={0.5} />
       <directionalLight position={[-5, 5, -5]} intensity={1.5} />
       <fog attach="fog" color="#84a4f4" near={0} far={40} />
+
+      {/* Hotspot Lighting - spotlights shining down on each hotspot */}
+      <HotspotLighting sequenceChapters={sequenceChapters} selectedHotspot={selectedHotspot} />
 
 
 

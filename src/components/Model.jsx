@@ -42,7 +42,7 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
 
           // Make specific objects transparent only when sequence position > 3 and <= 4 (during sequence 4 only)
           if (hiddenObjects.includes(child.name)) {
-            if (sequencePosition > 3 && sequencePosition <= 4.07) {
+            if (sequencePosition > 3 && sequencePosition <= 4.2) {
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
