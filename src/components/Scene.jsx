@@ -540,7 +540,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           >
             {/* Close button */}
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedHotspot(null);
+                setShowVideoScreen(null); // Also hide video screen
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
                 setSelectedHotspot(null);
                 setShowVideoScreen(null); // Also hide video screen
               }}
@@ -551,14 +560,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
                 background: "rgba(255, 255, 255, 0.2)",
                 border: "none",
                 color: "white",
-                width: mobile.isMobile ? "28px" : "14px", // Extra small button on desktop
-                height: mobile.isMobile ? "26px" : "14px",
+                width: mobile.isMobile ? "32px" : "14px", // Larger button on mobile for easier tap
+                height: mobile.isMobile ? "32px" : "14px",
                 borderRadius: "50%",
                 cursor: "pointer",
-                fontSize: mobile.isMobile ? "16px" : "9px", // Extra small font on desktop
+                fontSize: mobile.isMobile ? "18px" : "9px", // Larger font on mobile
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                zIndex: 10000, // Ensure button is always on top
+                touchAction: "manipulation", // Improve touch responsiveness
               }}
             >
               ×
