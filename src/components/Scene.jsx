@@ -6,8 +6,10 @@ import { useThree, useFrame } from "@react-three/fiber";
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
+import { HotspotLighting } from "./HotspotLighting";
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
+
 
 
 // Hotspots component - separated and always rendered as 3D objects
@@ -49,14 +51,14 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
 
               {/* HTML label attached to the 3D "i" - show hotspot title only when not selected */}
               {(!selectedHotspot || selectedHotspot.id !== chapter.id) && (
-                <Html distanceFactor={10} position={[0, 0.3, 0]}>
+                <Html distanceFactor={10} position={[0, 0.3, 0]} occlude>
                   <div
                     style={{
                       background: 'rgba(0, 0, 0, 0.8)',
                       color: 'white',
-                      padding: mobile.isMobile ? '3px 8px' : '1px 4px', // Larger padding on mobile
-                      borderRadius: mobile.isMobile ? '6px' : '3px', // Larger border radius on mobile
-                      fontSize: mobile.isMobile ? '12px' : '8px', // Keep original desktop font
+                      padding: mobile.isMobile ? '4px 10px' : '2px 6px', // Larger padding for better readability
+                      borderRadius: mobile.isMobile ? '6px' : '4px', // Larger border radius on mobile
+                      fontSize: mobile.isMobile ? '14px' : '10px', // Larger font size for better readability
                       fontWeight: 'bold',
                       pointerEvents: 'auto', // Enable pointer events for clicking
                       whiteSpace: 'nowrap',
@@ -190,9 +192,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Manual range definitions since removed from data
     const chapterRanges = {
       "Geom3D_393": [0.3, 1],
-      "indoor": [1, 2],
-      "Air Purification": [2, 4],
-      "Outdoor": [4, 5]
+      "indoor": [1, 2.4],
+      "Air Purification": [3, 4.3],
+      "Outdoor": [4.3, 6.5]
     };
 
     sequenceChapters.forEach((chapter) => {
@@ -231,19 +233,51 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   };
 
-  // Initialize targetPosition
+  // Initialize targetPosition and ensure proper sequence start
   useEffect(() => {
     const currentPos = sheet.sequence.position;
     // console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'type:', typeof currentPos);
 
     if (isNaN(currentPos) || currentPos === undefined) {
       // console.log('Setting targetPosition to 0 (fallback)');
+      sheet.sequence.position = 0; // Ensure Theatre.js sequence starts at 0
       setTargetPosition(0);
     } else {
       // console.log('Setting targetPosition to:', currentPos);
       setTargetPosition(currentPos);
     }
   }, [sheet.sequence]);
+
+  // Ensure proper initialization when entering explore mode
+  useEffect(() => {
+    if (isExploreMode) {
+      // Force Theatre.js sequence to start at position 0 when entering explore mode
+      // Add small delay to ensure Theatre.js is ready
+      setTimeout(() => {
+        sheet.sequence.position = 0;
+        setTargetPosition(0);
+        console.log('Explore mode entered - sequence reset to 0');
+      }, 50);
+    }
+  }, [isExploreMode, sheet.sequence]);
+
+  // Force initial sequence position when component mounts
+  useEffect(() => {
+    // Ensure sequence starts at 0 on mount
+    const initializeSequence = () => {
+      if (sheet && sheet.sequence) {
+        sheet.sequence.position = 0;
+        setTargetPosition(0);
+        console.log('Scene mounted - sequence initialized to 0');
+      }
+    };
+
+    // Run immediately and with a small delay to ensure Theatre.js is ready
+    initializeSequence();
+    const timer = setTimeout(initializeSequence, 100);
+
+    return () => clearTimeout(timer);
+  }, [sheet]);
 
   // Keyboard navigation for escape key
   useEffect(() => {
@@ -294,7 +328,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         let newPosition = prevTarget + (deltaY * scrollSensitivity);
 
         // Limit within range [0, 6] (entire sequence)
-        newPosition = Math.max(0, Math.min(6, newPosition));
+        newPosition = Math.max(0, Math.min(6.7, newPosition));
 
         // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 
@@ -449,6 +483,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <directionalLight position={[-5, 5, -5]} intensity={1.5} />
       <fog attach="fog" color="#84a4f4" near={0} far={40} />
 
+      {/* Hotspot Lighting - spotlights shining down on each hotspot */}
+      <HotspotLighting sequenceChapters={sequenceChapters} selectedHotspot={selectedHotspot} />
+
 
 
       <Suspense fallback={null}>
@@ -511,6 +548,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         theatreKey="Camera"
         makeDefault
         fov={mobile.getCameraFOV()}
+        position={[33.5381764274176, 5.205671442619433, -22.03415991352903]} // Initial position from Theatre.js state
       />
 
 

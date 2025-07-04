@@ -49,8 +49,11 @@ export default function App() {
   };
 
   const handleModelLoaded = () => {
-    setModelLoaded(true);
-    setIsLoading(false);
+    // Add small delay to ensure scene is properly rendered before showing
+    setTimeout(() => {
+      setModelLoaded(true);
+      setIsLoading(false);
+    }, 100); // Small delay to ensure proper scene initialization
   };
 
   useEffect(() => {
@@ -140,8 +143,8 @@ export default function App() {
         </button>
       )}
 
-      {/* Canvas - only show when not loading or model loaded */}
-      {(!showControlPanel || modelLoaded) && (
+      {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
+      {!showControlPanel && (
       <Canvas
         className="gpu-accelerated ios-fix android-fix"
         style={{
@@ -156,6 +159,8 @@ export default function App() {
           WebkitUserSelect: "none",
           WebkitTapHighlightColor: "transparent",
           userSelect: "none",
+          opacity: modelLoaded ? 1 : 0, // Hide canvas until model loads to prevent white screen
+          transition: "opacity 0.3s ease", // Smooth fade in when model loads
         }}
         shadows
         dpr={[1, 2]} // Higher DPR for better quality on retina displays
