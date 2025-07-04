@@ -345,7 +345,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       // Reduced touch sensitivity for mobile
-      const touchSensitivity = mobile.isMobile ? 0.002 : 0.003; // Lower sensitivity for mobile
+      const touchSensitivity = mobile.isMobile ? 0.003 : 0.003; // Lower sensitivity for mobile
 
       // console.log('Touch move:', { deltaY, deltaX, touchSensitivity }); // Debug log
 
