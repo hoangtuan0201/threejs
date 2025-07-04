@@ -16,9 +16,16 @@ import { useMobile } from "./hooks/useMobile";
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
 if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  console.log('Initializing Theatre.js Studio...');
   studio.initialize();
   studio.extend(extension);
-  studio.ui.hide(); // Hide Theatre.js UI for production-like experience
+
+  // Force show studio UI
+  setTimeout(() => {
+    console.log('Showing Theatre.js Studio UI...');
+    studio.ui.restore();
+  }, 1000);
+
   window.__THEATRE_ALREADY_INIT__ = true;
 }
 
@@ -97,6 +104,40 @@ export default function App() {
             }
           </div>
         </div>
+      )}
+
+      {/* Theatre.js Studio Button - Development only */}
+      {import.meta.env.DEV && !showControlPanel && !isLoading && modelLoaded && (
+        <button
+          onClick={() => {
+            console.log('Toggling Theatre.js Studio...');
+            if (window.__THEATRE_STUDIO_VISIBLE) {
+              studio.ui.hide();
+              window.__THEATRE_STUDIO_VISIBLE = false;
+            } else {
+              studio.ui.restore();
+              window.__THEATRE_STUDIO_VISIBLE = true;
+            }
+          }}
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 10000,
+            background: 'rgba(255, 100, 0, 0.9)',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          🎬 Studio
+        </button>
       )}
 
       {/* Canvas - only show when not loading or model loaded */}
