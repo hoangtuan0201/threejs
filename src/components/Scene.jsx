@@ -105,44 +105,26 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   const { gl, camera } = useThree();
 
-  // Update camera position based on mobile detection
+  // Update camera position based on mobile detection (optimized)
   useEffect(() => {
-    const newPosition = mobile.getCameraPosition();
     const newFOV = mobile.getCameraFOV();
 
-    // Force update camera position
-    camera.position.set(newPosition[0], newPosition[1], newPosition[2]);
-    camera.fov = newFOV;
-    camera.updateProjectionMatrix();
-
-    // console.log('Scene Camera updated:', {
-    //   position: newPosition,
-    //   fov: newFOV,
-    //   isMobile: mobile.isMobile,
-    //   actualPosition: camera.position.toArray()
-    // });
-
-    // Force a re-render
-    camera.updateMatrixWorld();
+    // Only update FOV, let Theatre.js handle position
+    if (camera.fov !== newFOV) {
+      camera.fov = newFOV;
+      camera.updateProjectionMatrix();
+    }
   }, [camera, mobile.isMobile]);
 
-  // Also update on window resize
+  // Handle resize events (optimized)
   useEffect(() => {
     const handleResize = () => {
-      const newPosition = mobile.getCameraPosition();
       const newFOV = mobile.getCameraFOV();
 
-      camera.position.set(newPosition[0], newPosition[1], newPosition[2]);
+      // Only update FOV and aspect ratio
       camera.fov = newFOV;
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      camera.updateMatrixWorld();
-
-      // console.log('Resize Camera updated:', {
-      //   position: newPosition,
-      //   fov: newFOV,
-      //   isMobile: mobile.isMobile
-      // });
     };
 
     window.addEventListener('resize', handleResize);
@@ -152,7 +134,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, [camera, mobile]);
+  }, [camera, mobile.getCameraFOV]);
 
   // Temporarily disabled useFrame for Theatre.js sequence editing
   useFrame(({ camera }) => {
@@ -165,15 +147,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       camera.updateProjectionMatrix();
     }
 
-    // Debug log current camera state (Theatre.js controlled position)
-    if (Math.floor(Date.now() / 1000) % 3 === 0 && Math.floor(Date.now() / 16) % 60 === 0) {
-      console.log('Camera State (Theatre.js position):', {
-        position: camera.position.toArray(),
-        fov: camera.fov,
-        isMobile: mobile.isMobile,
-        sequencePosition: sheet.sequence.position
-      });
-    }
+    // Debug log removed for performance
 
     if (targetPosition !== sheet.sequence.position) {
       const diff = targetPosition - sheet.sequence.position;
@@ -256,7 +230,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       setTimeout(() => {
         sheet.sequence.position = 0;
         setTargetPosition(0);
-        console.log('Explore mode entered - sequence reset to 0');
+        // Sequence reset to 0
       }, 50);
     }
   }, [isExploreMode, sheet.sequence]);
@@ -268,7 +242,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       if (sheet && sheet.sequence) {
         sheet.sequence.position = 0;
         setTargetPosition(0);
-        console.log('Scene mounted - sequence initialized to 0');
+        // Scene mounted - sequence initialized to 0
       }
     };
 
@@ -440,7 +414,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
     // Add listeners for both mouse and touch
     const canvas = gl.domElement;
-    // console.log('Adding scroll and touch listeners');
 
     // Mouse wheel events
     document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
@@ -458,7 +431,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     return () => {
-      // console.log('Removing scroll and touch listeners');
+      // Clean up event listeners
       document.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
 

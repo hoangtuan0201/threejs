@@ -130,16 +130,12 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
       object={scene}
       onClick={(e) => {
         e.stopPropagation();
-        console.log("Model clicked - object:", e.object?.name);
-
         // Handle both chapter clicks and mesh clicks
         e.object?.userData?.onClick?.(e);
         e.object?.userData?.onMeshClick?.(e);
       }}
       onPointerDown={(e) => {
         e.stopPropagation();
-        console.log("Model pointer down - object:", e.object?.name);
-
         // Handle touch events for mobile
         e.object?.userData?.onClick?.(e);
         e.object?.userData?.onMeshClick?.(e);

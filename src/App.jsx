@@ -16,13 +16,11 @@ import { useMobile } from "./hooks/useMobile";
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
 if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  console.log('Initializing Theatre.js Studio...');
   studio.initialize();
   studio.extend(extension);
 
   // Force show studio UI
   setTimeout(() => {
-    console.log('Showing Theatre.js Studio UI...');
     studio.ui.restore();
   }, 1000);
 
