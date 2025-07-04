@@ -8,22 +8,27 @@ import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
 import Homepage from "./components/Homepage";
 import LoadingScreen from "./components/LoadingScreen";
+import { useMobile } from "./hooks/useMobile";
 
 
 
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  //   studio.initialize();
-  //   studio.extend(extension);
-  //   window.__THEATRE_ALREADY_INIT__ = true;
-  // }
+if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  studio.initialize();
+  studio.extend(extension);
+  studio.ui.hide(); // Hide Theatre.js UI for production-like experience
+  window.__THEATRE_ALREADY_INIT__ = true;
+}
 
 export default function App() {
   const [showControlPanel, setShowControlPanel] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
+
+  // Mobile detection and responsive utilities
+  const mobile = useMobile();
 
   const startTour = () => {
     setIsLoading(true);
@@ -55,10 +60,11 @@ export default function App() {
       {/* Navigation Guide - Fixed position outside Canvas */}
       {!showControlPanel && !isLoading && modelLoaded && (
         <div
+          className="no-select safe-area-inset"
           style={{
             position: 'fixed',
-            top: window.innerWidth < 768 ? '16px' : '24px',
-            left: window.innerWidth < 768 ? '16px' : '24px',
+            top: mobile.getResponsiveValue('16px', '20px', '24px'),
+            left: mobile.getResponsiveValue('16px', '20px', '24px'),
             zIndex: 1000,
             pointerEvents: 'none',
             userSelect: 'none',
@@ -66,23 +72,27 @@ export default function App() {
         >
           <div
             style={{
-              background: 'rgba(0, 0, 0, 0.8)',
+              background: 'rgba(0, 0, 0, 0.85)',
               color: 'white',
-              padding: window.innerWidth < 768 ? '8px 12px' : '12px 20px',
-              borderRadius: '8px',
-              fontSize: window.innerWidth < 768 ? '12px' : '14px',
+              padding: mobile.getResponsiveValue('10px 16px', '11px 18px', '12px 20px'),
+              borderRadius: mobile.getResponsiveValue('12px', '10px', '8px'),
+              fontSize: mobile.getResponsiveValue('15px', '14px', '14px'), // Keep original desktop font
               fontWeight: '500',
               textAlign: 'center',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+              backdropFilter: 'blur(15px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
               fontFamily: 'system-ui, -apple-system, sans-serif',
               whiteSpace: window.innerWidth < 768 ? 'normal' : 'nowrap',
-              maxWidth: window.innerWidth < 768 ? '200px' : 'none',
+              maxWidth: mobile.getResponsiveValue('280px', '320px', 'none'),
+              lineHeight: mobile.getResponsiveValue('1.4', '1.3', '1.2'),
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
             }}
           >
-            {window.innerWidth < 768 ?
-              '👆 Swipe to navigate • ESC to exit' :
+            {mobile.isMobile ?
+              '👆 Touch & drag to navigate\n⬅️ Swipe ESC to exit' :
               '🖱️ Scroll to navigate • ⌨️ Press ESC to exit'
             }
           </div>
@@ -92,6 +102,7 @@ export default function App() {
       {/* Canvas - only show when not loading or model loaded */}
       {(!showControlPanel || modelLoaded) && (
       <Canvas
+        className="gpu-accelerated ios-fix android-fix"
         style={{
           position: "absolute",
           top: 0,
@@ -100,12 +111,16 @@ export default function App() {
           width: "100vw",
           height: "100vh",
           touchAction: "none", // Prevent default touch behaviors
+          WebkitTouchCallout: "none",
+          WebkitUserSelect: "none",
+          WebkitTapHighlightColor: "transparent",
+          userSelect: "none",
         }}
         shadows
         dpr={[1, 2]} // Higher DPR for better quality on retina displays
         camera={{
-          position: [0, 0, 10],
-          fov: window.innerWidth < 768 ? 70 : 60, // Wider FOV on mobile
+          position: mobile.getCameraPosition(), // Responsive camera position
+          fov: mobile.getCameraFOV(), // Responsive FOV based on device
           aspect: window.innerWidth / window.innerHeight,
           near: 0.1,
           far: 1000
@@ -119,15 +134,37 @@ export default function App() {
           depth: true
         }}
         onCreated={({ gl, camera }) => {
-          // Responsive camera adjustments
+          // Responsive camera adjustments using mobile hook
           const handleResize = () => {
-            camera.fov = window.innerWidth < 768 ? 70 : 60;
+            const newPosition = mobile.getCameraPosition();
+            const newFOV = mobile.getCameraFOV();
+
+            // Update camera position and FOV
+            camera.position.set(newPosition[0], newPosition[1], newPosition[2]);
+            camera.fov = newFOV;
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+
+            // Adjust renderer for mobile performance
+            gl.setPixelRatio(mobile.getPixelRatio());
+
+            console.log('App Camera updated:', {
+              position: newPosition,
+              fov: newFOV,
+              isMobile: mobile.isMobile
+            });
           };
 
+          // Initial setup
+          handleResize();
+
           window.addEventListener('resize', handleResize);
-          return () => window.removeEventListener('resize', handleResize);
+          window.addEventListener('orientationchange', handleResize);
+
+          return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleResize);
+          };
         }}
       >
         <SheetProvider sheet={sheet}>

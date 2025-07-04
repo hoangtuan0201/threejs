@@ -6,10 +6,11 @@ import { useThree, useFrame } from "@react-three/fiber";
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
 import { sequenceChapters } from "../data/sequenceChapters";
+import { useMobile } from "../hooks/useMobile";
 
 
 // Hotspots component - separated and always rendered as 3D objects
-const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot }) => {
+const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, mobile }) => {
   return (
     <>
       {sequenceChapters && sequenceChapters.length > 0 && (
@@ -46,15 +47,29 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot })
                     style={{
                       background: 'rgba(0, 0, 0, 0.8)',
                       color: 'white',
-                      padding: '1px 4px', // Smaller padding
-                      borderRadius: '3px', // Smaller border radius
-                      fontSize: '8px', // Smaller font size
+                      padding: mobile.isMobile ? '3px 8px' : '1px 4px', // Larger padding on mobile
+                      borderRadius: mobile.isMobile ? '6px' : '3px', // Larger border radius on mobile
+                      fontSize: mobile.isMobile ? '12px' : '8px', // Keep original desktop font
                       fontWeight: 'bold',
-                      pointerEvents: 'none',
+                      pointerEvents: 'auto', // Enable pointer events for clicking
                       whiteSpace: 'nowrap',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.3)', // Smaller shadow
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
                       border: '1px solid rgba(255,255,255,0.2)',
-                      opacity: 0.8,
+                      opacity: 0.9,
+                      cursor: 'pointer', // Show pointer cursor
+                      transition: 'all 0.2s ease', // Smooth hover effect
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onHotspotClick(chapter.id);
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(0, 0, 0, 0.95)';
+                      e.target.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'rgba(0, 0, 0, 0.8)';
+                      e.target.style.transform = 'scale(1)';
                     }}
                   >
                     {chapter.hotspot.title || chapter.title || `H${chapter.id}`}
@@ -75,10 +90,82 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
 
-  const { gl } = useThree();
+  // Mobile detection and responsive utilities
+  const mobile = useMobile();
+
+  const { gl, camera } = useThree();
+
+  // Update camera position based on mobile detection
+  useEffect(() => {
+    const newPosition = mobile.getCameraPosition();
+    const newFOV = mobile.getCameraFOV();
+
+    // Force update camera position
+    camera.position.set(newPosition[0], newPosition[1], newPosition[2]);
+    camera.fov = newFOV;
+    camera.updateProjectionMatrix();
+
+    console.log('Scene Camera updated:', {
+      position: newPosition,
+      fov: newFOV,
+      isMobile: mobile.isMobile,
+      actualPosition: camera.position.toArray()
+    });
+
+    // Force a re-render
+    camera.updateMatrixWorld();
+  }, [camera, mobile.isMobile]);
+
+  // Also update on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const newPosition = mobile.getCameraPosition();
+      const newFOV = mobile.getCameraFOV();
+
+      camera.position.set(newPosition[0], newPosition[1], newPosition[2]);
+      camera.fov = newFOV;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      console.log('Resize Camera updated:', {
+        position: newPosition,
+        fov: newFOV,
+        isMobile: mobile.isMobile
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, [camera, mobile]);
 
   // Smooth scrolling with useFrame for both preview and explore modes
-  useFrame(() => {
+  useFrame(({ camera }) => {
+    // Temporarily disable camera override to debug
+    // const targetCameraPosition = mobile.getCameraPosition();
+    // const targetFOV = mobile.getCameraFOV();
+
+    // Force camera position and FOV
+    // camera.position.set(targetCameraPosition[0], targetCameraPosition[1], targetCameraPosition[2]);
+    // camera.fov = targetFOV;
+    // camera.updateProjectionMatrix();
+
+    // Debug log current camera state
+    if (Math.floor(Date.now() / 1000) % 3 === 0 && Math.floor(Date.now() / 16) % 60 === 0) {
+      console.log('Current Camera State:', {
+        position: camera.position.toArray(),
+        fov: camera.fov,
+        isMobile: mobile.isMobile,
+        targetPos: mobile.getCameraPosition(),
+        targetFOV: mobile.getCameraFOV()
+      });
+    }
+
     if (targetPosition !== sheet.sequence.position) {
       const diff = targetPosition - sheet.sequence.position;
       const speed = 0.03; // Smooth scrolling speed
@@ -186,7 +273,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       const deltaY = event.deltaY;
-      const scrollSensitivity = window.innerWidth < 768 ? 0.003 : 0.002; // More sensitive on mobile
+      const scrollSensitivity = mobile.getTouchSensitivity() * 0.4; // Responsive scroll sensitivity
 
       // Use functional update to ensure latest value
       setTargetPosition(prevTarget => {
@@ -210,24 +297,52 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       });
     };
 
-    // Touch handling for mobile devices
+    // Enhanced touch handling for mobile devices
     let touchStartY = 0;
+    let touchStartX = 0;
+    let lastTouchTime = 0;
+    let touchVelocity = 0;
+
+    // Use mobile hook for device detection
 
     const handleTouchStart = (event) => {
       if (!isExploreMode) return;
-      touchStartY = event.touches[0].clientY;
+
+      const touch = event.touches[0];
+      touchStartY = touch.clientY;
+      touchStartX = touch.clientX;
+      lastTouchTime = Date.now();
+      touchVelocity = 0;
+
+      // Prevent default to avoid scrolling
+      event.preventDefault();
     };
 
     const handleTouchMove = (event) => {
       if (!isExploreMode) return;
 
       event.preventDefault();
+      event.stopPropagation();
 
-      const touchY = event.touches[0].clientY;
+      const touch = event.touches[0];
+      const touchY = touch.clientY;
+      const touchX = touch.clientX;
       const deltaY = touchStartY - touchY;
-      const touchSensitivity = 0.005; // Touch sensitivity
+      const deltaX = Math.abs(touchStartX - touchX);
+      const currentTime = Date.now();
+      const timeDelta = currentTime - lastTouchTime;
 
-      if (Math.abs(deltaY) > 10) { // Minimum threshold for touch movement
+      // Calculate velocity for momentum
+      if (timeDelta > 0) {
+        touchVelocity = deltaY / timeDelta;
+      }
+
+      // Enhanced touch sensitivity based on device using mobile hook
+      const baseSensitivity = mobile.getTouchSensitivity();
+      const touchSensitivity = baseSensitivity * (1 + Math.abs(touchVelocity) * 0.1);
+
+      // Only process vertical swipes (ignore horizontal)
+      if (deltaX < 50 && Math.abs(deltaY) > 5) {
         setTargetPosition(prevTarget => {
           if (isNaN(prevTarget)) {
             return 0;
@@ -239,8 +354,32 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           return newPosition;
         });
 
-        touchStartY = touchY; // Reset for continuous scrolling
+        touchStartY = touchY;
+        touchStartX = touchX;
+        lastTouchTime = currentTime;
       }
+    };
+
+    const handleTouchEnd = (event) => {
+      if (!isExploreMode) return;
+
+      event.preventDefault();
+
+      // Add momentum scrolling for smooth experience
+      if (Math.abs(touchVelocity) > 0.1) {
+        const momentum = touchVelocity * 0.3;
+        setTargetPosition(prevTarget => {
+          if (isNaN(prevTarget)) {
+            return 0;
+          }
+
+          let newPosition = prevTarget + momentum;
+          newPosition = Math.max(0, Math.min(6, newPosition));
+          return newPosition;
+        });
+      }
+
+      touchVelocity = 0;
     };
 
     // Add listeners for both mouse and touch
@@ -254,6 +393,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Touch events for mobile
     canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     return () => {
       console.log('Removing scroll and touch listeners');
@@ -261,6 +402,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       canvas.removeEventListener('wheel', handleWheel, { capture: true });
       canvas.removeEventListener('touchstart', handleTouchStart);
       canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchEnd);
     };
   }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode]);
 
@@ -291,6 +434,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <HotspotsRenderer
         sequenceChapters={sequenceChapters}
         selectedHotspot={selectedHotspot}
+        mobile={mobile}
         onHotspotClick={(chapterId) => {
           console.log(`Hotspot clicked for chapter: ${chapterId}`);
           // Find the chapter and show hotspot details + video screen
@@ -313,14 +457,25 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           videoId={showVideoScreen.videoScreen.videoId}
           title={showVideoScreen.videoScreen.title}
           size={showVideoScreen.videoScreen.size}
+          mobilePosition={showVideoScreen.videoScreen.mobilePosition}
+          mobileRotation={showVideoScreen.videoScreen.mobileRotation}
+          mobileSize={showVideoScreen.videoScreen.mobileSize}
         />
       )}
 
       {/* Hotspot Detail Popup */}
       {selectedHotspot && selectedHotspot.hotspot && (
         <group
-          position={selectedHotspot.hotspot.detailPosition || selectedHotspot.hotspot.position}
-          rotation={selectedHotspot.hotspot.detailRotation || selectedHotspot.hotspot.rotation || [0, Math.PI / 1.8, 0]}
+          position={
+            mobile.isMobile
+              ? (selectedHotspot.hotspot.mobileDetailPosition || selectedHotspot.hotspot.detailPosition || selectedHotspot.hotspot.position)
+              : (selectedHotspot.hotspot.detailPosition || selectedHotspot.hotspot.position)
+          }
+          rotation={
+            mobile.isMobile
+              ? (selectedHotspot.hotspot.mobileDetailRotation || selectedHotspot.hotspot.detailRotation || selectedHotspot.hotspot.rotation || [0, Math.PI / 1.8, 0])
+              : (selectedHotspot.hotspot.detailRotation || selectedHotspot.hotspot.rotation || [0, Math.PI / 1.8, 0])
+          }
         >
           <Html
             position={[0, 0, 0]}
@@ -362,11 +517,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
                 background: "rgba(255, 255, 255, 0.2)",
                 border: "none",
                 color: "white",
-                width: "20px", // Smaller button
-                height: "18px",
+                width: mobile.isMobile ? "28px" : "14px", // Extra small button on desktop
+                height: mobile.isMobile ? "26px" : "14px",
                 borderRadius: "50%",
                 cursor: "pointer",
-                fontSize: "12px", // Smaller font
+                fontSize: mobile.isMobile ? "16px" : "9px", // Extra small font on desktop
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -377,8 +532,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
             {/* Title */}
             <h3 style={{
-              margin: "0 0 6px 0", // Smaller margin
-              fontSize: "11px", // Smaller font
+              margin: "0 0 6px 0",
+              fontSize: mobile.isMobile ? "14px" : "11px", // Keep original desktop font
               fontWeight: "bold",
               color: "#fff"
             }}>
@@ -387,7 +542,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
             {/* Description */}
             <p style={{
-              fontSize: "8px",
+              fontSize: mobile.isMobile ? "12px" : "8px", // Keep original desktop font
               lineHeight: "1.4",
               margin: "0 0 12px 0",
               opacity: 0.9,
@@ -417,12 +572,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
                     justifyContent: 'center',
                     gap: '4px', // Even smaller gap
                     width: '100%',
-                    padding: '6px 8px', // Even smaller padding
-                    fontSize: '10px', // Even smaller font
+                    padding: mobile.isMobile ? '10px 12px' : '3px 5px', // Very small padding on desktop
+                    fontSize: mobile.isMobile ? '14px' : '8px', // Very small font on desktop
                     background: 'rgba(255, 255, 255, 0.15)',
                     color: 'white',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: '4px', // Smaller border radius
+                    borderRadius: mobile.isMobile ? '6px' : '3px', // Very small border radius on desktop
                     cursor: 'pointer',
                     fontWeight: '600',
                     transition: 'all 0.3s ease',
@@ -463,8 +618,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <PerspectiveCamera
         theatreKey="Camera"
         makeDefault
-        position={[0, 0, 10]}
-        fov={60}
+        position={mobile.getCameraPosition()}
+        fov={mobile.getCameraFOV()}
       />
 
 
