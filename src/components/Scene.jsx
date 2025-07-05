@@ -8,6 +8,7 @@ import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
+
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
 
@@ -28,12 +29,12 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
               position={chapter.hotspot.position || [0, 0, 0]}
               onClick={(e) => {
                 e.stopPropagation();
-                // console.log('Hotspot group clicked:', chapter.id);
+
                 onHotspotClick(chapter.id);
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // console.log('Hotspot pointer down:', chapter.id);
+
                 onHotspotClick(chapter.id);
               }}
             >
@@ -95,7 +96,7 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
   );
 };
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0 }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
@@ -103,6 +104,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
   const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
   const [localHiddenState, setLocalHiddenState] = useState(false); // Local state for 3D toggle
+
+  // Performance optimization refs (consolidated)
+
 
 
   // Mobile detection and responsive utilities
@@ -120,9 +124,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const frameCountRef = useRef(0);
 
   useFrame(() => {
-    // Only update position every 3 frames to reduce React warnings and improve performance
-    frameCountRef.current++;
-    if (frameCountRef.current % 3 === 0 && onPositionChange) {
+    // Only update position every 5 frames to reduce React warnings and improve performance (12 times per second at 60fps)
+    if (frameCountRef.current % 5 === 0 && onPositionChange) {
       const currentPos = sheet.sequence.position;
       if (Math.abs(currentPos - lastPositionRef.current) > 0.02) {
         lastPositionRef.current = currentPos;
@@ -164,15 +167,17 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
   }, [camera, mobile.getCameraFOV]);
 
-  // Temporarily disabled useFrame for Theatre.js sequence editing
+  // Performance optimized useFrame with reduced calculations
   useFrame(({ camera }) => {
-    // Let Theatre.js control camera position, only override FOV for mobile
-    const targetFOV = mobile.getCameraFOV();
+    frameCountRef.current++;
 
-    // Only update FOV, let Theatre.js handle position
-    if (camera.fov !== targetFOV) {
-      camera.fov = targetFOV;
-      camera.updateProjectionMatrix();
+    // Throttle FOV updates to reduce calculations (every 10 frames = ~6 times per second at 60fps)
+    if (frameCountRef.current % 30 === 0) {
+      const targetFOV = mobile.getCameraFOV();
+      if (Math.abs(camera.fov - targetFOV) > 0.1) { // Only update if significant difference
+        camera.fov = targetFOV;
+        camera.updateProjectionMatrix();
+      }
     }
 
     // 🎯 Handle chapter navigation with smooth animation
@@ -194,35 +199,21 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           // Navigation animation completed
           sheet.sequence.position = navTarget;
 
-          // 🎯 CRITICAL: Update targetPosition immediately to prevent rollback
+          // Update targetPosition immediately to prevent rollback
           setTargetPosition(navTarget);
           setHasNavigated(true); // Mark that user has navigated
-
-          console.log('🎯 Navigation animation completed!');
-          console.log('  - Final position:', navTarget);
-          console.log('  - Synced targetPosition to:', navTarget);
-          console.log('  - Current sheet position:', sheet.sequence.position);
-          console.log('  - Set hasNavigated to true');
 
           // Complete navigation state
           onComplete?.();
         }
       }
     } else if (!isNavigating) {
-      // Normal scroll behavior when not locked
-      if (targetPosition !== sheet.sequence.position) {
+      // Performance optimized scroll behavior - only update every 2 frames
+      if (frameCountRef.current % 2 === 0 && targetPosition !== sheet.sequence.position) {
         const diff = targetPosition - sheet.sequence.position;
-        const speed = 0.024; // Smooth scrolling speed
+        const speed = 0.028; // Slightly faster to compensate for throttling
 
-        // Debug large diffs that might cause rollback
-        if (Math.abs(diff) > 1) {
-          console.log('⚠️ Large diff detected in normal scroll:');
-          console.log('  - targetPosition:', targetPosition);
-          console.log('  - current position:', sheet.sequence.position);
-          console.log('  - diff:', diff);
-          console.log('  - isNavigating:', isNavigating);
-          console.log('  - navigationData.isNavigating:', navigationData?.isNavigating);
-        }
+        // Removed debug logging for better performance
 
         if (Math.abs(diff) > 0.001) {
           sheet.sequence.position += diff * speed;
@@ -284,19 +275,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   useEffect(() => {
     // Don't reset during navigation or if navigationData is active or if user has navigated
     if (isNavigating || navigationData?.isNavigating || hasNavigated) {
-      console.log('Skipping initialization - navigation in progress or user has navigated');
       return;
     }
 
     const currentPos = sheet.sequence.position;
-    console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'isNavigating:', isNavigating);
 
     if (isNaN(currentPos) || currentPos === undefined) {
-      console.log('Setting targetPosition to 0.1 (fallback) to avoid wall clipping');
       sheet.sequence.position = 0.1; // Ensure Theatre.js sequence starts at 0.1 to avoid wall clipping
       setTargetPosition(0.1);
     } else {
-      console.log('Setting targetPosition to:', currentPos);
       setTargetPosition(currentPos);
     }
   }, [sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
@@ -307,10 +294,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       // Force Theatre.js sequence to start at position 0.1 when entering explore mode to avoid wall clipping
       // Add small delay to ensure Theatre.js is ready
       setTimeout(() => {
-        console.log('Resetting to 0.1 on explore mode entry to avoid wall clipping');
         sheet.sequence.position = 0.1;
         setTargetPosition(0.1);
-        // Sequence reset to 0.1 to fix wall clipping
       }, 50);
     }
   }, [isExploreMode, sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
@@ -320,13 +305,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   useEffect(() => {
     // Only run once on mount
     if (mountedRef.current) {
-      console.log('Skipping mount initialization - already mounted');
       return;
     }
 
     // Don't initialize if navigation is active or user has navigated
     if (navigationData?.isNavigating || hasNavigated) {
-      console.log('Skipping mount initialization - navigation active or user has navigated');
       return;
     }
 
@@ -335,10 +318,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Ensure sequence starts at 0.1 on mount to avoid wall clipping
     const initializeSequence = () => {
       if (sheet && sheet.sequence && !navigationData?.isNavigating && !hasNavigated) {
-        console.log('Mount initialization - setting to 0.1 (ONCE) to avoid wall clipping');
         sheet.sequence.position = 0.1;
         setTargetPosition(0.1);
-        // Scene mounted - sequence initialized to 0.1 to fix wall clipping
       }
     };
 
@@ -384,27 +365,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
           break;
 
-        case 'ArrowUp':
-          event.preventDefault();
-          // Smooth jump to next chapter position
-          const chapterPositions = [0.1, 1, 2.4, 4.3, 6.5];
-          const currentIndex = chapterPositions.findIndex(pos => Math.abs(pos - targetPosition) < 0.3);
-          if (currentIndex < chapterPositions.length - 1) {
-            setTargetPosition(chapterPositions[currentIndex + 1]);
-            setHasNavigated(true);
-          }
-          break;
-
-        case 'ArrowDown':
-          event.preventDefault();
-          // Smooth jump to previous chapter position
-          const chapterPositionsDown = [0.1, 1, 2.4, 4.3, 6.5];
-          const currentIndexDown = chapterPositionsDown.findIndex(pos => Math.abs(pos - targetPosition) < 0.3);
-          if (currentIndexDown > 0) {
-            setTargetPosition(chapterPositionsDown[currentIndexDown - 1]);
-            setHasNavigated(true);
-          }
-          break;
+        // Removed ArrowUp and ArrowDown for smooth chapter navigation
 
         default:
           break;
@@ -415,18 +376,28 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onTourEnd, isExploreMode, targetPosition, setHasNavigated]);
 
-  // Handle scroll only in explore mode
+  // Handle scroll only in explore mode - Performance optimized
   useEffect(() => {
+    let lastScrollTime = 0;
+    const scrollThrottle = 16; // ~60fps throttling
+
     const handleWheel = (event) => {
       // Only allow scroll if in explore mode and when not navigating
       if (!isExploreMode || isNavigating) {
         return;
       }
 
+      // Throttle scroll events for better performance
+      const now = performance.now();
+      if (now - lastScrollTime < scrollThrottle) {
+        return;
+      }
+      lastScrollTime = now;
+
       event.preventDefault();
       event.stopPropagation();
 
-      // console.log('Scroll detected:', event.deltaY, 'targetPosition:', targetPosition); // Debug log
+
 
       // Hide ControlPanel when starting to scroll
       if (onHideControlPanel) {
@@ -434,23 +405,23 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       const deltaY = event.deltaY;
-      const scrollSensitivity = mobile.getTouchSensitivity() * 0.4; // Responsive scroll sensitivity
+      const baseSensitivity = mobile.getTouchSensitivity() * 0.4; // Base responsive scroll sensitivity
+      const finalSensitivity = baseSensitivity * scrollSensitivity; // Apply user-controlled sensitivity
 
       // Use functional update to ensure latest value
       setTargetPosition(prevTarget => {
         // Check targetPosition before calculation
         if (isNaN(prevTarget)) {
-          console.warn('prevTarget is NaN, resetting to 0.1');
           return 0.1;
         }
 
         // Calculate new position based on current targetPosition
-        let newPosition = prevTarget + (deltaY * scrollSensitivity);
+        let newPosition = prevTarget + (deltaY * finalSensitivity);
 
         // Limit within range [0.1, 6.7] (entire sequence) - start from 0.1 to avoid wall clipping
         newPosition = Math.max(0.1, Math.min(6.5, newPosition));
 
-        // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
+
 
 
 
@@ -458,13 +429,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       });
     };
 
-    // Enhanced touch handling for mobile devices
+    // Enhanced touch handling for mobile devices - Performance optimized
     let touchStartY = 0;
     let touchStartX = 0;
     let lastTouchTime = 0;
     let touchVelocity = 0;
     let isTouching = false;
     let hasMovedSignificantly = false;
+    let lastTouchMoveTime = 0;
+    const touchMoveThrottle = 16; // ~60fps throttling for touch moves
 
     const handleTouchStart = (event) => {
       if (!isExploreMode || isNavigating) return;
@@ -477,7 +450,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       isTouching = true;
       hasMovedSignificantly = false;
 
-      // console.log('Touch start:', { touchStartY, touchStartX }); // Debug log
+
 
       // Don't prevent default to allow object clicks
       // event.preventDefault();
@@ -485,6 +458,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
     const handleTouchMove = (event) => {
       if (!isExploreMode || !isTouching || isNavigating) return;
+
+      // Throttle touch move events for better performance
+      const now = performance.now();
+      if (now - lastTouchMoveTime < touchMoveThrottle) {
+        return;
+      }
+      lastTouchMoveTime = now;
 
       const touch = event.touches[0];
       const touchY = touch.clientY;
@@ -502,7 +482,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       // Reduced touch sensitivity for mobile
       const touchSensitivity = mobile.isMobile ? 0.003 : 0.003; // Lower sensitivity for mobile
 
-      // console.log('Touch move:', { deltaY, deltaX, touchSensitivity }); // Debug log
+
 
       // Only process vertical swipes (ignore horizontal) and only if significant movement
       if (deltaX < 50 && Math.abs(deltaY) > 3) { // Very low threshold for swipe detection
@@ -520,7 +500,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           let newPosition = prevTarget + (deltaY * touchSensitivity);
           newPosition = Math.max(0, Math.min(6.5, newPosition));
 
-          // console.log('Setting position from touch:', prevTarget, '->', newPosition); // Debug log
+
 
           return newPosition;
         });
@@ -536,7 +516,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
       isTouching = false;
 
-      // console.log('Touch end, velocity:', touchVelocity, 'hasMovedSignificantly:', hasMovedSignificantly); // Debug log
+
 
       // Add momentum scrolling for smooth experience - only if we actually swiped
       if (hasMovedSignificantly && Math.abs(touchVelocity) > 0.05) { // Lower threshold for momentum
@@ -549,7 +529,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           let newPosition = prevTarget + momentum;
           newPosition = Math.max(0, Math.min(6.5, newPosition));
 
-          // console.log('Momentum scroll:', prevTarget, '->', newPosition); // Debug log
+
 
           return newPosition;
         });
@@ -626,7 +606,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         selectedHotspot={selectedHotspot}
         mobile={mobile}
         onHotspotClick={(chapterId) => {
-          // console.log(`Hotspot clicked for chapter: ${chapterId}`);
+
           // Find the chapter and show hotspot details + video screen
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
           if (chapter && chapter.hotspot) {
@@ -668,7 +648,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         fov={mobile.getCameraFOV()}
         position={[33.5381764274176, 5.205671442619433, -22.03415991352903]} // Initial position from Theatre.js state
       />
-
 
 
 

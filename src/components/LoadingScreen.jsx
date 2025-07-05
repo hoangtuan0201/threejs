@@ -21,7 +21,7 @@ const fadeIn = keyframes`
   }
 `;
 
-export default function LoadingScreen() {
+export default function LoadingScreen({ text = "Loading 3D Experience...", variant = "default" }) {
   return (
     <Box
       sx={{
@@ -30,7 +30,9 @@ export default function LoadingScreen() {
         left: 0,
         width: "100vw",
         height: "100vh",
-        background: "linear-gradient(135deg, #1a2332 0%, #0f1419 100%)",
+        background: variant === "compare"
+          ? "linear-gradient(oklch(0.2 0.0122 237.44) 0px, oklch(0.36 0.0088 219.71) 100%)"
+          : "linear-gradient(135deg, #1a2332 0%, #0f1419 100%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -61,7 +63,9 @@ export default function LoadingScreen() {
           width: { xs: 32, sm: 40 },
           height: { xs: 32, sm: 40 },
           border: "3px solid rgba(255, 255, 255, 0.1)",
-          borderTop: "3px solid rgba(100, 150, 255, 0.8)",
+          borderTop: variant === "compare"
+            ? "3px solid rgba(59, 130, 246, 0.8)"
+            : "3px solid rgba(100, 150, 255, 0.8)",
           borderRadius: "50%",
           animation: `${spin} 1s linear infinite`,
           mb: { xs: 2, sm: 3 },
@@ -81,7 +85,7 @@ export default function LoadingScreen() {
           px: 2,
         }}
       >
-        Loading 3D Experience...
+        {text}
       </Typography>
     </Box>
   );

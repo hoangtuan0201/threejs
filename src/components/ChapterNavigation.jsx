@@ -20,14 +20,16 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   const handlePrevious = () => {
     if (canGoBack) {
       const targetPosition = chapters[currentIndex - 1].position;
-      onNavigate(targetPosition);
+      // Smooth navigation with reduced step size
+      onNavigate(targetPosition, { smooth: true, stepSize: 0.3 });
     }
   };
 
   const handleNext = () => {
     if (canGoForward) {
       const targetPosition = chapters[currentIndex + 1].position;
-      onNavigate(targetPosition);
+      // Smooth navigation with reduced step size
+      onNavigate(targetPosition, { smooth: true, stepSize: 0.3 });
     }
   };
 

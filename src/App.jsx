@@ -9,8 +9,10 @@ import { Scene } from "./components/Scene";
 import Homepage from "./pages/Homepage";
 import CompareSystem from "./pages/CompareSystem";
 import LoadingScreen from "./components/LoadingScreen";
+import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
 import ChapterNavigation from "./components/ChapterNavigation";
 import FloatingChatButton from "./components/FloatingChatButton";
+
 
 import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
@@ -35,6 +37,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
+  const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
 
   // Mobile detection and responsive utilities
   const mobile = useMobile();
@@ -50,9 +53,15 @@ export default function App() {
     completeNavigation,
   } = useSceneLock(sheet, 1000);
 
-  // Chapter navigation function - useSceneLock approach
-  const handleChapterNavigation = (position) => {
-    lockScene(position);
+  // Chapter navigation function - useSceneLock approach with smooth option
+  const handleChapterNavigation = (position, options = {}) => {
+    if (options.smooth) {
+      // For smooth navigation, use reduced step size
+      lockScene(position, { stepSize: options.stepSize || 0.3 });
+    } else {
+      // Default discrete navigation
+      lockScene(position);
+    }
   };
 
   const startTour = () => {
@@ -271,6 +280,7 @@ export default function App() {
               onModelLoaded={handleModelLoaded}
               onPositionChange={setCurrentSequencePosition}
               isNavigating={sceneLocked}
+              scrollSensitivity={scrollSensitivity}
               navigationData={{
                 isNavigating: sceneNavigating,
                 targetPosition: sceneTargetPosition,
@@ -290,6 +300,13 @@ export default function App() {
         mobile={mobile}
         isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
         isLocked={sceneLocked}
+      />
+
+      {/* Scroll Sensitivity Control */}
+      <ScrollSensitivityControl
+        sensitivity={scrollSensitivity}
+        onSensitivityChange={setScrollSensitivity}
+        isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
       />
 
       {/* Floating Chat Button - Always visible */}

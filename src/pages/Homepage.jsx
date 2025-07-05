@@ -227,7 +227,7 @@ export default function Homepage({ onExplore }) {
               <br />
             </Box>
             <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}> </Box>
-            THAT REDEFINES AIR PURIFICATION AND CLIMATE COMFORT
+            That redefines air purification and climate control
           </Typography>
 
           {/* Action Buttons */}

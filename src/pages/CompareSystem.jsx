@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import LoadingScreen from "../components/LoadingScreen";
 
 // Animation keyframes
 const fadeInUp = keyframes`
@@ -48,6 +49,15 @@ const shimmer = keyframes`
   }
 `;
 
+const spin = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
 // 3D Model Component
 function RotatingModel({ modelPath, scale = 1 }) {
   const { scene } = useGLTF(modelPath);
@@ -56,7 +66,7 @@ function RotatingModel({ modelPath, scale = 1 }) {
     <primitive
       object={scene}
       scale={[scale, scale, scale]}
-      position={[0, 0, 0]}
+      position={[-1, -1, 0]}
       rotation={[0, 0, 0]}
     />
   );
@@ -65,24 +75,33 @@ function RotatingModel({ modelPath, scale = 1 }) {
 export default function CompareSystem({ onBack }) {
   const [isVisible, setIsVisible] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModelLoading, setIsModelLoading] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true);
+    // Simulate loading time for 3D models
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setIsVisible(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const comparisonData = [
     {
       id: 1,
       title: "Thermostat",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART THERMOSTAT",
+        modelPath: "/Monitor001.glb",
         dimensions: "4\" x 4\" x 1\"",
         features: "AI-powered learning algorithms, 7\" touch display, voice control integration, smartphone app, energy optimization",
         benefits: "30% energy savings, predictive climate control"
       },
       traditional: {
         title: "TRADITIONAL THERMOSTAT",
+        modelPath: "/Monitor001.glb",
         dimensions: "5\" x 3\" x 2\"",
         features: "Manual controls, basic 7-day programming, simple LCD display",
         limitations: "No learning capability, limited scheduling options"
@@ -91,15 +110,16 @@ export default function CompareSystem({ onBack }) {
     {
       id: 2,
       title: "Air Purification",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART AIR PURIFICATION",
+        modelPath: "/Monitor001.glb",
         dimensions: "12\" x 8\" x 6\"",
         features: "HEPA filtration, UV-C sterilization, real-time air quality monitoring, automatic adjustment",
         benefits: "99.97% particle removal, virus elimination, smart air quality control"
       },
       traditional: {
         title: "TRADITIONAL AIR FILTER",
+        modelPath: "/Monitor001.glb",
         dimensions: "16\" x 20\" x 1\"",
         features: "Basic mechanical filtration, manual replacement indicator",
         limitations: "Limited filtration efficiency, no air quality monitoring, manual maintenance"
@@ -108,15 +128,16 @@ export default function CompareSystem({ onBack }) {
     {
       id: 3,
       title: "Linear Grille",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART LINEAR GRILLE",
+        modelPath: "/Monitor001.glb",
         dimensions: "24\" x 6\" x 2\"",
         features: "Smart airflow control, integrated sensors, automatic damper adjustment, sleek design",
         benefits: "Optimized air distribution, energy efficient, aesthetic integration"
       },
       traditional: {
         title: "TRADITIONAL LINEAR GRILLE",
+        modelPath: "/Monitor001.glb",
         dimensions: "24\" x 6\" x 3\"",
         features: "Fixed airflow direction, manual adjustment, basic metal construction",
         limitations: "No smart control, inefficient air distribution, bulky design"
@@ -125,15 +146,16 @@ export default function CompareSystem({ onBack }) {
     {
       id: 4,
       title: "Round Grille",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART ROUND GRILLE",
+        modelPath: "/Monitor001.glb",
         dimensions: "8\" diameter x 2\"",
         features: "360-degree airflow control, smart dampers, integrated air quality sensors",
         benefits: "Uniform air distribution, real-time monitoring, energy optimization"
       },
       traditional: {
         title: "TRADITIONAL ROUND GRILLE",
+        modelPath: "/Monitor001.glb",
         dimensions: "8\" diameter x 3\"",
         features: "Fixed louvers, manual adjustment, basic aluminum construction",
         limitations: "Limited airflow control, no monitoring capabilities, energy waste"
@@ -142,15 +164,16 @@ export default function CompareSystem({ onBack }) {
     {
       id: 5,
       title: "Outdoor Unit",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART OUTDOOR UNIT",
+        modelPath: "/Monitor001.glb",
         dimensions: "36\" x 36\" x 30\"",
         features: "Variable speed compressor, smart defrost, weather-resistant design, IoT connectivity",
         benefits: "40% energy savings, extended lifespan, remote monitoring and control"
       },
       traditional: {
         title: "TRADITIONAL OUTDOOR UNIT",
+        modelPath: "/Monitor001.glb",
         dimensions: "40\" x 40\" x 36\"",
         features: "Single speed compressor, basic controls, standard weather protection",
         limitations: "High energy consumption, limited efficiency, no remote capabilities"
@@ -159,15 +182,16 @@ export default function CompareSystem({ onBack }) {
     {
       id: 6,
       title: "Indoor Unit",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART INDOOR UNIT",
+        modelPath: "/Monitor001.glb",
         dimensions: "48\" x 24\" x 12\" (Horizontal) / 24\" x 48\" x 12\" (Vertical)",
         features: "Variable airflow, smart sensors, quiet operation, modular design",
         benefits: "Flexible installation, energy efficient, intelligent climate control"
       },
       traditional: {
         title: "TRADITIONAL INDOOR UNIT",
+        modelPath: "/Monitor001.glb",
         dimensions: "52\" x 28\" x 16\"",
         features: "Fixed speed fan, basic thermostat control, standard installation",
         limitations: "Limited flexibility, higher noise levels, basic control options"
@@ -176,15 +200,16 @@ export default function CompareSystem({ onBack }) {
     {
       id: 7,
       title: "Smart Flow Duct",
-      modelPath: "/Monitor001.glb",
       airsmart: {
         title: "AIRSMART SMART FLOW DUCT",
+        modelPath: "/Monitor001.glb",
         dimensions: "4\" diameter (Small diameter ducting)",
         features: "Intelligent airflow management, leak detection, pressure optimization, flexible routing",
         benefits: "Reduced installation space, improved efficiency, smart diagnostics"
       },
       traditional: {
         title: "TRADITIONAL DUCTWORK",
+        modelPath: "/Monitor001.glb",
         dimensions: "8\"-12\" diameter",
         features: "Standard metal ducting, manual dampers, basic insulation",
         limitations: "Large space requirements, energy losses, no smart features"
@@ -193,14 +218,30 @@ export default function CompareSystem({ onBack }) {
   ];
 
   const nextSlide = () => {
+    setIsModelLoading(true);
     setCurrentSlide((prev) => (prev + 1) % comparisonData.length);
+    // Simulate model loading time
+    setTimeout(() => setIsModelLoading(false), 800);
   };
 
   const prevSlide = () => {
+    setIsModelLoading(true);
     setCurrentSlide((prev) => (prev - 1 + comparisonData.length) % comparisonData.length);
+    // Simulate model loading time
+    setTimeout(() => setIsModelLoading(false), 800);
   };
 
   const currentData = comparisonData[currentSlide];
+
+  // Show loading screen while loading
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        text="Loading Comparison Models..."
+        variant="compare"
+      />
+    );
+  }
 
   return (
     <Box
@@ -491,6 +532,35 @@ export default function CompareSystem({ onBack }) {
                     boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.1)",
                   }}
                 >
+                  {/* Model Loading Overlay */}
+                  {isModelLoading && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: "rgba(37, 99, 235, 0.8)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 10,
+                        backdropFilter: "blur(4px)",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          border: "3px solid rgba(255, 255, 255, 0.3)",
+                          borderTop: "3px solid white",
+                          borderRadius: "50%",
+                          animation: `${spin} 1s linear infinite`,
+                        }}
+                      />
+                    </Box>
+                  )}
                   <Canvas
                     camera={{ position: [0, 1.5, 8], fov: 45 }}
                     style={{ width: "100%", height: "100%" }}
@@ -498,7 +568,7 @@ export default function CompareSystem({ onBack }) {
                     <ambientLight intensity={0.5} />
                     <directionalLight position={[10, 10, 5]} intensity={1} />
                     <Suspense fallback={null}>
-                      <RotatingModel modelPath={currentData.modelPath} scale={1} />
+                      <RotatingModel modelPath={currentData.airsmart.modelPath} scale={1} />
                     </Suspense>
                     <OrbitControls
                       enablePan={false}
@@ -637,6 +707,35 @@ export default function CompareSystem({ onBack }) {
                     boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.1)",
                   }}
                 >
+                  {/* Model Loading Overlay */}
+                  {isModelLoading && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: "rgba(107, 114, 128, 0.8)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 10,
+                        backdropFilter: "blur(4px)",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          border: "3px solid rgba(255, 255, 255, 0.3)",
+                          borderTop: "3px solid white",
+                          borderRadius: "50%",
+                          animation: `${spin} 1s linear infinite`,
+                        }}
+                      />
+                    </Box>
+                  )}
                   <Canvas
                     camera={{ position: [0, 1.5, 8], fov: 45 }}
                     style={{ width: "100%", height: "100%" }}
@@ -644,7 +743,7 @@ export default function CompareSystem({ onBack }) {
                     <ambientLight intensity={0.5} />
                     <directionalLight position={[10, 10, 5]} intensity={1} />
                     <Suspense fallback={null}>
-                      <RotatingModel modelPath={currentData.modelPath} scale={1} />
+                      <RotatingModel modelPath={currentData.traditional.modelPath} scale={1} />
                     </Suspense>
                     <OrbitControls
                       enablePan={false}
@@ -751,7 +850,13 @@ export default function CompareSystem({ onBack }) {
             {comparisonData.map((_, index) => (
               <Box
                 key={index}
-                onClick={() => setCurrentSlide(index)}
+                onClick={() => {
+                  if (index !== currentSlide) {
+                    setIsModelLoading(true);
+                    setCurrentSlide(index);
+                    setTimeout(() => setIsModelLoading(false), 800);
+                  }
+                }}
                 sx={{
                   width: 16,
                   height: 16,
