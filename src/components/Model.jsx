@@ -2,8 +2,8 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
 
-export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequencePosition, onModelLoaded }) {
-  const { scene } = useGLTF("/House Combined2.glb");
+export function Model({ hiddenObjectsState, onModelLoaded }) {
+  const { scene } = useGLTF("/HouseCombined2.glb");
 
   const originalMaterials = useRef(new Map());
   const [modelReady, setModelReady] = useState(false);
@@ -25,10 +25,7 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
   useEffect(() => {
     if (scene) {
 
-      // List of objects to make transparent only after sequence 2
-      const transparentObjects = [
 
-      ];
 
       scene.traverse((child) => {
         if (child.isMesh) {
@@ -40,42 +37,25 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
             originalMaterials.current.set(child.name, child.material.clone());
           }
 
-          // Make specific objects transparent only when sequence position > 3 and <= 4 (during sequence 4 only)
+          // Handle hidden objects based on toggle state
           if (hiddenObjects.includes(child.name)) {
-            if (sequencePosition > 3 && sequencePosition <= 4.3) {
+            if (hiddenObjectsState) {
               if (child.material) {
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
                 child.material.transparent = true;
-                child.material.opacity = 0.3; // 30% opacity
+                child.material.opacity = 0.3; // 30% opacity when hidden
               }
             } else {
               if (child.material) {
-                // Restore opacity when sequence <= 3 or > 4
+                // Restore opacity when not hidden
                 child.material = child.material.clone();
                 child.material.transparent = false;
                 child.material.opacity = 1.0; // Full opacity
               }
             }
           }
-          // Make specific objects transparent only when sequence position > 2 (after sequence 2 ends)
-          else if (transparentObjects.includes(child.name)) {
-            if (sequencePosition > 3) {
-              if (child.material) {
-                // Clone material to avoid affecting other objects
-                child.material = child.material.clone();
-                child.material.transparent = true;
-                child.material.opacity = 0.2; // 30% opacity
-              }
-            } else {
-              if (child.material) {
-                // Restore opacity when sequence <= 2
-                child.material = child.material.clone();
-                child.material.transparent = false;
-                child.material.opacity = 1.0; // Full opacity
-              }
-            }
-          }
+
           // Restore original material
           else {
             const originalMaterial = originalMaterials.current.get(child.name);
@@ -86,39 +66,9 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
         }
       });
     }
-  }, [scene, sequencePosition]);
+  }, [scene, hiddenObjectsState]);
 
-  useEffect(() => {
-    if (!scene || !sequenceChapters || !onChapterClick) return;
 
-    try {
-      // Only set up click handlers for objects that actually exist in the 3D model
-      sequenceChapters.forEach((chapter) => {
-        if (!chapter || !chapter.id) return;
-
-        const object = scene.getObjectByName(chapter.id);
-        if (object && object.userData) {
-          object.userData.onClick = (e) => {
-            e.stopPropagation();
-            if (onChapterClick) {
-              onChapterClick(chapter.id);
-            }
-          };
-        }
-      });
-
-      // Set up mesh click handler for Geom3D_393
-      const geom393 = scene.getObjectByName("Geom3D_393");
-      if (geom393 && geom393.userData && onMeshClick) {
-        geom393.userData.onMeshClick = (e) => {
-          e.stopPropagation();
-          onMeshClick("Geom3D_393");
-        };
-      }
-    } catch (error) {
-      console.error("Error setting up click handlers:", error);
-    }
-  }, [scene, sequenceChapters, onChapterClick, onMeshClick]);
 
 
 
@@ -128,22 +78,8 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
   }
 
   return (
-    <primitive
-      object={scene}
-      onClick={(e) => {
-        e.stopPropagation();
-        // Handle both chapter clicks and mesh clicks
-        e.object?.userData?.onClick?.(e);
-        e.object?.userData?.onMeshClick?.(e);
-      }}
-      onPointerDown={(e) => {
-        e.stopPropagation();
-        // Handle touch events for mobile
-        e.object?.userData?.onClick?.(e);
-        e.object?.userData?.onMeshClick?.(e);
-      }}
-    />
+    <primitive object={scene} />
   );
 }
 
-useGLTF.preload("/House Combined2.glb");
+useGLTF.preload("/HouseCombined2.glb");

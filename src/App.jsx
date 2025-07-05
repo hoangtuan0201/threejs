@@ -9,6 +9,7 @@ import { Scene } from "./components/Scene";
 import Homepage from "./components/Homepage";
 import LoadingScreen from "./components/LoadingScreen";
 import ChapterNavigation from "./components/ChapterNavigation";
+
 import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
 
@@ -35,6 +36,7 @@ export default function App() {
   const [modelLoaded, setModelLoaded] = useState(false);
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
 
+
   // Mobile detection and responsive utilities
   const mobile = useMobile();
 
@@ -47,16 +49,14 @@ export default function App() {
     startTime: sceneStartTime,
     lockScene,
     completeNavigation
-  } = useSceneLock(sheet, 3000);
+  } = useSceneLock(sheet, 1000);
 
   // Chapter navigation function - useSceneLock approach
   const handleChapterNavigation = (position) => {
-    console.log(`Navigating to chapter position: ${position}`);
-    console.log(`Current sheet position: ${sheet.sequence.position}`);
-
-    // 🎯 Use scene lock hook for clean navigation
     lockScene(position);
   };
+
+
 
   const startTour = () => {
     setIsLoading(true);
@@ -96,7 +96,7 @@ export default function App() {
             position: 'fixed',
             top: mobile.getResponsiveValue('16px', '20px', '24px'),
             left: mobile.getResponsiveValue('16px', '20px', '24px'),
-            zIndex: 1000,
+            zIndex: 1500,
             pointerEvents: 'none',
             userSelect: 'none',
           }}
@@ -243,6 +243,7 @@ export default function App() {
             onModelLoaded={handleModelLoaded}
             onPositionChange={setCurrentSequencePosition}
             isNavigating={sceneLocked}
+
             navigationData={{
               isNavigating: sceneNavigating,
               targetPosition: sceneTargetPosition,
@@ -263,6 +264,8 @@ export default function App() {
         isVisible={!showControlPanel && modelLoaded}
         isLocked={sceneLocked}
       />
+
+
     </>
   );
 }

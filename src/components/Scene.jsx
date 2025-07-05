@@ -7,6 +7,7 @@ import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
+import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
 
@@ -101,10 +102,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
   const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
+  const [localHiddenState, setLocalHiddenState] = useState(false); // Local state for 3D toggle
 
 
   // Mobile detection and responsive utilities
   const mobile = useMobile();
+
+  // Handle toggle hidden objects
+  const handleToggleHidden = (isHidden) => {
+    setLocalHiddenState(isHidden);
+  };
 
 
 
@@ -174,7 +181,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
       if (navStart !== null && startTime !== null) {
         const elapsed = performance.now() - startTime;
-        const duration = 1500; // 1.5 seconds for smooth navigation
+        const duration = 3000; // 1.5 seconds for smooth navigation
         const progress = Math.min(elapsed / duration, 1);
 
         // Smooth easing function (ease-out-cubic)
@@ -548,18 +555,17 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Hotspot Lighting - spotlights shining down on each hotspot */}
       <HotspotLighting sequenceChapters={sequenceChapters} selectedHotspot={selectedHotspot} />
 
+      {/* 3D Toggle Hidden Objects Button */}
+      <ToggleHiddenObjects
+        onToggleHidden={handleToggleHidden}
+        isVisible={isExploreMode}
+      />
+
 
 
       <Suspense fallback={null}>
         <Model
-          sequenceChapters={sequenceChapters}
-          sequencePosition={sheet.sequence.position}
-          onChapterClick={(chapterId) => {
-            // console.log(`Model chapter clicked: ${chapterId}`);
-          }}
-          onMeshClick={(meshName) => {
-            // console.log(`Mesh clicked: ${meshName}`);
-          }}
+          hiddenObjectsState={localHiddenState}
           onModelLoaded={onModelLoaded}
         />
       </Suspense>

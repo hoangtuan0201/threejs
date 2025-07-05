@@ -116,30 +116,7 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
         →
       </button>
 
-      {/* Chapter Indicator */}
-      {currentIndex >= 0 && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: mobile.isMobile ? '20px' : '30px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: isLocked ? 'rgba(255, 165, 0, 0.8)' : 'rgba(0, 0, 0, 0.7)',
-            color: 'white',
-            padding: mobile.isMobile ? '8px 16px' : '6px 12px',
-            borderRadius: '20px',
-            fontSize: mobile.isMobile ? '14px' : '12px',
-            fontWeight: 'bold',
-            zIndex: 1000,
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-            transition: 'all 0.3s ease',
-          }}
-        >
-          {isLocked ? 'Scene Locked - Observing...' : chapters[currentIndex].label}
-        </div>
-      )}
+     
     </>
   );
 };
