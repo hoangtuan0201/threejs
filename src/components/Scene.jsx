@@ -54,7 +54,7 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
 
               {/* HTML label attached to the 3D "i" - show hotspot title only when not selected */}
               {(!selectedHotspot || selectedHotspot.id !== chapter.id) && (
-                <Html distanceFactor={10} position={[0, 0.3, 0]} occlude>
+                <Html distanceFactor={10} position={[0, 0.3, 0.1]} occlude>
                   <div
                     style={{
                       background: 'rgba(0, 0, 0, 0.8)',
@@ -212,7 +212,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       // Normal scroll behavior when not locked
       if (targetPosition !== sheet.sequence.position) {
         const diff = targetPosition - sheet.sequence.position;
-        const speed = 0.03; // Smooth scrolling speed
+        const speed = 0.024; // Smooth scrolling speed
 
         // Debug large diffs that might cause rollback
         if (Math.abs(diff) > 1) {
@@ -271,9 +271,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     setActiveChapter(null);
     setSelectedHotspot(null);
     setShowVideoScreen(null);
-    // Reset camera to initial position
-    sheet.sequence.position = 0;
-    setTargetPosition(0);
+    // Reset camera to initial position - start from 0.1 to avoid wall clipping
+    sheet.sequence.position = 0.1;
+    setTargetPosition(0.1);
     // Show ControlPanel again
     if (onShowControlPanel) {
       onShowControlPanel();
@@ -292,9 +292,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'isNavigating:', isNavigating);
 
     if (isNaN(currentPos) || currentPos === undefined) {
-      console.log('Setting targetPosition to 0 (fallback)');
-      sheet.sequence.position = 0; // Ensure Theatre.js sequence starts at 0
-      setTargetPosition(0);
+      console.log('Setting targetPosition to 0.1 (fallback) to avoid wall clipping');
+      sheet.sequence.position = 0.1; // Ensure Theatre.js sequence starts at 0.1 to avoid wall clipping
+      setTargetPosition(0.1);
     } else {
       console.log('Setting targetPosition to:', currentPos);
       setTargetPosition(currentPos);
@@ -304,13 +304,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Ensure proper initialization when entering explore mode
   useEffect(() => {
     if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated) {
-      // Force Theatre.js sequence to start at position 0 when entering explore mode
+      // Force Theatre.js sequence to start at position 0.1 when entering explore mode to avoid wall clipping
       // Add small delay to ensure Theatre.js is ready
       setTimeout(() => {
-        console.log('Resetting to 0 on explore mode entry');
-        sheet.sequence.position = 0;
-        setTargetPosition(0);
-        // Sequence reset to 0
+        console.log('Resetting to 0.1 on explore mode entry to avoid wall clipping');
+        sheet.sequence.position = 0.1;
+        setTargetPosition(0.1);
+        // Sequence reset to 0.1 to fix wall clipping
       }, 50);
     }
   }, [isExploreMode, sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
@@ -332,13 +332,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
     mountedRef.current = true;
 
-    // Ensure sequence starts at 0 on mount
+    // Ensure sequence starts at 0.1 on mount to avoid wall clipping
     const initializeSequence = () => {
       if (sheet && sheet.sequence && !navigationData?.isNavigating && !hasNavigated) {
-        console.log('Mount initialization - setting to 0 (ONCE)');
-        sheet.sequence.position = 0;
-        setTargetPosition(0);
-        // Scene mounted - sequence initialized to 0
+        console.log('Mount initialization - setting to 0.1 (ONCE) to avoid wall clipping');
+        sheet.sequence.position = 0.1;
+        setTargetPosition(0.1);
+        // Scene mounted - sequence initialized to 0.1 to fix wall clipping
       }
     };
 
@@ -349,21 +349,71 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     return () => clearTimeout(timer);
   }, []); // Empty dependency array - only run once
 
-  // Keyboard navigation for escape key
+  // Enhanced keyboard navigation for escape key and arrow keys
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        resetScene();
-        if (onTourEnd) {
-          onTourEnd();
-        }
+      // Only handle keys in explore mode
+      if (!isExploreMode) return;
+
+      switch (event.key) {
+        case 'Escape':
+          event.preventDefault();
+          resetScene();
+          if (onTourEnd) {
+            onTourEnd();
+          }
+          break;
+
+        case 'ArrowLeft':
+          event.preventDefault();
+          // Smooth navigation backward using setTargetPosition (like scroll)
+          if (targetPosition > 0.1) {
+            const newPosition = Math.max(0.1, targetPosition - 0.3);
+            setTargetPosition(newPosition);
+            setHasNavigated(true);
+          }
+          break;
+
+        case 'ArrowRight':
+          event.preventDefault();
+          // Smooth navigation forward using setTargetPosition (like scroll)
+          if (targetPosition < 6.7) {
+            const newPosition = Math.min(6.7, targetPosition + 0.3);
+            setTargetPosition(newPosition);
+            setHasNavigated(true);
+          }
+          break;
+
+        case 'ArrowUp':
+          event.preventDefault();
+          // Smooth jump to next chapter position
+          const chapterPositions = [0.1, 1, 2.4, 4.3, 6.15];
+          const currentIndex = chapterPositions.findIndex(pos => Math.abs(pos - targetPosition) < 0.5);
+          if (currentIndex < chapterPositions.length - 1) {
+            setTargetPosition(chapterPositions[currentIndex + 1]);
+            setHasNavigated(true);
+          }
+          break;
+
+        case 'ArrowDown':
+          event.preventDefault();
+          // Smooth jump to previous chapter position
+          const chapterPositionsDown = [0.1, 1, 2.4, 4.3, 6.15];
+          const currentIndexDown = chapterPositionsDown.findIndex(pos => Math.abs(pos - targetPosition) < 0.5);
+          if (currentIndexDown > 0) {
+            setTargetPosition(chapterPositionsDown[currentIndexDown - 1]);
+            setHasNavigated(true);
+          }
+          break;
+
+        default:
+          break;
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onTourEnd]);
+  }, [onTourEnd, isExploreMode, targetPosition, setHasNavigated]);
 
   // Handle scroll only in explore mode
   useEffect(() => {
@@ -390,15 +440,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       setTargetPosition(prevTarget => {
         // Check targetPosition before calculation
         if (isNaN(prevTarget)) {
-          console.warn('prevTarget is NaN, resetting to 0');
-          return 0;
+          console.warn('prevTarget is NaN, resetting to 0.1');
+          return 0.1;
         }
 
         // Calculate new position based on current targetPosition
         let newPosition = prevTarget + (deltaY * scrollSensitivity);
 
-        // Limit within range [0, 6] (entire sequence)
-        newPosition = Math.max(0, Math.min(6.7, newPosition));
+        // Limit within range [0.1, 6.7] (entire sequence) - start from 0.1 to avoid wall clipping
+        newPosition = Math.max(0.1, Math.min(6.7, newPosition));
 
         // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 

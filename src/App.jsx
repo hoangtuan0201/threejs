@@ -102,24 +102,34 @@ export default function App() {
               color: "white",
               padding: mobile.getResponsiveValue("10px 16px", "11px 18px", "12px 20px"),
               borderRadius: mobile.getResponsiveValue("12px", "10px", "8px"),
-              fontSize: mobile.getResponsiveValue("15px", "14px", "14px"), // Keep original desktop font
+              fontSize: mobile.getResponsiveValue("13px", "12px", "12px"),
               fontWeight: "500",
-              textAlign: "center",
+              textAlign: "left",
               backdropFilter: "blur(15px)",
               border: "1px solid rgba(255, 255, 255, 0.15)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
               fontFamily: "system-ui, -apple-system, sans-serif",
-              whiteSpace: window.innerWidth < 768 ? "normal" : "nowrap",
-              maxWidth: mobile.getResponsiveValue("280px", "320px", "none"),
-              lineHeight: mobile.getResponsiveValue("1.4", "1.3", "1.2"),
+              maxWidth: mobile.getResponsiveValue("280px", "320px", "380px"),
+              lineHeight: mobile.getResponsiveValue("1.4", "1.3", "1.3"),
               WebkitTouchCallout: "none",
               WebkitUserSelect: "none",
               userSelect: "none",
             }}
           >
-            {mobile.isMobile
-              ? "👆 Touch & drag to navigate\n⬅️ Swipe ESC to exit"
-              : "🖱️ Scroll to navigate • ⌨️ Press ESC to exit"}
+            {mobile.isMobile ? (
+              <div>
+                <div style={{ marginBottom: "4px" }}>👆 Touch & drag to navigate</div>
+                <div>⬅️ Swipe ESC to exit</div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ marginBottom: "6px", fontWeight: "600", color: "#ffffff" }}>Navigation Controls:</div>
+                <div style={{ marginBottom: "3px" }}>🖱️ <strong>Scroll</strong> - Smooth navigation</div>
+                <div style={{ marginBottom: "3px" }}>⬅️➡️ <strong>Left/Right</strong> - Smooth steps</div>
+                <div style={{ marginBottom: "3px" }}>⬆️⬇️ <strong>Up/Down</strong> - Smooth chapter jump</div>
+                <div>⌨️ <strong>ESC</strong> - Exit explore mode</div>
+              </div>
+            )}
           </div>
         </div>
       )}
