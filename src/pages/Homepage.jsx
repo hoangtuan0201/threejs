@@ -63,7 +63,9 @@ export default function Homepage({ onExplore }) {
     if (type === "explore") {
       onExplore();
     } else if (type === "compare") {
-      alert("Comparison feature coming soon!");
+      if (window.onCompare) {
+        window.onCompare();
+      }
     } else if (type === "download") {
       window.open("/brochures/sample.pdf", "_blank");
     }
@@ -225,7 +227,7 @@ export default function Homepage({ onExplore }) {
               <br />
             </Box>
             <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}> </Box>
-            that redefines air purification and climate comfort
+            THAT REDEFINES AIR PURIFICATION AND CLIMATE COMFORT
           </Typography>
 
           {/* Action Buttons */}

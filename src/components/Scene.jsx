@@ -377,8 +377,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowRight':
           event.preventDefault();
           // Smooth navigation forward using setTargetPosition (like scroll)
-          if (targetPosition < 6.7) {
-            const newPosition = Math.min(6.7, targetPosition + 0.3);
+          if (targetPosition < 6.5) {
+            const newPosition = Math.min(6.5, targetPosition + 0.3);
             setTargetPosition(newPosition);
             setHasNavigated(true);
           }
@@ -387,8 +387,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowUp':
           event.preventDefault();
           // Smooth jump to next chapter position
-          const chapterPositions = [0.1, 1, 2.4, 4.3, 6.15];
-          const currentIndex = chapterPositions.findIndex(pos => Math.abs(pos - targetPosition) < 0.5);
+          const chapterPositions = [0.1, 1, 2.4, 4.3, 6.5];
+          const currentIndex = chapterPositions.findIndex(pos => Math.abs(pos - targetPosition) < 0.3);
           if (currentIndex < chapterPositions.length - 1) {
             setTargetPosition(chapterPositions[currentIndex + 1]);
             setHasNavigated(true);
@@ -398,8 +398,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowDown':
           event.preventDefault();
           // Smooth jump to previous chapter position
-          const chapterPositionsDown = [0.1, 1, 2.4, 4.3, 6.15];
-          const currentIndexDown = chapterPositionsDown.findIndex(pos => Math.abs(pos - targetPosition) < 0.5);
+          const chapterPositionsDown = [0.1, 1, 2.4, 4.3, 6.5];
+          const currentIndexDown = chapterPositionsDown.findIndex(pos => Math.abs(pos - targetPosition) < 0.3);
           if (currentIndexDown > 0) {
             setTargetPosition(chapterPositionsDown[currentIndexDown - 1]);
             setHasNavigated(true);
@@ -448,7 +448,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         let newPosition = prevTarget + (deltaY * scrollSensitivity);
 
         // Limit within range [0.1, 6.7] (entire sequence) - start from 0.1 to avoid wall clipping
-        newPosition = Math.max(0.1, Math.min(6.7, newPosition));
+        newPosition = Math.max(0.1, Math.min(6.5, newPosition));
 
         // console.log('Setting target position from', prevTarget, 'to:', newPosition); // Debug log
 
@@ -518,7 +518,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + (deltaY * touchSensitivity);
-          newPosition = Math.max(0, Math.min(6.7, newPosition));
+          newPosition = Math.max(0, Math.min(6.5, newPosition));
 
           // console.log('Setting position from touch:', prevTarget, '->', newPosition); // Debug log
 
@@ -547,7 +547,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + momentum;
-          newPosition = Math.max(0, Math.min(6.7, newPosition));
+          newPosition = Math.max(0, Math.min(6.5, newPosition));
 
           // console.log('Momentum scroll:', prevTarget, '->', newPosition); // Debug log
 

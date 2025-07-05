@@ -111,7 +111,7 @@ const chapterPositions = [
 ## Navigation Behavior
 
 ### **Smooth Navigation (Left/Right)**
-- **Step size**: 1.5 units
+- **Step size**: 0.3 units (reduced sensitivity)
 - **Animation**: Uses setTargetPosition() + useFrame smooth interpolation
 - **Boundaries**: Respects [0.1, 6.7] limits
 - **User feedback**: Smooth like scroll navigation

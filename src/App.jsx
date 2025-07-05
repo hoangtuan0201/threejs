@@ -6,7 +6,8 @@ import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
-import Homepage from "./components/Homepage";
+import Homepage from "./pages/Homepage";
+import CompareSystem from "./pages/CompareSystem";
 import LoadingScreen from "./components/LoadingScreen";
 import ChapterNavigation from "./components/ChapterNavigation";
 import FloatingChatButton from "./components/FloatingChatButton";
@@ -30,6 +31,7 @@ if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
 
 export default function App() {
   const [showControlPanel, setShowControlPanel] = useState(true);
+  const [showCompareSystem, setShowCompareSystem] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
@@ -56,10 +58,24 @@ export default function App() {
   const startTour = () => {
     setIsLoading(true);
     setShowControlPanel(false);
+    setShowCompareSystem(false);
+  };
+
+  const showCompare = () => {
+    setShowControlPanel(false);
+    setShowCompareSystem(true);
+  };
+
+  const backToHome = () => {
+    setShowControlPanel(true);
+    setShowCompareSystem(false);
+    setIsLoading(false);
+    setModelLoaded(false);
   };
 
   const endTour = () => {
     setShowControlPanel(true);
+    setShowCompareSystem(false);
     setIsLoading(false);
     setModelLoaded(false);
   };
@@ -74,17 +90,25 @@ export default function App() {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+
+    // Set up global navigation function for Homepage
+    window.onCompare = showCompare;
+
+    return () => {
+      delete window.onCompare;
+    };
   }, []);
 
   return (
     <>
       {showControlPanel && <Homepage onExplore={startTour} />}
+      {showCompareSystem && <CompareSystem onBack={backToHome} />}
 
       {/* Loading Screen */}
       {isLoading && !modelLoaded && <LoadingScreen />}
 
       {/* Navigation Guide - Fixed position outside Canvas */}
-      {!showControlPanel && !isLoading && modelLoaded && (
+      {!showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
         <div
           className="no-select safe-area-inset"
           style={{
@@ -135,7 +159,7 @@ export default function App() {
       )}
 
       {/* Theatre.js Studio Button - Development only */}
-      {import.meta.env.DEV && !showControlPanel && !isLoading && modelLoaded && (
+      {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
         <button
           onClick={() => {
             console.log("Toggling Theatre.js Studio...");
@@ -169,7 +193,7 @@ export default function App() {
       )}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
-      {!showControlPanel && (
+      {!showControlPanel && !showCompareSystem && (
         <Canvas
           className="gpu-accelerated ios-fix android-fix"
           style={{
@@ -264,7 +288,7 @@ export default function App() {
         currentPosition={currentSequencePosition}
         onNavigate={handleChapterNavigation}
         mobile={mobile}
-        isVisible={!showControlPanel && modelLoaded}
+        isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
         isLocked={sceneLocked}
       />
 
