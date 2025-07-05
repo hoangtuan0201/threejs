@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Box, Fab, Paper, Typography, TextField, IconButton, Stack, CircularProgress } from '@mui/material';
 import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
+import ReactMarkdown from 'react-markdown';
 import { useMobile } from '../hooks/useMobile';
 
 const FloatingChatButton = () => {
@@ -215,9 +216,105 @@ const FloatingChatButton = () => {
                     border: `1px solid ${chat.isError ? 'rgba(255, 86, 86, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
                   }}
                 >
-                  <Typography variant="body2" sx={{ fontSize: '0.85rem', lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>
-                    {chat.message}
-                  </Typography>
+                  {/* Render message with markdown support */}
+                  <Box
+                    sx={{
+                      fontSize: '0.85rem',
+                      lineHeight: 1.4,
+                      '& p': {
+                        margin: 0,
+                        marginBottom: '8px',
+                        '&:last-child': {
+                          marginBottom: 0,
+                        },
+                      },
+                      '& ul, & ol': {
+                        margin: '8px 0',
+                        paddingLeft: '20px',
+                      },
+                      '& li': {
+                        marginBottom: '4px',
+                      },
+                      '& strong': {
+                        fontWeight: 700,
+                        color: '#ffffff',
+                      },
+                      '& em': {
+                        fontStyle: 'italic',
+                        color: 'rgba(255, 255, 255, 0.9)',
+                      },
+                      '& code': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem',
+                        fontFamily: 'monospace',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                      },
+                      '& pre': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        overflow: 'auto',
+                        margin: '8px 0',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        '& code': {
+                          backgroundColor: 'transparent',
+                          padding: 0,
+                          border: 'none',
+                          fontSize: '0.75rem',
+                        },
+                      },
+                      '& blockquote': {
+                        borderLeft: '3px solid rgba(255, 255, 255, 0.5)',
+                        paddingLeft: '12px',
+                        margin: '8px 0',
+                        fontStyle: 'italic',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                      },
+                      '& h1, & h2, & h3, & h4, & h5, & h6': {
+                        margin: '12px 0 8px 0',
+                        fontWeight: 600,
+                        color: '#ffffff',
+                      },
+                      '& h1': { fontSize: '1.1rem' },
+                      '& h2': { fontSize: '1.05rem' },
+                      '& h3': { fontSize: '1rem' },
+                      '& h4': { fontSize: '0.95rem' },
+                      '& h5': { fontSize: '0.9rem' },
+                      '& h6': { fontSize: '0.85rem' },
+                      '& a': {
+                        color: '#64b5f6',
+                        textDecoration: 'underline',
+                        '&:hover': {
+                          color: '#90caf9',
+                        },
+                      },
+                      '& table': {
+                        borderCollapse: 'collapse',
+                        width: '100%',
+                        margin: '8px 0',
+                        fontSize: '0.8rem',
+                      },
+                      '& th, & td': {
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        padding: '6px 8px',
+                        textAlign: 'left',
+                      },
+                      '& th': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        fontWeight: 600,
+                      },
+                      '& hr': {
+                        border: 'none',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                        margin: '12px 0',
+                      },
+                    }}
+                  >
+                    <ReactMarkdown>{chat.message}</ReactMarkdown>
+                  </Box>
+                  
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
                     <Typography 
                       variant="caption" 
