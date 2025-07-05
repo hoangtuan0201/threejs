@@ -206,7 +206,7 @@ export default function Homepage({ onExplore }) {
           </Typography>
 
           {/* Subtitle */}
-          <Typography
+         <Typography
             variant="h5"
             sx={{
               color: "rgba(200, 200, 200, 0.9)",
@@ -217,14 +217,15 @@ export default function Homepage({ onExplore }) {
               lineHeight: 1.6,
               fontSize: { xs: "1rem", sm: "1.2rem", md: "1.4rem" },
               px: { xs: 1, sm: 0 },
+              textTransform: "none", // Đảm bảo không viết hoa
             }}
           >
-            The most powerful smart air conditioning platform
+            We’ve created the world’s finest indoor environment system
             <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
               <br />
             </Box>
             <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}> </Box>
-            backed by the industry-leading climate control engine.
+            that redefines air purification and climate comfort
           </Typography>
 
           {/* Action Buttons */}

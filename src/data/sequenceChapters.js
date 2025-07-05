@@ -8,10 +8,10 @@ export const sequenceChapters = [
       position: [27.78, 4.5, -22.5],
       rotation: [0, Math.PI / 1.8, 0],
       detailPosition: [27.78, 4.9, -22.7],
-      detailRotation: [0, Math.PI / 1.8, 0],
+      detailRotation: [0, Math.PI / 2, 0],
       // Mobile-specific positioning
-      mobileDetailPosition: [27.78, 4.6, -22.3],
-      mobileDetailRotation: [0, Math.PI / 1.8, 0],
+      mobileDetailPosition: [27.78, 3.8, -22.3],
+      mobileDetailRotation: [0, Math.PI / 2, 0],
       title: "Smart Thermostat",
       description: "Intelligent temperature control with AI that automatically learns your usage habits. The system automatically adjusts temperature based on usage patterns and weather.",
       link: "https://www.youtube.com/watch?v=mC1Ket54DW8"
@@ -31,10 +31,10 @@ export const sequenceChapters = [
     },
     videoScreen: {
       position: [27.78, 4.7, -21.2],
-      rotation: [0, Math.PI / 1.8, 0],
+      rotation: [0, Math.PI / 2, 0],
       // Mobile-specific positioning
       mobilePosition: [27.78, 4.5, -20.8],
-      mobileRotation: [0, Math.PI / 1.8, 0],
+      mobileRotation: [0, Math.PI / 2, 0],
       videoId: "mC1Ket54DW8",
       title: "Smart Thermostat Demo",
       size: { width: 320, height: 180 },
@@ -109,7 +109,7 @@ export const sequenceChapters = [
       }
     },
     videoScreen: {
-      position: [18, 4.7, -32.3],
+      position: [17.8, 4.7, -32.3],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
       mobilePosition: [17.3, 5, -31.8],
