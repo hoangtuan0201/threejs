@@ -64,7 +64,7 @@
                   },
                   {
                     "id": "buzql6pKVy",
-                    "position": 2.267,
+                    "position": 2.467,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -77,7 +77,7 @@
                   },
                   {
                     "id": "YeVzVd0lhU",
-                    "position": 2.7,
+                    "position": 2.8,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -168,7 +168,7 @@
                   },
                   {
                     "id": "87TrCHkWV0",
-                    "position": 5.4,
+                    "position": 5.567,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -176,25 +176,12 @@
                       0.5,
                       0.5
                     ],
-                    "type": "bezier",
+                    "type": "hold",
                     "value": 27.27460695889973
                   },
                   {
-                    "id": "qCEJjKSlma",
-                    "position": 5.767,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.25,
-                      0.46
-                    ],
-                    "type": "hold",
-                    "value": 24.039832616148423
-                  },
-                  {
                     "id": "_FQISzsvt8",
-                    "position": 6.1,
+                    "position": 5.733,
                     "connectedRight": true,
                     "handles": [
                       0.45,
@@ -265,7 +252,7 @@
                   },
                   {
                     "id": "Tx1nJ9-O2n",
-                    "position": 2.267,
+                    "position": 2.467,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -278,7 +265,7 @@
                   },
                   {
                     "id": "W0wyIpQZRh",
-                    "position": 2.7,
+                    "position": 2.8,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -369,7 +356,7 @@
                   },
                   {
                     "id": "LgUr6jzw6z",
-                    "position": 5.4,
+                    "position": 5.567,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -377,25 +364,12 @@
                       0.5,
                       0.5
                     ],
-                    "type": "bezier",
-                    "value": 5.282095836630216
-                  },
-                  {
-                    "id": "ywEani_pXr",
-                    "position": 5.767,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.25,
-                      0.46
-                    ],
                     "type": "hold",
                     "value": 5.282095836630216
                   },
                   {
                     "id": "DrR884urlc",
-                    "position": 6.1,
+                    "position": 5.733,
                     "connectedRight": true,
                     "handles": [
                       0.45,
@@ -453,7 +427,7 @@
                   },
                   {
                     "id": "nTLchK5Vae",
-                    "position": 2.267,
+                    "position": 2.467,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -466,7 +440,7 @@
                   },
                   {
                     "id": "hEsyMkHNn7",
-                    "position": 2.7,
+                    "position": 2.8,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -557,7 +531,7 @@
                   },
                   {
                     "id": "pjqTMADWlR",
-                    "position": 5.4,
+                    "position": 5.567,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -565,25 +539,12 @@
                       0.5,
                       0.5
                     ],
-                    "type": "bezier",
+                    "type": "hold",
                     "value": -18.218194736744714
                   },
                   {
-                    "id": "Tt-GeRf-rn",
-                    "position": 5.767,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.25,
-                      0.46
-                    ],
-                    "type": "hold",
-                    "value": -15.64014849257634
-                  },
-                  {
                     "id": "iOfAbxX23b",
-                    "position": 6.1,
+                    "position": 5.733,
                     "connectedRight": true,
                     "handles": [
                       0.45,
@@ -641,7 +602,7 @@
                   },
                   {
                     "id": "Z-2ycLDwnC",
-                    "position": 2.133,
+                    "position": 2.3,
                     "connectedRight": true,
                     "handles": [
                       0.355,
@@ -732,7 +693,7 @@
                   },
                   {
                     "id": "htNsudsg-u",
-                    "position": 5.4,
+                    "position": 5.567,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -740,25 +701,12 @@
                       0.5,
                       0.5
                     ],
-                    "type": "bezier",
+                    "type": "hold",
                     "value": -3.073854359457433
                   },
                   {
-                    "id": "5J5tT5yMtT",
-                    "position": 5.767,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.25,
-                      0.46
-                    ],
-                    "type": "hold",
-                    "value": -3.0750730131983577
-                  },
-                  {
                     "id": "3Czyc17GgT",
-                    "position": 6.1,
+                    "position": 5.733,
                     "connectedRight": true,
                     "handles": [
                       0.45,
@@ -816,7 +764,7 @@
                   },
                   {
                     "id": "Mrsp63NoGU",
-                    "position": 2.133,
+                    "position": 2.3,
                     "connectedRight": true,
                     "handles": [
                       0.355,
@@ -907,7 +855,7 @@
                   },
                   {
                     "id": "Hw2Y4yZYwI",
-                    "position": 5.4,
+                    "position": 5.567,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -915,25 +863,12 @@
                       0.5,
                       0.5
                     ],
-                    "type": "bezier",
+                    "type": "hold",
                     "value": -0.23187118723210265
                   },
                   {
-                    "id": "W7gr4JCsb7",
-                    "position": 5.767,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.25,
-                      0.46
-                    ],
-                    "type": "hold",
-                    "value": 0.1339583117921051
-                  },
-                  {
                     "id": "gYuDKPspa5",
-                    "position": 6.1,
+                    "position": 5.733,
                     "connectedRight": true,
                     "handles": [
                       0.45,
@@ -991,7 +926,7 @@
                   },
                   {
                     "id": "jOGkMQanyZ",
-                    "position": 2.133,
+                    "position": 2.3,
                     "connectedRight": true,
                     "handles": [
                       0.355,
@@ -1082,7 +1017,7 @@
                   },
                   {
                     "id": "an38lA16Fh",
-                    "position": 5.4,
+                    "position": 5.567,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -1090,25 +1025,12 @@
                       0.5,
                       0.5
                     ],
-                    "type": "bezier",
+                    "type": "hold",
                     "value": -3.1288961507688353
                   },
                   {
-                    "id": "XgYqJA4D7h",
-                    "position": 5.767,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      0.5,
-                      0.25,
-                      0.46
-                    ],
-                    "type": "hold",
-                    "value": 3.1298032481788196
-                  },
-                  {
                     "id": "TPAMHNT-z7",
-                    "position": 6.1,
+                    "position": 5.733,
                     "connectedRight": true,
                     "handles": [
                       0.45,
@@ -1150,6 +1072,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "ihZlsawbwx5dIpjK",
     "Tz7XRLNXx4P7WqdI",
     "QDIpvWt6DjPnMRgo",
     "CP7Tqmf2dXYIU85g",
