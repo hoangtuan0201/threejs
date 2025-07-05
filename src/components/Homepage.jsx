@@ -339,7 +339,7 @@ export default function Homepage({ onExplore }) {
           </Stack>
 
           {/* Feature chips */}
-          <Stack
+          {/* <Stack
             direction="row"
             spacing={2}
             justifyContent="center"
@@ -366,7 +366,7 @@ export default function Homepage({ onExplore }) {
                 }}
               />
             ))}
-          </Stack>
+          </Stack> */}
         </Box>
       </Container>
 
