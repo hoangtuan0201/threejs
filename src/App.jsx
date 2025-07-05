@@ -8,7 +8,9 @@ import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
 import Homepage from "./components/Homepage";
 import LoadingScreen from "./components/LoadingScreen";
+import ChapterNavigation from "./components/ChapterNavigation";
 import { useMobile } from "./hooks/useMobile";
+import useSceneLock from "./hooks/useSceneLock";
 
 
 
@@ -31,9 +33,30 @@ export default function App() {
   const [showControlPanel, setShowControlPanel] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
 
   // Mobile detection and responsive utilities
   const mobile = useMobile();
+
+  // Scene lock hook for chapter navigation
+  const {
+    locked: sceneLocked,
+    isNavigating: sceneNavigating,
+    targetPosition: sceneTargetPosition,
+    startPosition: sceneStartPosition,
+    startTime: sceneStartTime,
+    lockScene,
+    completeNavigation
+  } = useSceneLock(sheet, 3000);
+
+  // Chapter navigation function - useSceneLock approach
+  const handleChapterNavigation = (position) => {
+    console.log(`Navigating to chapter position: ${position}`);
+    console.log(`Current sheet position: ${sheet.sequence.position}`);
+
+    // 🎯 Use scene lock hook for clean navigation
+    lockScene(position);
+  };
 
   const startTour = () => {
     setIsLoading(true);
@@ -218,10 +241,28 @@ export default function App() {
             onShowControlPanel={() => setShowControlPanel(true)}
             isExploreMode={!showControlPanel}
             onModelLoaded={handleModelLoaded}
+            onPositionChange={setCurrentSequencePosition}
+            isNavigating={sceneLocked}
+            navigationData={{
+              isNavigating: sceneNavigating,
+              targetPosition: sceneTargetPosition,
+              startPosition: sceneStartPosition,
+              startTime: sceneStartTime,
+              onComplete: completeNavigation
+            }}
           />
         </SheetProvider>
       </Canvas>
       )}
+
+      {/* Chapter Navigation - show when in explore mode and model is loaded */}
+      <ChapterNavigation
+        currentPosition={currentSequencePosition}
+        onNavigate={handleChapterNavigation}
+        mobile={mobile}
+        isVisible={!showControlPanel && modelLoaded}
+        isLocked={sceneLocked}
+      />
     </>
   );
 }

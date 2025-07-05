@@ -47,7 +47,7 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
                 // Clone material to avoid affecting other objects
                 child.material = child.material.clone();
                 child.material.transparent = true;
-                child.material.opacity = 0.2; // 30% opacity
+                child.material.opacity = 0.3; // 30% opacity
               }
             } else {
               if (child.material) {
@@ -100,7 +100,9 @@ export function Model({ sequenceChapters, onChapterClick, onMeshClick, sequenceP
         if (object && object.userData) {
           object.userData.onClick = (e) => {
             e.stopPropagation();
-            onChapterClick(chapter.id);
+            if (onChapterClick) {
+              onChapterClick(chapter.id);
+            }
           };
         }
       });

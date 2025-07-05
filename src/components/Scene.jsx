@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { Html } from "@react-three/drei";
 import { useThree, useFrame } from "@react-three/fiber";
@@ -9,6 +9,8 @@ import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
+
+
 
 
 
@@ -92,16 +94,35 @@ const HotspotsRenderer = ({ sequenceChapters, onHotspotClick, selectedHotspot, m
   );
 };
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
+  const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
 
 
   // Mobile detection and responsive utilities
   const mobile = useMobile();
+
+
+
+  // Track position changes and notify parent using useFrame
+  const lastPositionRef = useRef(0);
+  const frameCountRef = useRef(0);
+
+  useFrame(() => {
+    // Only update position every 3 frames to reduce React warnings and improve performance
+    frameCountRef.current++;
+    if (frameCountRef.current % 3 === 0 && onPositionChange) {
+      const currentPos = sheet.sequence.position;
+      if (Math.abs(currentPos - lastPositionRef.current) > 0.02) {
+        lastPositionRef.current = currentPos;
+        onPositionChange(currentPos);
+      }
+    }
+  });
 
   const { gl, camera } = useThree();
 
@@ -147,18 +168,63 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       camera.updateProjectionMatrix();
     }
 
-    // Debug log removed for performance
+    // 🎯 Handle chapter navigation with smooth animation
+    if (navigationData?.isNavigating && navigationData.targetPosition !== null) {
+      const { targetPosition: navTarget, startPosition: navStart, startTime, onComplete } = navigationData;
 
-    if (targetPosition !== sheet.sequence.position) {
-      const diff = targetPosition - sheet.sequence.position;
-      const speed = 0.03; // Smooth scrolling speed
+      if (navStart !== null && startTime !== null) {
+        const elapsed = performance.now() - startTime;
+        const duration = 1500; // 1.5 seconds for smooth navigation
+        const progress = Math.min(elapsed / duration, 1);
 
-      if (Math.abs(diff) > 0.001) {
-        sheet.sequence.position += diff * speed;
-      } else {
-        sheet.sequence.position = targetPosition;
+        // Smooth easing function (ease-out-cubic)
+        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+
+        const currentPos = navStart + (navTarget - navStart) * easeOutCubic;
+        sheet.sequence.position = currentPos;
+
+        if (progress >= 1) {
+          // Navigation animation completed
+          sheet.sequence.position = navTarget;
+
+          // 🎯 CRITICAL: Update targetPosition immediately to prevent rollback
+          setTargetPosition(navTarget);
+          setHasNavigated(true); // Mark that user has navigated
+
+          console.log('🎯 Navigation animation completed!');
+          console.log('  - Final position:', navTarget);
+          console.log('  - Synced targetPosition to:', navTarget);
+          console.log('  - Current sheet position:', sheet.sequence.position);
+          console.log('  - Set hasNavigated to true');
+
+          // Complete navigation state
+          onComplete?.();
+        }
+      }
+    } else if (!isNavigating) {
+      // Normal scroll behavior when not locked
+      if (targetPosition !== sheet.sequence.position) {
+        const diff = targetPosition - sheet.sequence.position;
+        const speed = 0.03; // Smooth scrolling speed
+
+        // Debug large diffs that might cause rollback
+        if (Math.abs(diff) > 1) {
+          console.log('⚠️ Large diff detected in normal scroll:');
+          console.log('  - targetPosition:', targetPosition);
+          console.log('  - current position:', sheet.sequence.position);
+          console.log('  - diff:', diff);
+          console.log('  - isNavigating:', isNavigating);
+          console.log('  - navigationData.isNavigating:', navigationData?.isNavigating);
+        }
+
+        if (Math.abs(diff) > 0.001) {
+          sheet.sequence.position += diff * speed;
+        } else {
+          sheet.sequence.position = targetPosition;
+        }
       }
     }
+    // When isNavigating but not navigationData.isNavigating, we're in lock mode - do nothing
 
     // Auto-show/hide active chapter based on scroll position
     const currentPosition = sheet.sequence.position;
@@ -209,37 +275,60 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   // Initialize targetPosition and ensure proper sequence start
   useEffect(() => {
+    // Don't reset during navigation or if navigationData is active or if user has navigated
+    if (isNavigating || navigationData?.isNavigating || hasNavigated) {
+      console.log('Skipping initialization - navigation in progress or user has navigated');
+      return;
+    }
+
     const currentPos = sheet.sequence.position;
-    // console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'type:', typeof currentPos);
+    console.log('Initializing targetPosition - sheet.sequence.position:', currentPos, 'isNavigating:', isNavigating);
 
     if (isNaN(currentPos) || currentPos === undefined) {
-      // console.log('Setting targetPosition to 0 (fallback)');
+      console.log('Setting targetPosition to 0 (fallback)');
       sheet.sequence.position = 0; // Ensure Theatre.js sequence starts at 0
       setTargetPosition(0);
     } else {
-      // console.log('Setting targetPosition to:', currentPos);
+      console.log('Setting targetPosition to:', currentPos);
       setTargetPosition(currentPos);
     }
-  }, [sheet.sequence]);
+  }, [sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
 
   // Ensure proper initialization when entering explore mode
   useEffect(() => {
-    if (isExploreMode) {
+    if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated) {
       // Force Theatre.js sequence to start at position 0 when entering explore mode
       // Add small delay to ensure Theatre.js is ready
       setTimeout(() => {
+        console.log('Resetting to 0 on explore mode entry');
         sheet.sequence.position = 0;
         setTargetPosition(0);
         // Sequence reset to 0
       }, 50);
     }
-  }, [isExploreMode, sheet.sequence]);
+  }, [isExploreMode, sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
 
-  // Force initial sequence position when component mounts
+  // Force initial sequence position when component mounts - ONLY ONCE
+  const mountedRef = useRef(false);
   useEffect(() => {
+    // Only run once on mount
+    if (mountedRef.current) {
+      console.log('Skipping mount initialization - already mounted');
+      return;
+    }
+
+    // Don't initialize if navigation is active or user has navigated
+    if (navigationData?.isNavigating || hasNavigated) {
+      console.log('Skipping mount initialization - navigation active or user has navigated');
+      return;
+    }
+
+    mountedRef.current = true;
+
     // Ensure sequence starts at 0 on mount
     const initializeSequence = () => {
-      if (sheet && sheet.sequence) {
+      if (sheet && sheet.sequence && !navigationData?.isNavigating && !hasNavigated) {
+        console.log('Mount initialization - setting to 0 (ONCE)');
         sheet.sequence.position = 0;
         setTargetPosition(0);
         // Scene mounted - sequence initialized to 0
@@ -251,7 +340,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     const timer = setTimeout(initializeSequence, 100);
 
     return () => clearTimeout(timer);
-  }, [sheet]);
+  }, []); // Empty dependency array - only run once
 
   // Keyboard navigation for escape key
   useEffect(() => {
@@ -272,8 +361,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Handle scroll only in explore mode
   useEffect(() => {
     const handleWheel = (event) => {
-      // Only allow scroll if in explore mode
-      if (!isExploreMode) {
+      // Only allow scroll if in explore mode and when not navigating
+      if (!isExploreMode || isNavigating) {
         return;
       }
 
@@ -321,7 +410,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     let hasMovedSignificantly = false;
 
     const handleTouchStart = (event) => {
-      if (!isExploreMode) return;
+      if (!isExploreMode || isNavigating) return;
 
       const touch = event.touches[0];
       touchStartY = touch.clientY;
@@ -338,7 +427,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
 
     const handleTouchMove = (event) => {
-      if (!isExploreMode || !isTouching) return;
+      if (!isExploreMode || !isTouching || isNavigating) return;
 
       const touch = event.touches[0];
       const touchY = touch.clientY;
@@ -372,7 +461,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + (deltaY * touchSensitivity);
-          newPosition = Math.max(0, Math.min(6, newPosition));
+          newPosition = Math.max(0, Math.min(6.7, newPosition));
 
           // console.log('Setting position from touch:', prevTarget, '->', newPosition); // Debug log
 
@@ -401,7 +490,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + momentum;
-          newPosition = Math.max(0, Math.min(6, newPosition));
+          newPosition = Math.max(0, Math.min(6.7, newPosition));
 
           // console.log('Momentum scroll:', prevTarget, '->', newPosition); // Debug log
 
@@ -447,7 +536,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       canvas.removeEventListener('touchend', handleTouchEnd);
       canvas.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile]);
+  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile, isNavigating]);
 
   return (
     <>
