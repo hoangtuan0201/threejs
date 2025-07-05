@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box, Fab, Paper, Typography, TextField, IconButton, Stack } from '@mui/material';
+import { Box, Fab, Paper, Typography, TextField, IconButton, Stack, CircularProgress } from '@mui/material';
 import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
 import { useMobile } from '../hooks/useMobile';
 
 const FloatingChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState([
     {
       type: 'bot',
@@ -25,51 +26,65 @@ const FloatingChatButton = () => {
     scrollToBottom();
   }, [chatHistory]);
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
+  const handleSendMessage = async () => {
+    if (!message.trim() || isLoading) return;
 
+    const userMessage = message.trim();
+    
     // Add user message
-    const userMessage = {
+    const userMessageObj = {
       type: 'user',
-      message: message.trim(),
+      message: userMessage,
       timestamp: new Date()
     };
 
-    setChatHistory(prev => [...prev, userMessage]);
+    setChatHistory(prev => [...prev, userMessageObj]);
+    setMessage('');
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Call the AI API
+      const response = await fetch('https://ai-airsmart.onrender.com/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: userMessage
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Add bot response
       const botResponse = {
         type: 'bot',
-        message: getBotResponse(message.trim()),
-        timestamp: new Date()
+        message: data.answer || 'I apologize, but I couldn\'t process your request at the moment.',
+        timestamp: new Date(),
+        sourceCount: data.source_count || 0
       };
+      
       setChatHistory(prev => [...prev, botResponse]);
-    }, 1000);
-
-    setMessage('');
-  };
-
-  const getBotResponse = (userMessage) => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    if (lowerMessage.includes('thermostat') || lowerMessage.includes('temperature')) {
-      return 'Our smart thermostat uses AI to learn your preferences and optimize energy efficiency.';
+      
+    } catch (error) {
+      console.error('Error calling AI API:', error);
+      
+      // Add error message
+      const errorResponse = {
+        type: 'bot',
+        message: 'I\'m sorry, I\'m having trouble connecting to the server right now. Please try again later.',
+        timestamp: new Date(),
+        isError: true
+      };
+      
+      setChatHistory(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
     }
-    
-    if (lowerMessage.includes('air purification') || lowerMessage.includes('filter')) {
-      return 'Advanced HEPA H13 filtration with UV-C sterilization and real-time air quality monitoring.';
-    }
-    
-    if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-      return 'Please contact our sales team for custom quotes tailored to your needs.';
-    }
-    
-    if (lowerMessage.includes('installation')) {
-      return 'Professional installation takes 4-6 hours with 5-year warranty included.';
-    }
-    
-    return 'Thanks for your question! Our AirSmart systems offer cutting-edge climate control technology.';
   };
 
   const handleKeyPress = (e) => {
@@ -135,7 +150,7 @@ const FloatingChatButton = () => {
                 style={{
                   width: '24px',
                   height: '24px',
-                  filter: 'brightness(0) invert(1)',
+                  color: 'white',
                 }}
               />
               <Box>
@@ -143,7 +158,7 @@ const FloatingChatButton = () => {
                   AirSmart Assistant
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                  Online
+                  {isLoading ? 'Thinking...' : 'Online'}
                 </Typography>
               </Box>
             </Box>
@@ -193,28 +208,70 @@ const FloatingChatButton = () => {
                     borderRadius: 2,
                     background: chat.type === 'user' 
                       ? 'linear-gradient(135deg, #444 0%, #666 50%, #444 100%)'
+                      : chat.isError
+                      ? 'rgba(255, 86, 86, 0.2)'
                       : 'rgba(255, 255, 255, 0.1)',
                     color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    border: `1px solid ${chat.isError ? 'rgba(255, 86, 86, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
                   }}
                 >
-                  <Typography variant="body2" sx={{ fontSize: '0.85rem', lineHeight: 1.4 }}>
+                  <Typography variant="body2" sx={{ fontSize: '0.85rem', lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>
                     {chat.message}
                   </Typography>
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      display: 'block',
-                      mt: 0.5,
-                      fontSize: '0.65rem'
-                    }}
-                  >
-                    {chat.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        fontSize: '0.65rem'
+                      }}
+                    >
+                      {chat.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Typography>
+                    {chat.sourceCount > 0 && (
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          color: 'rgba(255, 255, 255, 0.4)',
+                          fontSize: '0.6rem',
+                          fontStyle: 'italic'
+                        }}
+                      >
+                        {chat.sourceCount} sources
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               </Box>
             ))}
+            
+            {/* Loading indicator */}
+            {isLoading && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <CircularProgress size={16} sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
+                  <Typography variant="body2" sx={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    AI is thinking...
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+            
             <div ref={messagesEndRef} />
           </Box>
 
@@ -237,6 +294,7 @@ const FloatingChatButton = () => {
                 placeholder="Type a message..."
                 variant="outlined"
                 size="small"
+                disabled={isLoading}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     color: 'white',
@@ -251,6 +309,12 @@ const FloatingChatButton = () => {
                     '&.Mui-focused fieldset': {
                       borderColor: 'rgba(255, 255, 255, 0.5)',
                     },
+                    '&.Mui-disabled': {
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      '& fieldset': {
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                      },
+                    },
                   },
                   '& .MuiOutlinedInput-input': {
                     '&::placeholder': {
@@ -262,7 +326,7 @@ const FloatingChatButton = () => {
               />
               <IconButton
                 onClick={handleSendMessage}
-                disabled={!message.trim()}
+                disabled={!message.trim() || isLoading}
                 size="small"
                 sx={{
                   background: 'linear-gradient(135deg, #444 0%, #666 50%, #444 100%)',
@@ -278,7 +342,11 @@ const FloatingChatButton = () => {
                   },
                 }}
               >
-                <SendIcon fontSize="small" />
+                {isLoading ? (
+                  <CircularProgress size={16} sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                ) : (
+                  <SendIcon fontSize="small" />
+                )}
               </IconButton>
             </Stack>
           </Box>
@@ -339,7 +407,7 @@ const FloatingChatButton = () => {
             style={{
               width: mobile.getResponsiveValue('28px', '32px', '32px'),
               height: mobile.getResponsiveValue('28px', '32px', '32px'),
-              filter: 'brightness(0) invert(1)',
+              color: 'white',
             }}
           />
         )}
