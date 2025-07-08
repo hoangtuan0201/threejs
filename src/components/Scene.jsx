@@ -134,7 +134,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       // Normal scroll behavior when not locked
       if (targetPosition !== sheet.sequence.position) {
         const diff = targetPosition - sheet.sequence.position;
-        const speed = 0.024; // Smooth scrolling speed
+        const speed = 0.02; // Smooth scrolling speed
 
         if (Math.abs(diff) > 0.001) {
           sheet.sequence.position += diff * speed;
