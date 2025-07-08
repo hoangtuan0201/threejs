@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { useMobile } from "../hooks/useMobile";
 
@@ -13,9 +13,30 @@ export function VideoScreen({
   mobileSize
 }) {
   const mobile = useMobile();
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Monitor network status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => {
+      setIsOnline(false);
+      setHasError(true);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Check if we're offline on mount
+    if (!navigator.onLine) {
+      setHasError(true);
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Extract video ID from YouTube URL if full URL is provided
   const extractVideoId = (url) => {
@@ -60,7 +81,7 @@ export function VideoScreen({
           onClick={() => window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank')}
           title="Xem video lớn"
         >
-          {hasError ? (
+          {hasError || !isOnline ? (
             <div
               style={{
                 width: size.width,
@@ -74,14 +95,33 @@ export function VideoScreen({
                 fontSize: '14px',
                 textAlign: 'center',
                 padding: '20px',
-                border: '2px solid #333'
+                border: '2px solid #333',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onClick={() => {
+                const finalVideoId = videoId.includes('youtube.com')
+                  ? videoId.split('v=')[1]?.split('&')[0]
+                  : videoId;
+                window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank');
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'scale(1.02)';
+                e.target.style.borderColor = '#555';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.borderColor = '#333';
               }}
             >
               <div>
                 <div style={{ marginBottom: '10px', fontSize: '18px' }}>📺</div>
                 <div>Video không khả dụng</div>
                 <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
-                  Kiểm tra kết nối internet
+                  {!isOnline ? 'Không có kết nối internet' : 'Lỗi tải video'}
+                </div>
+                <div style={{ fontSize: '11px', opacity: 0.6, marginTop: '8px', padding: '4px 8px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>
+                  Click để xem trên YouTube
                 </div>
               </div>
             </div>
@@ -91,12 +131,11 @@ export function VideoScreen({
               height={size.height}
               src={embedUrl}
               title={title}
-              frameBorder="0"
+              style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               onError={() => setHasError(true)}
               onLoad={() => setHasError(false)}
-              style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
             />
           )}
           <div

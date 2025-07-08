@@ -142,7 +142,7 @@ export default function ScrollSensitivityControl({
           {/* Sensitivity Slider */}
           <div style={styles.sliderContainer}>
             <div style={styles.sliderLabel}>
-              Speed: {sensitivity.toFixed(0.8)}x
+              Speed: {sensitivity.toFixed(1)}x
             </div>
 
             <input

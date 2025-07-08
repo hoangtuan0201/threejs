@@ -101,7 +101,7 @@ export const sequenceChapters = [
       detailPosition: [15.3, 4.5, -32.3],
       detailRotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobileDetailPosition: [16.5, 4.3, -31.8],
+      mobileDetailPosition: [16.6, 4.2, -31.8],
       mobileDetailRotation: [0, 0, 0],
       title: "Air Purification System",
       description: "Advanced HEPA H13 filtration combined with UV-C sterilization and activated carbon filters. ",
