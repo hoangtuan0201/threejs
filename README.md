@@ -2,8 +2,7 @@
 
 > **The world's finest indoor environment system** - Experience AirSmart's cutting-edge HVAC technology through immersive 3D visualization.
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-blue?style=for-the-badge)](https://your-deployment-url.com)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/hoangtuan0201/threejs)
+https://threejs-p5tz.onrender.com/
 
 ## ✨ Features
 
@@ -138,19 +137,6 @@ src/
 ### Environment Variables
 Create a `.env.local` file in the root directory:
 
-```env
-# Wasabi S3 Configuration
-VITE_WASABI_ACCESS_KEY=your_access_key
-VITE_WASABI_SECRET_KEY=your_secret_key
-VITE_WASABI_BUCKET=your_bucket_name
-VITE_WASABI_REGION=ap-southeast-2
-
-# Backend API
-VITE_API_BASE_URL=https://your-backend-api.com
-
-# Analytics (optional)
-VITE_GA_TRACKING_ID=your_google_analytics_id
-```
 
 ### Customization
 - **3D Models**: Replace GLB files in `/public/` directory
@@ -267,20 +253,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **Material-UI** - For the component library
 - **AirSmart Team** - For the product specifications and assets
 
-## 📞 Support
-
-- **🐛 Bug Reports**: [GitHub Issues](https://github.com/hoangtuan0201/threejs/issues)
-- **💡 Feature Requests**: [GitHub Discussions](https://github.com/hoangtuan0201/threejs/discussions)
-- **📧 Email**: support@airsmart.com
-- **📱 Live Chat**: Available on the website
 
 ---
 
-<div align="center">
 
-**Made with ❤️ by the AirSmart Team**
-
-[![GitHub stars](https://img.shields.io/github/stars/hoangtuan0201/threejs?style=social)](https://github.com/hoangtuan0201/threejs/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/hoangtuan0201/threejs?style=social)](https://github.com/hoangtuan0201/threejs/network/members)
-
-</div>
