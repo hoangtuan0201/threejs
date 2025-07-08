@@ -1,0 +1,289 @@
+import { useState, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
+import { SheetProvider } from "@theatre/r3f";
+import { getProject } from "@theatre/core";
+// import studio from "@theatre/studio";
+// import extension from "@theatre/r3f/dist/extension";
+import theatreState from "./states/FlyThrough.json";
+import { Scene } from "./components/Scene";
+import Homepage from "./pages/Homepage";
+import CompareSystem from "./pages/CompareSystem";
+import LoadingScreen from "./components/LoadingScreen";
+import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
+import ChapterNavigation from "./components/ChapterNavigation";
+import FloatingChatButton from "./components/FloatingChatButton";
+import NavigationGuide from "./components/NavigationGuide";
+import MobileHomeButton from "./components/MobileHomeButton";
+
+import { ThemeProvider } from "./theme/ThemeContext";
+
+
+import { useMobile } from "./hooks/useMobile";
+import useSceneLock from "./hooks/useSceneLock";
+
+const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
+
+// Theatre.js Studio disabled for production
+// if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+//   studio.initialize();
+//   studio.extend(extension);
+//
+//   // Force show studio UI
+//   setTimeout(() => {
+//     studio.ui.restore();
+//   }, 1000);
+//
+//   window.__THEATRE_ALREADY_INIT__ = true;
+// }
+
+export default function App() {
+  const [showControlPanel, setShowControlPanel] = useState(true);
+  const [showCompareSystem, setShowCompareSystem] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modelLoaded, setModelLoaded] = useState(false);
+  const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
+  const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
+  const [showNavigationGuide, setShowNavigationGuide] = useState(false);
+
+  // Mobile detection and responsive utilities
+  const mobile = useMobile();
+
+  // Scene lock hook for chapter navigation
+  const {
+    locked: sceneLocked,
+    isNavigating: sceneNavigating,
+    targetPosition: sceneTargetPosition,
+    startPosition: sceneStartPosition,
+    startTime: sceneStartTime,
+    lockScene,
+    completeNavigation,
+  } = useSceneLock(sheet, 1000);
+
+  // Chapter navigation function - useSceneLock approach with smooth option
+  const handleChapterNavigation = (position, options = {}) => {
+    if (options.smooth) {
+      // For smooth navigation, use reduced step size
+      lockScene(position, { stepSize: options.stepSize || 0.15 });
+    } else {
+      // Default discrete navigation
+      lockScene(position);
+    }
+  };
+
+  const startTour = () => {
+    setIsLoading(true);
+    setShowControlPanel(false);
+    setShowCompareSystem(false);
+  };
+
+  const showCompare = () => {
+    setShowControlPanel(false);
+    setShowCompareSystem(true);
+  };
+
+  const backToHome = () => {
+    setShowControlPanel(true);
+    setShowCompareSystem(false);
+    setIsLoading(false);
+    setModelLoaded(false);
+  };
+
+  const endTour = () => {
+    setShowControlPanel(true);
+    setShowCompareSystem(false);
+    setIsLoading(false);
+    setModelLoaded(false);
+  };
+
+  const handleGoHome = () => {
+    setShowControlPanel(true);
+    setShowCompareSystem(false);
+    setIsLoading(false);
+    setModelLoaded(false);
+  };
+
+  const handleModelLoaded = () => {
+    // Add small delay to ensure scene is properly rendered before showing
+    setTimeout(() => {
+      setModelLoaded(true);
+      setIsLoading(false);
+    }, 200); // Small delay to ensure proper scene initialization
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    // Set up global navigation function for Homepage
+    window.onCompare = showCompare;
+
+    return () => {
+      delete window.onCompare;
+    };
+  }, []);
+
+  return (
+    <ThemeProvider>
+      {showControlPanel && <Homepage onExplore={startTour} />}
+      {showCompareSystem && <CompareSystem onBack={backToHome} />}
+
+      {/* Loading Screen */}
+      {isLoading && !modelLoaded && <LoadingScreen />}
+
+    
+      {/* Theatre.js Studio Button - Development only */}
+      {/* {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
+        <button
+          onClick={() => {
+            console.log("Toggling Theatre.js Studio...");
+            if (window.__THEATRE_STUDIO_VISIBLE) {
+              studio.ui.hide();
+              window.__THEATRE_STUDIO_VISIBLE = false;
+            } else {
+              studio.ui.restore();
+              window.__THEATRE_STUDIO_VISIBLE = true;
+            }
+          }}
+          style={{
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: 10000,
+            background: "rgba(255, 100, 0, 0.9)",
+            color: "white",
+            border: "none",
+            padding: "10px 15px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          🎬 Studio
+        </button>
+      )} */}
+
+      {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
+      {!showControlPanel && !showCompareSystem && (
+        <Canvas
+          className="gpu-accelerated ios-fix android-fix"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 1,
+            width: "100vw",
+            height: "100vh",
+            touchAction: "none", // Prevent default touch behaviors
+            WebkitTouchCallout: "none",
+            WebkitUserSelect: "none",
+            WebkitTapHighlightColor: "transparent",
+            userSelect: "none",
+            opacity: modelLoaded ? 1 : 0, // Hide canvas until model loads to prevent white screen
+            transition: "opacity 0.3s ease", // Smooth fade in when model loads
+          }}
+          shadows
+          dpr={[1, 2]} // Higher DPR for better quality on retina displays
+          camera={{
+            position: mobile.getCameraPosition(), // Responsive camera position
+            fov: mobile.getCameraFOV(), // Responsive FOV based on device
+            aspect: window.innerWidth / window.innerHeight,
+            near: 0.1,
+            far: 1000,
+          }}
+          gl={{
+            preserveDrawingBuffer: true,
+            antialias: true,
+            alpha: false,
+            powerPreference: "high-performance",
+            stencil: false,
+            depth: true,
+          }}
+          onCreated={({ gl, camera }) => {
+            // Responsive camera adjustments using mobile hook
+            const handleResize = () => {
+              const newPosition = mobile.getCameraPosition();
+              const newFOV = mobile.getCameraFOV();
+
+              // Update camera position and FOV
+              camera.position.set(newPosition[0], newPosition[1], newPosition[2]);
+              camera.fov = newFOV;
+              camera.aspect = window.innerWidth / window.innerHeight;
+              camera.updateProjectionMatrix();
+
+              // Adjust renderer for mobile performance
+              gl.setPixelRatio(mobile.getPixelRatio());
+
+            
+            };
+
+            // Initial setup
+            handleResize();
+
+            window.addEventListener("resize", handleResize);
+            window.addEventListener("orientationchange", handleResize);
+
+            return () => {
+              window.removeEventListener("resize", handleResize);
+              window.removeEventListener("orientationchange", handleResize);
+            };
+          }}
+        >
+          <SheetProvider sheet={sheet}>
+            <Scene
+              onTourEnd={endTour}
+              onHideControlPanel={() => setShowControlPanel(false)}
+              onShowControlPanel={() => setShowControlPanel(true)}
+              isExploreMode={!showControlPanel}
+              onModelLoaded={handleModelLoaded}
+              onPositionChange={setCurrentSequencePosition}
+              isNavigating={sceneLocked}
+              scrollSensitivity={scrollSensitivity}
+              onShowNavigationGuide={() => setShowNavigationGuide(true)}
+              showNavigationGuide={showNavigationGuide}
+              navigationData={{
+                isNavigating: sceneNavigating,
+                targetPosition: sceneTargetPosition,
+                startPosition: sceneStartPosition,
+                startTime: sceneStartTime,
+                onComplete: completeNavigation,
+              }}
+            />
+          </SheetProvider>
+        </Canvas>
+      )}
+
+      {/* Chapter Navigation - show when in explore mode and model is loaded */}
+      <ChapterNavigation
+        currentPosition={currentSequencePosition}
+        onNavigate={handleChapterNavigation}
+        mobile={mobile}
+        isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
+        isLocked={sceneLocked}
+      />
+
+      {/* Scroll Sensitivity Control */}
+      <ScrollSensitivityControl
+        sensitivity={scrollSensitivity}
+        onSensitivityChange={setScrollSensitivity}
+        isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
+      />
+
+      {/* Floating Chat Button - Always visible */}
+      <FloatingChatButton />
+
+      {/* Mobile Home Button - Only visible in 3D explore mode */}
+      <MobileHomeButton
+        onGoHome={handleGoHome}
+        isVisible={!showControlPanel && !showCompareSystem && !showNavigationGuide}
+      />
+
+      {/* Navigation Guide Popup */}
+      <NavigationGuide
+        isVisible={showNavigationGuide}
+        onClose={() => setShowNavigationGuide(false)}
+      />
+    </ThemeProvider>
+  );
+}
