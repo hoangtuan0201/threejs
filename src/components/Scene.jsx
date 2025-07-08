@@ -183,9 +183,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     setActiveChapter(null);
     setSelectedHotspot(null);
     setShowVideoScreen(null);
-    // Reset camera to initial position - start from 0.1 to avoid wall clipping
-    sheet.sequence.position = 0.1;
-    setTargetPosition(0.1);
+    // Reset camera to initial position - start from 0.15 to avoid wall clipping
+    sheet.sequence.position = 0.15;
+    setTargetPosition(0.15);
     // Show ControlPanel again
     if (onShowControlPanel) {
       onShowControlPanel();
@@ -202,8 +202,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     const currentPos = sheet.sequence.position;
 
     if (isNaN(currentPos) || currentPos === undefined) {
-      sheet.sequence.position = 0.1; // Ensure Theatre.js sequence starts at 0.1 to avoid wall clipping
-      setTargetPosition(0.1);
+      sheet.sequence.position = 0.15; // Ensure Theatre.js sequence starts at 0.15 to avoid wall clipping
+      setTargetPosition(0.15);
     } else {
       setTargetPosition(currentPos);
     }
@@ -212,11 +212,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Ensure proper initialization when entering explore mode
   useEffect(() => {
     if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated) {
-      // Force Theatre.js sequence to start at position 0.1 when entering explore mode to avoid wall clipping
+      // Force Theatre.js sequence to start at position 0.15 when entering explore mode to avoid wall clipping
       // Add small delay to ensure Theatre.js is ready
       setTimeout(() => {
-        sheet.sequence.position = 0.1;
-        setTargetPosition(0.1);
+        sheet.sequence.position = 0.15;
+        setTargetPosition(0.15);
         // Show navigation guide when first entering explore mode
         if (onShowNavigationGuide) {
           onShowNavigationGuide();
@@ -243,8 +243,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Ensure sequence starts at 0.1 on mount to avoid wall clipping
     const initializeSequence = () => {
       if (sheet && sheet.sequence && !navigationData?.isNavigating && !hasNavigated) {
-        sheet.sequence.position = 0.1;
-        setTargetPosition(0.1);
+        sheet.sequence.position = 0.15;
+        setTargetPosition(0.15);
       }
     };
 
@@ -273,8 +273,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowLeft':
           event.preventDefault();
           // Smooth navigation backward using setTargetPosition (like scroll)
-          if (targetPosition > 0.1) {
-            const newPosition = Math.max(0.1, targetPosition - 0.3);
+          if (targetPosition > 0.15) {
+            const newPosition = Math.max(0.15, targetPosition - 0.3);
             setTargetPosition(newPosition);
             setHasNavigated(true);
           }
@@ -333,8 +333,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         // Calculate new position based on current targetPosition
         let newPosition = prevTarget + (deltaY * finalSensitivity);
 
-        // Limit within range [0.1, 6.7] (entire sequence) - start from 0.1 to avoid wall clipping
-        newPosition = Math.max(0.1, Math.min(6.5, newPosition));
+        // Limit within range [0.15, 6.7] (entire sequence) - start from 0.15 to avoid wall clipping
+        newPosition = Math.max(0.15, Math.min(6.5, newPosition));
 
 
 
