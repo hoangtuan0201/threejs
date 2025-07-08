@@ -23,18 +23,18 @@ import useSceneLock from "./hooks/useSceneLock";
 
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
-// Theatre.js Studio disabled for production
-if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  studio.initialize();
-  studio.extend(extension);
+// // Theatre.js Studio disabled for production
+// if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+//   studio.initialize();
+//   studio.extend(extension);
 
-  // Force show studio UI
-  setTimeout(() => {
-    studio.ui.restore();
-  }, 1000);
+//   // Force show studio UI
+//   setTimeout(() => {
+//     studio.ui.restore();
+//   }, 1000);
 
-  window.__THEATRE_ALREADY_INIT__ = true;
-}
+//   window.__THEATRE_ALREADY_INIT__ = true;
+// }
 
 export default function App() {
   const [showControlPanel, setShowControlPanel] = useState(true);
@@ -48,34 +48,6 @@ export default function App() {
 
   // Mobile detection and responsive utilities
   const mobile = useMobile();
-
-  // Handle network errors
-  useEffect(() => {
-    const handleOnline = () => {
-      console.log('Connection restored');
-    };
-
-    const handleOffline = () => {
-      console.log('Connection lost');
-    };
-
-    const handleError = (event) => {
-      if (event.message && event.message.includes('ERR_INTERNET_DISCONNECTED')) {
-        console.log('Network error detected, continuing with cached content');
-        event.preventDefault();
-      }
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    window.addEventListener('error', handleError);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('error', handleError);
-    };
-  }, []);
 
   // Scene lock hook for chapter navigation
   const {
@@ -160,7 +132,7 @@ export default function App() {
 
     
       {/* Theatre.js Studio Button - Development only */}
-      {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
+      {/* {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
         <button
           onClick={() => {
             console.log("Toggling Theatre.js Studio...");
@@ -191,7 +163,7 @@ export default function App() {
         >
           🎬 Studio
         </button>
-      )}
+      )} */}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
       {!showControlPanel && !showCompareSystem && (
