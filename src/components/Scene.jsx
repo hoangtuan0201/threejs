@@ -19,7 +19,7 @@ import { useMobile } from "../hooks/useMobile";
 
 
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false }) {
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
@@ -304,8 +304,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Handle scroll only in explore mode
   useEffect(() => {
     const handleWheel = (event) => {
-      // Only allow scroll if in explore mode, when not navigating, and when NavigationGuide is not showing
-      if (!isExploreMode || isNavigating || showNavigationGuide) {
+      // Only allow scroll if in explore mode, when not navigating, when NavigationGuide is not showing, and when chat is not focused
+      if (!isExploreMode || isNavigating || showNavigationGuide || isChatFocused) {
         return;
       }
 
@@ -479,7 +479,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       canvas.removeEventListener('touchend', handleTouchEnd);
       canvas.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile, isNavigating, showNavigationGuide]);
+  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile, isNavigating, showNavigationGuide, isChatFocused]);
 
   return (
     <>

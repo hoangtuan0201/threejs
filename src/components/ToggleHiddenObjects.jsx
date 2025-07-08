@@ -9,7 +9,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
   // Auto-show objects when position >= 4.2
   useEffect(() => {
     const currentPosition = sheet.sequence.position;
-    if (currentPosition >= 4.2 && isHidden) {
+    if (currentPosition >= 4.28 && isHidden) {
       setIsHidden(false);
       onToggleHidden(false);
     }

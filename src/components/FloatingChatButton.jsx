@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Fab, Paper, Typography, TextField, IconButton, Stack, CircularProgress } from '@mui/material';
 import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
 import { useMobile } from '../hooks/useMobile';
 import { useTheme } from '../theme/ThemeContext';
 
-const FloatingChatButton = () => {
+const FloatingChatButton = ({ onFocusChange }) => {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -21,7 +21,7 @@ const FloatingChatButton = () => {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
-  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+
 
   const scrollToBottom = () => {
     // Try multiple methods to ensure scrolling works
@@ -41,14 +41,17 @@ const FloatingChatButton = () => {
 
   useEffect(() => {
     scrollToBottom();
+  }, [chatHistory]);
 
-    // Check if scroll indicator should be shown
-    const messagesContainer = chatContainerRef.current?.querySelector('[data-messages-container]');
-    if (messagesContainer) {
-      const hasScroll = messagesContainer.scrollHeight > messagesContainer.clientHeight;
-      setShowScrollIndicator(hasScroll && !mobile.isMobile);
+  // Handle click outside to unfocus chat
+  const handleClickOutside = useCallback((event) => {
+    if (isOpen && chatContainerRef.current && !chatContainerRef.current.contains(event.target)) {
+      // User clicked outside chat - unfocus but don't close
+      if (onFocusChange) {
+        onFocusChange(false);
+      }
     }
-  }, [chatHistory, mobile.isMobile]);
+  }, [isOpen, onFocusChange]);
 
   // Focus chat when opened and handle scroll isolation
   useEffect(() => {
@@ -58,6 +61,19 @@ const FloatingChatButton = () => {
         if (chatContainerRef.current) {
           chatContainerRef.current.focus();
         }
+      }, 100);
+
+      // Notify parent that chat is focused
+      if (onFocusChange) {
+        onFocusChange(true);
+      }
+
+
+
+      // Add listener with slight delay to avoid immediate trigger
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
       }, 100);
 
       // Enhanced scroll isolation
@@ -88,9 +104,17 @@ const FloatingChatButton = () => {
           chatElement.removeEventListener('wheel', handleWheel, { capture: true });
           chatElement.removeEventListener('touchmove', handleTouchMove, { capture: true });
         }
+        // Clean up click outside listeners
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside);
       };
+    } else {
+      // Notify parent that chat is no longer focused when closed
+      if (onFocusChange) {
+        onFocusChange(false);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, onFocusChange, handleClickOutside]);
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
@@ -180,6 +204,10 @@ const FloatingChatButton = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.focus();
     }
+    // Re-focus chat when clicked
+    if (onFocusChange) {
+      onFocusChange(true);
+    }
   };
 
   return (
@@ -263,7 +291,13 @@ const FloatingChatButton = () => {
             </Box>
             <IconButton
               size="small"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                // Notify parent that chat is no longer focused
+                if (onFocusChange) {
+                  onFocusChange(false);
+                }
+              }}
               sx={{ color: theme.colors.text.secondary }}
             >
               <CloseIcon fontSize="small" />
@@ -482,50 +516,7 @@ const FloatingChatButton = () => {
             
             <div ref={messagesEndRef} />
 
-            {/* Scroll Indicator for Desktop */}
-            {showScrollIndicator && !mobile.isMobile && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  right: 4,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  zIndex: 10,
-                  pointerEvents: 'none',
-                  opacity: 0.5,
-                  animation: 'scrollHint 2s ease-in-out infinite',
-                  '@keyframes scrollHint': {
-                    '0%, 100%': { opacity: 0.3 },
-                    '50%': { opacity: 0.7 },
-                  },
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: theme.colors.text.tertiary,
-                    fontSize: '8px',
-                    writingMode: 'vertical-rl',
-                    textOrientation: 'mixed',
-                    letterSpacing: '1px',
-                  }}
-                >
-                  SCROLL
-                </Typography>
-                <Box
-                  sx={{
-                    width: '2px',
-                    height: '16px',
-                    background: `linear-gradient(to bottom, transparent, ${theme.colors.text.tertiary}, transparent)`,
-                    borderRadius: '1px',
-                  }}
-                />
-              </Box>
-            )}
+
 
             {/* Manual scroll to bottom button - for testing */}
             {chatHistory.length > 3 && (

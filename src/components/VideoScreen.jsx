@@ -15,6 +15,7 @@ export function VideoScreen({
   const mobile = useMobile();
   const [isPlaying, setIsPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // Extract video ID from YouTube URL if full URL is provided
   const extractVideoId = (url) => {
@@ -59,16 +60,45 @@ export function VideoScreen({
           onClick={() => window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank')}
           title="Xem video lớn"
         >
-          <iframe
-            width={size.width}
-            height={size.height}
-            src={embedUrl}
-            title={title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
-          />
+          {hasError ? (
+            <div
+              style={{
+                width: size.width,
+                height: size.height,
+                backgroundColor: '#1a1a1a',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: '14px',
+                textAlign: 'center',
+                padding: '20px',
+                border: '2px solid #333'
+              }}
+            >
+              <div>
+                <div style={{ marginBottom: '10px', fontSize: '18px' }}>📺</div>
+                <div>Video không khả dụng</div>
+                <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
+                  Kiểm tra kết nối internet
+                </div>
+              </div>
+            </div>
+          ) : (
+            <iframe
+              width={size.width}
+              height={size.height}
+              src={embedUrl}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              onError={() => setHasError(true)}
+              onLoad={() => setHasError(false)}
+              style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
+            />
+          )}
           <div
             style={{
               position: 'absolute',

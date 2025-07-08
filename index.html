@@ -11,6 +11,32 @@
     <link rel="stylesheet" type="text/css" href="css/mobile.css" />
     <title>AirSmart</title>
     <script>
+      // Clear YouTube service worker cache to prevent conflicts
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            if (registration.scope.includes('youtube.com')) {
+              registration.unregister();
+            }
+          }
+        });
+      }
+
+      // Clear YouTube-related caches
+      if ('caches' in window) {
+        caches.keys().then(function(cacheNames) {
+          return Promise.all(
+            cacheNames.filter(cacheName =>
+              cacheName.includes('youtube') ||
+              cacheName.includes('kevlar') ||
+              cacheName.includes('appshell')
+            ).map(function(cacheName) {
+              return caches.delete(cacheName);
+            })
+          );
+        });
+      }
+
       document.documentElement.className = "js";
       var supportsCssVars = function () {
         var e,
