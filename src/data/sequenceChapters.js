@@ -5,7 +5,7 @@ export const sequenceChapters = [
   {
     id: "Geom3D_393",
     hotspot: {
-      position: [27.78, 4.5, -22.5],
+      position: [27.78, 4.4, -22.5],
       rotation: [0, Math.PI / 1.8, 0],
       detailPosition: [27.78, 5, -22.7],
       detailRotation: [0, Math.PI / 2, 0],
@@ -59,7 +59,7 @@ export const sequenceChapters = [
      // Hotspot label positioning
        mobileLabelPosition: [31.4, 7, -20.5],
       // Hotspot label positioning
-      labelPosition:  [31.4, 7, -20.7],
+      labelPosition:  [31.5, 7, -20.8],
       // Mobile-specific positioning
       mobileDetailPosition: [31, 7.3, -21.3],
       mobileDetailRotation: [0, Math.PI / 1, 0],
@@ -96,7 +96,7 @@ export const sequenceChapters = [
   {
     id: "Air Purification",
     hotspot: {
-      position: [16.3, 4.3, -32.3],
+      position: [16.8, 4.3, -32.3],
       rotation: [0, Math.PI / 1, 0],
       detailPosition: [15.3, 4.5, -32.3],
       detailRotation: [0, 0, 0],

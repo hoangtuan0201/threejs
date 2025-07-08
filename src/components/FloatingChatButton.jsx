@@ -137,7 +137,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-      const response = await fetch('https://ai-airsmart.onrender.com/ask', {
+      const response = await fetch('https://api2.heartstribute.com/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

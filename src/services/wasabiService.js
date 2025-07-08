@@ -1,7 +1,8 @@
 // Frontend Wasabi service - Uses deployed backend API
 
 // Backend API configuration - Production
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://be-airsmart-ba1z.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api2.heartstribute.com'
+
 
 /**
  * Format file size helper

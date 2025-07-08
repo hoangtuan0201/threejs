@@ -11,7 +11,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
     const currentPosition = sheet.sequence.position;
 
     // Auto-show objects when leaving the range 3.0-4.2 if they are hidden
-    if ((currentPosition < 3.7 || currentPosition > 4.2) && isHidden) {
+    if ((currentPosition < 3.7 || currentPosition > 4.3) && isHidden) {
       setIsHidden(false);
       onToggleHidden(false);
     }
