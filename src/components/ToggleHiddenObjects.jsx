@@ -6,22 +6,18 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
   const [isHidden, setIsHidden] = useState(false);
   const sheet = useCurrentSheet();
 
-  // Auto-show objects when position is between 3.7 and 4.2
+  // Auto-show objects when exiting range 3.0-4.2 if they were hidden
   useEffect(() => {
     const currentPosition = sheet.sequence.position;
 
-    // Show objects when in the range 3.7 to 4.2
-    if (currentPosition >= 3.7 && currentPosition <= 4.2 && isHidden) {
+    // Auto-show objects when leaving the range 3.0-4.2 if they are hidden
+    if ((currentPosition < 3.7 || currentPosition > 4.2) && isHidden) {
       setIsHidden(false);
       onToggleHidden(false);
     }
-
-    // Hide objects when outside the range (before 3.7 or after 4.2)
-    if ((currentPosition < 3.7 || currentPosition > 4.2) && !isHidden) {
-      setIsHidden(true);
-      onToggleHidden(true);
-    }
   }, [sheet.sequence.position, isHidden, onToggleHidden]);
+
+
 
   // Always call hooks first (Rules of Hooks)
   const handleToggle = (e) => {
@@ -74,15 +70,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
             e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
           }}
         >
-          {(() => {
-            const currentPosition = sheet.sequence.position;
-            const isInAutoShowRange = currentPosition >= 3.7 && currentPosition <= 4.2;
-
-            if (isInAutoShowRange) {
-              return isHidden ? 'Auto Show (3.7-4.2)' : 'Auto Hide (3.7-4.2)';
-            }
-            return isHidden ? 'Show Objects' : 'Hide Objects';
-          })()}
+          {isHidden ? 'Show Objects' : 'Hide Objects'}
         </div>
       </Html>
     </group>

@@ -45,6 +45,14 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
         e.stopPropagation();
         onHotspotClick(chapter.id);
       }}
+      onPointerEnter={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerLeave={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = 'default';
+      }}
     >
       {/* 3D "i" shape for hotspot - created with simple geometry */}
       <group>
