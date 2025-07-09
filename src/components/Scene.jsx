@@ -33,6 +33,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
   const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown in current session
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
+  const hasTriggeredGuideRef = useRef(false); // Ref to prevent multiple triggers
 
   // Track if we just returned from detail scene to prevent navigation guide
   useEffect(() => {
@@ -217,14 +218,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // 4. Not currently restoring from detail scene
     // 5. Haven't already shown the guide
     // Note: Allow first-time users to see guide even if they haven't visited detail scene
-    // Show navigation guide on page load/refresh, but not when returning from detail scene
-    if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated && !isRestoring && !justCompletedRestore && !hasShownNavigationGuide) {
+    // Show navigation guide only once on first explore mode entry
+    if (isExploreMode && !hasTriggeredGuideRef.current && !hasVisitedDetailScene) {
       if (onShowNavigationGuide) {
+        hasTriggeredGuideRef.current = true; // Mark as triggered
         onShowNavigationGuide();
         setHasShownNavigationGuide(true);
       }
     }
-  }, [isExploreMode, isNavigating, navigationData?.isNavigating, hasNavigated, isRestoring, justCompletedRestore, hasShownNavigationGuide, hasVisitedDetailScene, onShowNavigationGuide]);
+  }, [isExploreMode, hasVisitedDetailScene]); // Removed hasShownNavigationGuide to prevent loop
 
   // Update camera position based on mobile detection (optimized)
   useEffect(() => {

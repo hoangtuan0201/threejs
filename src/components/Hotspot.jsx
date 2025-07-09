@@ -216,6 +216,10 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
               transition: 'all 0.2s ease',
               textShadow: '0 1px 2px rgba(0,0,0,0.8)',
               backdropFilter: 'blur(4px)',
+              zIndex: 9999, // High z-index to ensure clickability above navigation guide
+              position: 'relative',
+              zIndex: 9999, // High z-index to ensure clickability
+              position: 'relative',
             }}
             onClick={(e) => {
               e.stopPropagation();

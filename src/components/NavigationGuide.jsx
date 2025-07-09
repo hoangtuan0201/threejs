@@ -98,7 +98,7 @@ const NavigationGuide = ({ isVisible, onClose }) => {
       bottom: 0,
       background: "rgba(0, 0, 0, 0.85)",
       backdropFilter: "blur(15px)",
-      zIndex: 2000,
+      zIndex: 1300, // Lower z-index to not block hotspot labels
       display: "flex",
       alignItems: "center",
       justifyContent: "center",

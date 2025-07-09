@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { SheetProvider } from "@theatre/r3f";
@@ -58,10 +58,7 @@ export default function App({ isChatFocused = false }) {
   const [currentSheet, setCurrentSheet] = useState(mainSheet);
   const [currentScene, setCurrentScene] = useState('main'); // Track current scene
 
-  // Debug log for currentSheet changes
-  useEffect(() => {
-    console.log('App: currentSheet changed:', currentSheet);
-  }, [currentSheet]);
+
   const navigate = useNavigate();
   const [showControlPanel, setShowControlPanel] = useState(false); // Start with 3D experience
   const [showCompareSystem, setShowCompareSystem] = useState(false);
@@ -69,28 +66,41 @@ export default function App({ isChatFocused = false }) {
   const [modelLoaded, setModelLoaded] = useState(false);
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
   const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
-  const [showNavigationGuide, setShowNavigationGuide] = useState(false);
+  const [showNavigationGuide, setShowNavigationGuide] = useState(false); // Force disabled
 
-  // Debug navigation guide state
+  // Add global functions for navigation guide control
   useEffect(() => {
-    console.log('🧭 NavigationGuide state changed:', showNavigationGuide);
+    // Immediately close any existing navigation guide
+    setShowNavigationGuide(false);
 
     // Add global function to force close navigation guide
     window.forceCloseNavigationGuide = () => {
-      console.log('🔧 Force closing navigation guide');
       setShowNavigationGuide(false);
+    };
+
+
+
+    // Add global function to manually show navigation guide (for testing)
+    window.showNavigationGuide = () => {
+      setShowNavigationGuide(true);
     };
 
     // Add global function to reset navigation guide (for testing)
     window.resetNavigationGuide = () => {
-      console.log('🔄 Resetting navigation guide flags');
       localStorage.removeItem('hasVisitedDetailScene');
-      // Don't remove hasShownNavigationGuide - it resets on page refresh
       setShowNavigationGuide(false);
-      // Reload page to reset all states
       window.location.reload();
     };
-  }, [showNavigationGuide]);
+
+    // Auto-close navigation guide after 8 seconds if still showing
+    if (showNavigationGuide) {
+      const autoCloseTimer = setTimeout(() => {
+        setShowNavigationGuide(false);
+      }, 10000); // 8 seconds to give user time to read
+
+      return () => clearTimeout(autoCloseTimer);
+    }
+  }, []); // Empty dependency array to run only once
 
 
   // Mobile detection and responsive utilities
@@ -155,7 +165,6 @@ export default function App({ isChatFocused = false }) {
       {/* {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
         <button
           onClick={() => {
-            console.log("Toggling Theatre.js Studio...");
             if (window.__THEATRE_STUDIO_VISIBLE) {
               studio.ui.hide();
               window.__THEATRE_STUDIO_VISIBLE = false;
@@ -183,7 +192,7 @@ export default function App({ isChatFocused = false }) {
         >
           🎬 Studio
         </button>
-      )}  */}
+      )}   */}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
       {!showControlPanel && !showCompareSystem && (
@@ -260,8 +269,8 @@ export default function App({ isChatFocused = false }) {
             onPositionChange={setCurrentSequencePosition}
             isNavigating={sceneLocked}
             scrollSensitivity={scrollSensitivity}
-            onShowNavigationGuide={() => setShowNavigationGuide(true)}
-            onHideNavigationGuide={() => setShowNavigationGuide(false)}
+            onShowNavigationGuide={useCallback(() => setShowNavigationGuide(true), [])}
+            onHideNavigationGuide={useCallback(() => setShowNavigationGuide(false), [])}
             showNavigationGuide={showNavigationGuide}
             isChatFocused={isChatFocused}
             navigationData={{
