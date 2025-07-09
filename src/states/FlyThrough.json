@@ -275,7 +275,7 @@
                       0.5
                     ],
                     "type": "bezier",
-                    "value": 4.973735178439581
+                    "value": 4.893524010830917
                   },
                   {
                     "id": "pBzs4EVmTB",
@@ -852,7 +852,7 @@
                       0.5
                     ],
                     "type": "bezier",
-                    "value": 1.3488986321128276
+                    "value": 1.4488986321128277
                   },
                   {
                     "id": "XDzviol8BD",
@@ -1316,10 +1316,30 @@
           }
         }
       }
+    },
+    "DetailScene": {
+      "staticOverrides": {
+        "byObject": {
+          "DetailCamera": {
+            "rotation": {
+              "x": 0,
+              "y": 1.5237046202644542,
+              "z": 0
+            },
+            "zoom": 4.519999999999977,
+            "position": {
+              "y": 4.464,
+              "x": 30.808215306909304,
+              "z": -21.946039856732135
+            }
+          }
+        }
+      }
     }
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "PqEB41X46pPdZEmW",
     "hk2t5tCqhLd9asz3",
     "qjY0RSXRs2xr00ZX",
     "vHg9gJYkcDuNplOg",
