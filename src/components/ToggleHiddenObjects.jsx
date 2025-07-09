@@ -17,6 +17,10 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
     }
   }, [sheet.sequence.position, isHidden, onToggleHidden]);
 
+  // Check if button should be hidden at start
+  const currentPosition = sheet.sequence.position;
+  const shouldHideAtStart = currentPosition < 0.15;
+
 
 
   // Always call hooks first (Rules of Hooks)
@@ -28,7 +32,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
   };
 
   // Early returns after all hooks
-  if (!isVisible) return null;
+  if (!isVisible || shouldHideAtStart) return null;
 
   return (
     <group position={[17.1, 5.7, -32.2]} >

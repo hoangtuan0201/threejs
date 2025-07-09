@@ -235,8 +235,8 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
       <VideoScreen
         position={mobile.isMobile ? [28, 4.1, -22.1] : [27.8, 4.24, -21.72]} // Positioned below detail panel
         rotation={[0, Math.PI / 1.8, 0]}
-        videoId="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // YouTube backup video - replace with actual AirSmart video
-        title="AirSmart Demo"
+        videoId="https://vimeo.com/912200130" // YouTube backup video - replace with actual AirSmart video
+        title="Thermostat"
         size={mobile.isMobile ? { width: 220, height: 124 } : { width: 200, height: 100 }}
         mobilePosition={[28, 4.1, -22.1]}
         mobileRotation={[0, Math.PI / 1.8, 0]}

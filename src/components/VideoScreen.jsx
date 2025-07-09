@@ -90,7 +90,7 @@ export function VideoScreen({
   return (
     <group position={finalPosition} rotation={finalRotation}>
       {/* TV screen as HTML plane */}
-      <Html distanceFactor={mobile.isMobile ? 1.5 : 2} position={[0, 0, 0]} transform occlude>
+      <Html distanceFactor={mobile.isMobile ? 1.5 : 2.2} position={[0, 0, 0]} transform occlude>
         <div
           style={{
             width: finalSize.width,

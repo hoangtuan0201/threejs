@@ -98,7 +98,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
   const isSelected = selectedHotspot && selectedHotspot.id === chapter.id;
 
   // Hide labels at very beginning of scene to prevent see-through walls
-  const shouldHideAtStart = currentPosition < 0.2;
+  const shouldHideAtStart = currentPosition < 0.15;
   
   // Calculate relative label position from hotspot position
   const hotspotPosition = chapter.hotspot.position || [0, 0, 0];
