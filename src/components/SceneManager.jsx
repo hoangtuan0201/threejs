@@ -25,7 +25,9 @@ export function SceneManager({
   const [justReturnedFromDetail, setJustReturnedFromDetail] = useState(false); // Track when just returned
   const [hasVisitedDetailScene, setHasVisitedDetailScene] = useState(() => {
     // Check localStorage for persistent flag
-    return localStorage.getItem('hasVisitedDetailScene') === 'true';
+    const visited = localStorage.getItem('hasVisitedDetailScene') === 'true';
+    console.log('🏠 hasVisitedDetailScene from localStorage:', visited);
+    return visited;
   }); // Permanent flag
 
   // Create sheets from the passed project

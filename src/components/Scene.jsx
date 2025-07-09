@@ -31,7 +31,10 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
   const [localHiddenState, setLocalHiddenState] = useState(false); // Local state for 3D toggle
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
-  const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown
+  const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(() => {
+    // Check localStorage to persist navigation guide state
+    return localStorage.getItem('hasShownNavigationGuide') === 'true';
+  }); // Track if guide was shown
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
 
   // Reset navigation guide flag for first-time users (who haven't visited detail scene)
@@ -210,11 +213,28 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // 5. Haven't already shown the guide
     // Note: Allow first-time users to see guide even if they haven't visited detail scene
     // Show navigation guide at scene start but don't block interactions
+    console.log('🧭 Navigation Guide Check:', {
+      isExploreMode,
+      isNavigating,
+      navigationDataNavigating: navigationData?.isNavigating,
+      hasNavigated,
+      isRestoring,
+      justCompletedRestore,
+      hasShownNavigationGuide,
+      hasVisitedDetailScene
+    });
+
+    // Show navigation guide only for first-time users, not when returning from detail scene
     if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated && !isRestoring && !justCompletedRestore && !hasShownNavigationGuide && !hasVisitedDetailScene) {
+      console.log('✅ Showing navigation guide - all conditions met');
       if (onShowNavigationGuide) {
         onShowNavigationGuide();
         setHasShownNavigationGuide(true);
+        // Save to localStorage to persist across sessions
+        localStorage.setItem('hasShownNavigationGuide', 'true');
       }
+    } else {
+      console.log('❌ Not showing navigation guide - conditions not met');
     }
   }, [isExploreMode, isNavigating, navigationData?.isNavigating, hasNavigated, isRestoring, justCompletedRestore, hasShownNavigationGuide, hasVisitedDetailScene, onShowNavigationGuide]);
 

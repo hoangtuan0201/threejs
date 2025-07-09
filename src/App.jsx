@@ -80,6 +80,16 @@ export default function App({ isChatFocused = false }) {
       console.log('🔧 Force closing navigation guide');
       setShowNavigationGuide(false);
     };
+
+    // Add global function to reset navigation guide (for testing)
+    window.resetNavigationGuide = () => {
+      console.log('🔄 Resetting navigation guide flags');
+      localStorage.removeItem('hasVisitedDetailScene');
+      localStorage.removeItem('hasShownNavigationGuide');
+      setShowNavigationGuide(false);
+      // Reload page to reset all states
+      window.location.reload();
+    };
   }, [showNavigationGuide]);
 
 
