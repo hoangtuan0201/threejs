@@ -12,7 +12,6 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
-        console.log('⌨️ Escape key pressed - returning to main scene');
         onReturnToMain();
       }
     };
@@ -39,25 +38,16 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
 
       {/* Close Button - Fixed position with mobile support */}
       <Html
-        position={mobile.isMobile ? [29.08, 4.78, -22.25] : [28.7 , 4.75, -22.3]}
-        distanceFactor={mobile.isMobile ? 4 : 4}
+        position={mobile.isMobile ? [28.5, 4.98, -22.25] : [28.7 , 4.75, -22.3]}
+        distanceFactor={mobile.isMobile ? 5 : 4}
         occlude={false}
         style={{
           pointerEvents: 'auto',
-          zIndex: 1000,
+          zIndex: 99999, // Highest z-index to overlay labels and all other elements
         }}
       >
         <button
           onClick={() => {
-            console.log('❌ Close button clicked - returning to main scene');
-            if (savedMainSceneState) {
-              console.log('📍 Saved state available:', {
-                position: [savedMainSceneState.position.x.toFixed(2), savedMainSceneState.position.y.toFixed(2), savedMainSceneState.position.z.toFixed(2)],
-                sequencePosition: savedMainSceneState.sequencePosition?.toFixed(3)
-              });
-            } else {
-              console.log('⚠️ No saved state available');
-            }
             onReturnToMain();
           }}
           style={{
@@ -75,6 +65,8 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
             justifyContent: 'center',
             transition: 'all 0.3s ease',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+            position: 'relative',
+            zIndex: 999999, // Extremely high z-index to overlay detail panel
           }}
           onMouseEnter={(e) => {
             e.target.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';

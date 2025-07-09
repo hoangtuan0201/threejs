@@ -98,7 +98,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
       // Ensure we have a valid sequence position (fallback to 1 if at start)
       if (state.sequencePosition < 0.1) {
-        console.log('⚠️ Sequence position too low, setting to 1.0');
         state.sequencePosition = 1.0;
       }
 
@@ -111,7 +110,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   useEffect(() => {
     if (shouldRestorePosition && camera && sheet) {
       // Set restoring flag to prevent other useEffects from resetting
-      console.log('🚫 Setting isRestoring=true to prevent auto-reset');
       setIsRestoring(true);
 
       // Immediate restore to prevent jitter - use requestAnimationFrame for smooth transition
@@ -121,17 +119,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
 
         if (savedSceneState && savedSceneState.sequencePosition !== undefined) {
-          console.log('🔄 Restoring camera state:', {
-            position: [savedSceneState.position.x.toFixed(2), savedSceneState.position.y.toFixed(2), savedSceneState.position.z.toFixed(2)],
-            sequencePosition: savedSceneState.sequencePosition?.toFixed(3)
-          });
-
           // Use saved position if it's reasonable (> 0.1) - Lower threshold
           if (savedSceneState.sequencePosition > 0.1) {
             targetSequencePosition = savedSceneState.sequencePosition;
-            console.log('✅ Using saved sequence position:', targetSequencePosition);
-          } else {
-            console.log('⚠️ Saved position too low:', savedSceneState.sequencePosition, 'using fallback position 1.0');
           }
 
           // Restore sequence position FIRST to prevent jitter
@@ -151,18 +141,15 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             }
           });
         } else {
-          console.log('❌ No saved state available! This should not happen.');
-
           // Try to get from localStorage as fallback
           try {
             const localState = localStorage.getItem('lastHotspotPosition');
             if (localState) {
               const parsedState = JSON.parse(localState);
-              console.log('📱 Found localStorage fallback:', parsedState);
               targetSequencePosition = parsedState.sequencePosition || 1.0;
             }
           } catch (error) {
-            console.error('❌ Error reading localStorage:', error);
+            // Silent error handling
           }
 
           if (sheet.sequence) {
@@ -171,18 +158,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
         }
 
-        console.log('✅ Camera state restored successfully to position:', targetSequencePosition);
-
         // Mark as navigated to prevent future auto-resets
         setHasNavigated(true);
 
         // Mark navigation guide as shown to prevent popup during restore
-        console.log('🚫 Marking navigation guide as shown to prevent popup during restore');
         setHasShownNavigationGuide(true);
 
         // Force close navigation guide if it's currently showing
         if (onHideNavigationGuide) {
-          console.log('🚫 Force closing navigation guide during restore');
           onHideNavigationGuide();
         }
 
@@ -193,7 +176,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
         // Clear restoring flag with shorter delay
         setTimeout(() => {
-          console.log('✅ Setting isRestoring=false - restore complete');
           setIsRestoring(false);
           setJustCompletedRestore(true);
 

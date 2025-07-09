@@ -48,10 +48,8 @@ export function SceneManager({
 
           // Only restore if saved within last 24 hours (86400000 ms)
           if (timeDiff < 86400000) {
-            console.log('🔄 Found recent saved position on startup:', parsedState);
-            // Don't auto-restore on startup, just log that it's available
+            // Don't auto-restore on startup, just keep it available
           } else {
-            console.log('🗑️ Saved position too old, clearing localStorage');
             localStorage.removeItem('lastHotspotPosition');
           }
         }
@@ -67,7 +65,7 @@ export function SceneManager({
   // Expose current sheet and scene to parent
   useEffect(() => {
     const currentSheet = currentScene === 'detail' ? detailSheet : mainSheet;
-    console.log('SceneManager: Current scene:', currentScene, 'Sheet:', currentSheet);
+
     if (onCurrentSheetChange) {
       onCurrentSheetChange(currentSheet);
     }
@@ -113,7 +111,6 @@ export function SceneManager({
 
   // Handle return to main scene with smooth transition
   const handleReturnToMain = () => {
-    console.log('🔙 Returning to main scene with smooth transition');
 
     // Try to get saved state from memory first, then localStorage
     let stateToRestore = savedMainSceneState.current;
@@ -124,7 +121,6 @@ export function SceneManager({
         const savedState = localStorage.getItem('lastHotspotPosition');
         if (savedState) {
           const parsedState = JSON.parse(savedState);
-          console.log('📱 Found saved state in localStorage:', parsedState);
 
           // Convert back to the expected format
           stateToRestore = {
@@ -151,12 +147,7 @@ export function SceneManager({
       }
     }
 
-    console.log('📍 Saved state available:', stateToRestore ? 'Yes' : 'No');
-    if (stateToRestore) {
-      console.log('📍 Will restore to sequence position:', stateToRestore.sequencePosition?.toFixed(3));
-    } else {
-      console.log('📍 No saved state - will restore to fallback position 1.0');
-    }
+
 
     // Use requestAnimationFrame for smooth scene transition
     requestAnimationFrame(() => {

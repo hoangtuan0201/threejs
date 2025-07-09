@@ -190,7 +190,6 @@ export function VideoScreen({
                   setIsLoading(false);
                 }}
                 onLoad={() => {
-                  console.log('Video loaded successfully:', embedUrl);
                   setHasError(false);
                   setIsLoading(false);
                 }}

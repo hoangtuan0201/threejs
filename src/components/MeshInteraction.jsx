@@ -34,7 +34,6 @@ export function MeshInteraction() {
     // Find the Geom3D_393 mesh in the scene and log all mesh names
     const findMesh = (object) => {
       if (object.name === "Geom3D_393" || object.name === "geom393") {
-        console.log('Target mesh found:', object.name);
         return object;
       }
       for (let child of object.children) {
