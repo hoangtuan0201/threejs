@@ -35,6 +35,21 @@ import useSceneLock from "./hooks/useSceneLock";
 //     studio.ui.restore();
 //   }, 1000);
 
+//   // Add export function for development
+//   window.exportTheatreState = () => {
+//     const state = project.getState();
+//     console.log('Theatre.js State:', JSON.stringify(state, null, 2));
+
+//     // Download as file
+//     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+//     const url = URL.createObjectURL(blob);
+//     const a = document.createElement('a');
+//     a.href = url;
+//     a.download = 'FlyThrough.json';
+//     a.click();
+//     URL.revokeObjectURL(url);
+//   };
+
 //   window.__THEATRE_ALREADY_INIT__ = true;
 // }
 
@@ -55,6 +70,17 @@ export default function App({ isChatFocused = false }) {
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
   const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
   const [showNavigationGuide, setShowNavigationGuide] = useState(false);
+
+  // Debug navigation guide state
+  useEffect(() => {
+    console.log('🧭 NavigationGuide state changed:', showNavigationGuide);
+
+    // Add global function to force close navigation guide
+    window.forceCloseNavigationGuide = () => {
+      console.log('🔧 Force closing navigation guide');
+      setShowNavigationGuide(false);
+    };
+  }, [showNavigationGuide]);
 
 
   // Mobile detection and responsive utilities
@@ -147,7 +173,7 @@ export default function App({ isChatFocused = false }) {
         >
           🎬 Studio
         </button>
-      )} */}
+      )}  */}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
       {!showControlPanel && !showCompareSystem && (
@@ -237,6 +263,7 @@ export default function App({ isChatFocused = false }) {
             }}
             onCurrentSheetChange={setCurrentSheet}
             onCurrentSceneChange={setCurrentScene}
+            project={project}
           />
         </Canvas>
       )}

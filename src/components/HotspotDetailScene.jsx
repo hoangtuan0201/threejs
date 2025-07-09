@@ -44,7 +44,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
         occlude={false}
         style={{
           pointerEvents: 'auto',
-          zIndex: 9999,
+          zIndex: 1000,
         }}
       >
         <button

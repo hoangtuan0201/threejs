@@ -209,6 +209,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // 4. Not currently restoring from detail scene
     // 5. Haven't already shown the guide
     // Note: Allow first-time users to see guide even if they haven't visited detail scene
+    // Show navigation guide at scene start but don't block interactions
     if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated && !isRestoring && !justCompletedRestore && !hasShownNavigationGuide && !hasVisitedDetailScene) {
       if (onShowNavigationGuide) {
         onShowNavigationGuide();
@@ -390,8 +391,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Handle scroll only in explore mode
   useEffect(() => {
     const handleWheel = (event) => {
-      // Only allow scroll if in explore mode, when not navigating, when NavigationGuide is not showing, and when chat is not focused
-      if (!isExploreMode || isNavigating || showNavigationGuide || isChatFocused) {
+      // Only allow scroll if in explore mode, when not navigating, and when chat is not focused
+      // Note: Removed showNavigationGuide blocking to allow scroll while guide is showing
+      if (!isExploreMode || isNavigating || isChatFocused) {
         return;
       }
 
@@ -439,7 +441,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     let hasMovedSignificantly = false;
 
     const handleTouchStart = (event) => {
-      if (!isExploreMode || isNavigating || showNavigationGuide) return;
+      // Allow touch even when navigation guide is showing
+      if (!isExploreMode || isNavigating) return;
 
       const touch = event.touches[0];
       touchStartY = touch.clientY;
@@ -456,7 +459,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
 
     const handleTouchMove = (event) => {
-      if (!isExploreMode || !isTouching || isNavigating || showNavigationGuide) return;
+      // Allow touch move even when navigation guide is showing
+      if (!isExploreMode || !isTouching || isNavigating) return;
 
       const touch = event.touches[0];
       const touchY = touch.clientY;
@@ -504,7 +508,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
 
     const handleTouchEnd = () => {
-      if (!isExploreMode || showNavigationGuide) return;
+      // Allow touch end even when navigation guide is showing
+      if (!isExploreMode) return;
 
       isTouching = false;
 

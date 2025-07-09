@@ -1,15 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { SheetProvider } from "@theatre/r3f";
-import { getProject } from "@theatre/core";
 import { Scene } from './Scene';
 import { HotspotDetailScene } from './HotspotDetailScene';
-import theatreState from "../states/FlyThrough.json";
-import "../utils/theatreHelper.js"; // Import helper for state export
-
-// Create multiple sheets for different scenes
-const project = getProject("Fly Through", { state: theatreState });
-const mainSheet = project.sheet("Scene");
-const detailSheet = project.sheet("DetailScene");
 
 export function SceneManager({
   onTourEnd,
@@ -25,7 +17,8 @@ export function SceneManager({
   showNavigationGuide,
   isChatFocused,
   onCurrentSheetChange, // New prop to expose current sheet
-  onCurrentSceneChange // New prop to expose current scene
+  onCurrentSceneChange, // New prop to expose current scene
+  project // Receive project from App.jsx
 }) {
   const [currentScene, setCurrentScene] = useState('main'); // 'main' or 'detail'
   const [activeHotspotChapter, setActiveHotspotChapter] = useState(null);
@@ -34,6 +27,11 @@ export function SceneManager({
     // Check localStorage for persistent flag
     return localStorage.getItem('hasVisitedDetailScene') === 'true';
   }); // Permanent flag
+
+  // Create sheets from the passed project
+  const mainSheet = project.sheet("Scene");
+  const detailSheet = project.sheet("DetailScene");
+
   const savedMainSceneState = useRef(null); // Store main scene camera state
 
   // Check for saved position on component mount
