@@ -109,24 +109,21 @@ const NavigationGuide = ({ isVisible, onClose }) => {
       touchAction: "none", // Prevent scrolling behind modal
     },
     container: {
-      background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #e9ecef 100%)",
-      borderRadius: mobile.isMobile ? "20px" : "32px",
-      padding: mobile.isMobile ? "20px" : "40px",
-      maxWidth: mobile.isMobile ? "80vw" : "440px",
-      width: mobile.isMobile ? "80%" : "90%",
-      maxHeight: mobile.isMobile ? "auto" : "90vh", // Auto height cho mobile
+      background: "#fff",
+      borderRadius: mobile.isMobile ? "8px" : "10px",
+      padding: mobile.isMobile ? "12px" : "20px",
+      maxWidth: mobile.isMobile ? "90vw" : "440px",
+      width: mobile.isMobile ? "90%" : "100%",
+      maxHeight: mobile.isMobile ? "auto" : "90vh",
       overflowY: mobile.isMobile ? "visible" : "auto",
-      boxShadow: mobile.isMobile
-        ? "0 20px 60px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1)"
-        : "0 25px 80px rgba(0, 0, 0, 0.15), 0 15px 40px rgba(0, 0, 0, 0.1)",
-      border: "1px solid rgba(0, 0, 0, 0.06)",
+      boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+      border: "1px solid #ececec",
       position: "relative",
       animation: showGuide
         ? mobile.isMobile
           ? "slideInFromBottom 0.5s cubic-bezier(0.4, 0, 0.2, 1) both"
           : "bounceIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both"
         : 'none',
-      // Mobile-specific improvements
       WebkitOverflowScrolling: "touch",
       scrollbarWidth: "none",
       msOverflowStyle: "none",
@@ -154,44 +151,50 @@ const NavigationGuide = ({ isVisible, onClose }) => {
     },
     content: {
       display: "flex",
+      flexDirection: mobile.isMobile ? "column" : "row",
+      gap: mobile.isMobile ? "8px" : "16px",
+      justifyContent: mobile.isMobile ? undefined : "center",
+      alignItems: mobile.isMobile ? undefined : "flex-start",
+    },
+    column: {
+      display: "flex",
       flexDirection: "column",
-      gap: mobile.isMobile ? "12px" : "20px",
+      gap: "12px",
+      flex: 1,
     },
     instructionItem: {
       display: "flex",
-      alignItems: "center", // Center alignment for mobile
-      gap: mobile.isMobile ? "12px" : "20px",
-      padding: mobile.isMobile ? "16px" : "24px",
-      background: "rgba(0, 0, 0, 0.02)",
-      borderRadius: mobile.isMobile ? "12px" : "20px",
-      border: "1px solid rgba(0, 0, 0, 0.06)",
-      backdropFilter: "blur(10px)",
+      alignItems: "center",
+      gap: mobile.isMobile ? "8px" : "12px",
+      padding: mobile.isMobile ? "10px" : "16px 18px",
+      background: "#f7f7f7",
+      borderRadius: mobile.isMobile ? "6px" : "5px",
+      border: "1px solid #ececec",
+      boxShadow: "none",
       cursor: mobile.isMobile ? "default" : "pointer",
-      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
       transformStyle: mobile.isMobile ? "flat" : "preserve-3d",
-      // Mobile touch improvements
       WebkitTapHighlightColor: "transparent",
       touchAction: "manipulation",
+      minHeight: mobile.isMobile ? undefined : "90px",
+      flex: 1,
     },
     icon: {
-      width: mobile.isMobile ? "52px" : "60px",
-      height: mobile.isMobile ? "52px" : "60px",
-      background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #e9ecef 100%)",
-      borderRadius: mobile.isMobile ? "16px" : "20px",
+      width: mobile.isMobile ? "36px" : "40px",
+      height: mobile.isMobile ? "36px" : "40px",
+      background: "#fff",
+      borderRadius: mobile.isMobile ? "6px" : "5px",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: mobile.isMobile ? "22px" : "24px",
+      fontSize: mobile.isMobile ? "18px" : "20px",
       fontWeight: "bold",
       color: "#1a1a1a",
       flexShrink: 0,
-      border: "1px solid rgba(0, 0, 0, 0.06)",
-      boxShadow: mobile.isMobile
-        ? "0 4px 15px rgba(0, 0, 0, 0.08)"
-        : "0 8px 25px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.06)",
-      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      border: "1px solid #ececec",
+      boxShadow: "none",
+      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
       transformStyle: mobile.isMobile ? "flat" : "preserve-3d",
-      // Mobile touch improvements
       WebkitTapHighlightColor: "transparent",
     },
     text: {
@@ -237,20 +240,18 @@ const NavigationGuide = ({ isVisible, onClose }) => {
       flexWrap: "wrap",
     },
     keyBadge: {
-      background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #e9ecef 100%)",
-      border: "1px solid rgba(0, 0, 0, 0.1)",
-      borderRadius: mobile.isMobile ? "12px" : "16px",
-      padding: mobile.isMobile ? "8px 14px" : "10px 16px",
-      fontSize: mobile.isMobile ? "13px" : "14px",
-      fontWeight: "700",
+      background: "#fff",
+      border: "1px solid #ececec",
+      borderRadius: mobile.isMobile ? "6px" : "5px",
+      padding: mobile.isMobile ? "4px 10px" : "5px 14px",
+      fontSize: mobile.isMobile ? "12px" : "13px",
+      fontWeight: "600",
       color: "#6c757d",
       fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace',
-      textShadow: "0 1px 2px rgba(255, 255, 255, 0.8)",
-      backdropFilter: "blur(5px)",
-      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+      textShadow: "none",
+      boxShadow: "none",
       transition: "all 0.2s ease",
-      // Mobile improvements
-      minHeight: mobile.isMobile ? "36px" : "auto",
+      minHeight: "auto",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -320,67 +321,125 @@ const NavigationGuide = ({ isVisible, onClose }) => {
         {/* Header */}
         <div style={styles.header}>
           <h2 style={styles.title}>Navigation Guide</h2>
-    
         </div>
 
         {/* Instructions */}
         <div style={styles.content}>
-          {instructions.map((instruction, index) => (
-            <div
-              key={index}
-              style={{
-                ...styles.instructionItem,
-                animation: showGuide ? `fadeInUp 0.5s ease-out ${index * 0.1 + 0.4}s both` : 'none',
-              }}
-              onMouseEnter={!mobile.isMobile ? (e) => {
-                e.stopPropagation();
-                const currentTarget = e.currentTarget;
-                currentTarget.style.transform = "translateY(-4px) translateZ(8px) rotateX(2deg)";
-                currentTarget.style.boxShadow = "0 15px 35px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.08)";
-                currentTarget.style.background = "rgba(0, 0, 0, 0.04)";
+          {mobile.isMobile ? (
+            instructions.map((instruction, index) => (
+              <div
+                key={index}
+                style={{
+                  ...styles.instructionItem,
+                  animation: showGuide ? `fadeInUp 0.5s ease-out ${index * 0.1 + 0.4}s both` : 'none',
+                }}
+                onMouseEnter={!mobile.isMobile ? (e) => {
+                  e.stopPropagation();
+                  const currentTarget = e.currentTarget;
+                  currentTarget.style.transform = "translateY(-4px) translateZ(8px) rotateX(2deg)";
+                  currentTarget.style.boxShadow = "0 15px 35px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.08)";
+                  currentTarget.style.background = "rgba(0, 0, 0, 0.04)";
 
-                // Icon 3D effect
-                const icon = currentTarget.querySelector('.instruction-icon');
-                if (icon) {
-                  icon.style.transform = "translateZ(12px) rotateY(5deg) scale(1.05)";
-                  icon.style.boxShadow = "0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)";
-                }
-              } : undefined}
-              onMouseLeave={!mobile.isMobile ? (e) => {
-                e.stopPropagation();
-                const currentTarget = e.currentTarget;
-                currentTarget.style.transform = "translateY(0) translateZ(0) rotateX(0deg)";
-                currentTarget.style.boxShadow = "none";
-                currentTarget.style.background = "rgba(0, 0, 0, 0.02)";
+                  // Icon 3D effect
+                  const icon = currentTarget.querySelector('.instruction-icon');
+                  if (icon) {
+                    icon.style.transform = "translateZ(12px) rotateY(5deg) scale(1.05)";
+                    icon.style.boxShadow = "0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)";
+                  }
+                } : undefined}
+                onMouseLeave={!mobile.isMobile ? (e) => {
+                  e.stopPropagation();
+                  const currentTarget = e.currentTarget;
+                  currentTarget.style.transform = "translateY(0) translateZ(0) rotateX(0deg)";
+                  currentTarget.style.boxShadow = "none";
+                  currentTarget.style.background = "rgba(0, 0, 0, 0.02)";
 
-                // Reset icon
-                const icon = currentTarget.querySelector('.instruction-icon');
-                if (icon) {
-                  icon.style.transform = "translateZ(0) rotateY(0deg) scale(1)";
-                  icon.style.boxShadow = "0 8px 25px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)";
-                }
-              } : undefined}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div style={styles.icon} className="instruction-icon">
-                <IconSVG type={instruction.iconType} size={mobile.isMobile ? 24 : 26} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={styles.text}>
-                  {instruction.text}
+                  // Reset icon
+                  const icon = currentTarget.querySelector('.instruction-icon');
+                  if (icon) {
+                    icon.style.transform = "translateZ(0) rotateY(0deg) scale(1)";
+                    icon.style.boxShadow = "0 8px 25px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)";
+                  }
+                } : undefined}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div style={styles.icon} className="instruction-icon">
+                  <IconSVG type={instruction.iconType} size={mobile.isMobile ? 24 : 26} />
                 </div>
-                {instruction.keys && (
-                  <div style={styles.keysContainer}>
-                    {instruction.keys.map((key, keyIndex) => (
-                      <span key={keyIndex} style={styles.keyBadge}>
-                        {key}
-                      </span>
-                    ))}
+                <div style={{ flex: 1 }}>
+                  <div style={styles.text}>
+                    {instruction.text}
                   </div>
-                )}
+                  {instruction.keys && (
+                    <div style={styles.keysContainer}>
+                      {instruction.keys.map((key, keyIndex) => (
+                        <span key={keyIndex} style={styles.keyBadge}>
+                          {key}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
+            ))
+          ) : (
+            // PC: luôn chia 2 cột, mỗi cột 2 mục, các item luôn bằng nhau
+            <div style={{ display: "flex", gap: "18px", width: "100%", alignItems: "stretch" }}>
+              {[0, 1].map(col => (
+                <div key={col} style={{ display: "flex", flexDirection: "column", gap: "18px", flex: 1 }}>
+                  {instructions.slice(col * 2, col * 2 + 2).map((instruction, index) => (
+                    <div
+                      key={index}
+                      style={{ ...styles.instructionItem, animation: showGuide ? `fadeInUp 0.5s ease-out ${(col * 2 + index) * 0.1 + 0.4}s both` : 'none', height: "100%" }}
+                      onMouseEnter={(e) => {
+                        e.stopPropagation();
+                        const currentTarget = e.currentTarget;
+                        currentTarget.style.transform = "translateY(-4px) translateZ(8px) rotateX(2deg)";
+                        currentTarget.style.boxShadow = "0 15px 35px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.08)";
+                        currentTarget.style.background = "rgba(0, 0, 0, 0.04)";
+                        const icon = currentTarget.querySelector('.instruction-icon');
+                        if (icon) {
+                          icon.style.transform = "translateZ(12px) rotateY(5deg) scale(1.05)";
+                          icon.style.boxShadow = "0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.stopPropagation();
+                        const currentTarget = e.currentTarget;
+                        currentTarget.style.transform = "translateY(0) translateZ(0) rotateX(0deg)";
+                        currentTarget.style.boxShadow = "none";
+                        currentTarget.style.background = "rgba(0, 0, 0, 0.02)";
+                        const icon = currentTarget.querySelector('.instruction-icon');
+                        if (icon) {
+                          icon.style.transform = "translateZ(0) rotateY(0deg) scale(1)";
+                          icon.style.boxShadow = "0 8px 25px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)";
+                        }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div style={styles.icon} className="instruction-icon">
+                        <IconSVG type={instruction.iconType} size={26} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={styles.text}>
+                          {instruction.text}
+                        </div>
+                        {instruction.keys && (
+                          <div style={styles.keysContainer}>
+                            {instruction.keys.map((key, keyIndex) => (
+                              <span key={keyIndex} style={styles.keyBadge}>
+                                {key}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
 
       </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useMobile } from "../hooks/useMobile";
 
 const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
-  const mobile = useMobile();
+  const { isMobile } = useMobile(); // Đổi tên cho rõ ràng
   const [isPressed, setIsPressed] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
@@ -29,13 +29,13 @@ const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
 
   // Add entrance animation
   useEffect(() => {
-    if (isVisible && mobile.isMobile) {
+    if (isVisible) { // Bỏ điều kiện isMobile, chỉ cần isVisible
       const timer = setTimeout(() => setShowButton(true), 500); // Delay to show after scene loads
       return () => clearTimeout(timer);
     } else {
       setShowButton(false);
     }
-  }, [isVisible, mobile.isMobile]);
+  }, [isVisible]);
 
   const handleClick = () => {
     if (onGoHome) {
@@ -43,8 +43,8 @@ const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
     }
   };
 
-  // Only show on mobile and when visible
-  if (!mobile.isMobile || !isVisible) return null;
+  // Chỉ kiểm tra isVisible, không kiểm tra isMobile nữa
+  if (!isVisible) return null;
 
   const styles = {
     button: {

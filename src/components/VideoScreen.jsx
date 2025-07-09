@@ -38,20 +38,29 @@ export function VideoScreen({
     };
   }, []);
 
-  // Extract video ID from YouTube URL if full URL is provided
-  const extractVideoId = (url) => {
+  // Extract video ID and type (YouTube or Vimeo)
+  const extractVideoInfo = (url) => {
     if (url.includes('youtube.com/watch?v=')) {
-      return url.split('v=')[1].split('&')[0];
+      return { type: 'youtube', id: url.split('v=')[1].split('&')[0] };
     } else if (url.includes('youtu.be/')) {
-      return url.split('youtu.be/')[1].split('?')[0];
+      return { type: 'youtube', id: url.split('youtu.be/')[1].split('?')[0] };
+    } else if (url.includes('vimeo.com/')) {
+      // Vimeo URL: https://vimeo.com/912200130
+      const match = url.match(/vimeo.com\/(\d+)/);
+      if (match) {
+        return { type: 'vimeo', id: match[1] };
+      }
     }
-    return url; // Assume it's already a video ID
+    // Default: assume YouTube video ID
+    return { type: 'youtube', id: url };
   };
 
-  const finalVideoId = extractVideoId(videoId);
+  const { type: videoType, id: finalVideoId } = extractVideoInfo(videoId);
 
-  // YouTube embed URL with autoplay, loop, and audio enabled
-  const embedUrl = `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`;
+  // Embed URL for YouTube or Vimeo
+  const embedUrl = videoType === 'youtube'
+    ? `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`
+    : `https://player.vimeo.com/video/${finalVideoId}?autoplay=1&loop=1&title=0&byline=0&portrait=0`;
 
   // Use mobile-specific values if available and on mobile
   const finalPosition = mobile.isMobile && mobilePosition ? mobilePosition : position;
@@ -78,7 +87,15 @@ export function VideoScreen({
             cursor: 'pointer',
             position: 'relative',
           }}
-          onClick={() => window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank')}
+          onClick={() => {
+            if (videoType === 'youtube') {
+              window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank');
+            } else if (videoType === 'vimeo') {
+              window.open(`https://vimeo.com/${finalVideoId}`, '_blank');
+            } else {
+              window.open(`#`, '_blank');
+            }
+          }}
           title="Xem video lớn"
         >
           {hasError || !isOnline ? (
@@ -100,10 +117,14 @@ export function VideoScreen({
                 transition: 'all 0.3s ease'
               }}
               onClick={() => {
-                const finalVideoId = videoId.includes('youtube.com')
-                  ? videoId.split('v=')[1]?.split('&')[0]
-                  : videoId;
-                window.open(`https://www.youtube.com/watch?v=${finalVideoId}`, '_blank');
+                const { type: vType, id: vId } = extractVideoInfo(videoId);
+                if (vType === 'youtube') {
+                  window.open(`https://www.youtube.com/watch?v=${vId}`, '_blank');
+                } else if (vType === 'vimeo') {
+                  window.open(`https://vimeo.com/${vId}`, '_blank');
+                } else {
+                  window.open(`#`, '_blank');
+                }
               }}
               onMouseEnter={(e) => {
                 e.target.style.transform = 'scale(1.02)';
@@ -132,7 +153,7 @@ export function VideoScreen({
               src={embedUrl}
               title={title}
               style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow={videoType === 'youtube' ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' : 'autoplay; fullscreen; picture-in-picture'}
               allowFullScreen
               onError={() => setHasError(true)}
               onLoad={() => setHasError(false)}
