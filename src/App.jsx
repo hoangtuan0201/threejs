@@ -70,6 +70,12 @@ export default function App({ isChatFocused = false }) {
 
   // Add global functions for navigation guide control
   useEffect(() => {
+    // Auto-clear hasVisitedDetailScene on page load to allow navigation guide
+    localStorage.removeItem('hasVisitedDetailScene');
+
+    // Also clear any session-based navigation flags
+    sessionStorage.removeItem('navigationGuideShown');
+
     // Immediately close any existing navigation guide
     setShowNavigationGuide(false);
 
@@ -88,8 +94,17 @@ export default function App({ isChatFocused = false }) {
     // Add global function to reset navigation guide (for testing)
     window.resetNavigationGuide = () => {
       localStorage.removeItem('hasVisitedDetailScene');
+      console.log('🔄 Manual reset - cleared hasVisitedDetailScene');
       setShowNavigationGuide(false);
       window.location.reload();
+    };
+
+    // Add global function to check localStorage state
+    window.checkNavigationState = () => {
+      console.log('📊 Navigation State:', {
+        hasVisitedDetailScene: localStorage.getItem('hasVisitedDetailScene'),
+        showNavigationGuide: showNavigationGuide
+      });
     };
 
     // Auto-close navigation guide after 8 seconds if still showing

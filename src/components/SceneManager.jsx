@@ -24,9 +24,10 @@ export function SceneManager({
   const [activeHotspotChapter, setActiveHotspotChapter] = useState(null);
   const [justReturnedFromDetail, setJustReturnedFromDetail] = useState(false); // Track when just returned
   const [hasVisitedDetailScene, setHasVisitedDetailScene] = useState(() => {
-    // Check localStorage for persistent flag
-    return localStorage.getItem('hasVisitedDetailScene') === 'true';
-  }); // Permanent flag
+    // Check localStorage for persistent flag (auto-cleared on page load)
+    const visited = localStorage.getItem('hasVisitedDetailScene') === 'true';
+    return visited;
+  }); // Flag that resets on page refresh
 
   // Create sheets from the passed project
   const mainSheet = project.sheet("Scene");
