@@ -36,50 +36,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
         <Model onModelLoaded={onModelLoaded} />
       </Suspense>
 
-      {/* Close Button - Fixed position with mobile support */}
-      <Html
-        position={mobile.isMobile ? [28.5, 4.98, -22.25] : [28.7 , 4.75, -22.3]}
-        distanceFactor={mobile.isMobile ? 5 : 4}
-        occlude={false}
-        style={{
-          pointerEvents: 'auto',
-          zIndex: 99999, // Highest z-index to overlay labels and all other elements
-        }}
-      >
-        <button
-          onClick={() => {
-            onReturnToMain();
-          }}
-          style={{
-            width: '20px',
-            height: '20px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            border: '1px solid white',
-            color: 'white',
-            fontSize: '10px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
-            position: 'relative',
-            zIndex: 999999, // Extremely high z-index to overlay detail panel
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
-            e.target.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-            e.target.style.transform = 'scale(1)';
-          }}
-        >
-          ✕
-        </button>
-      </Html>
+
 
       {/* Hotspot Details Panel - Same design as HotspotDetail.jsx */}
       <group
@@ -157,6 +114,45 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
               {chapter.hotspot.description || 'Detailed information about this component.'}
             </p>
 
+            {/* Close button in top-right corner */}
+            <button
+              onClick={() => {
+                onReturnToMain();
+              }}
+              style={{
+                position: 'absolute',
+                top: '5px',
+                right: '5px',
+                width: '15px',
+                height: '15px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                border: '1px solid rgba(0, 0, 0, 0.2)',
+                color: 'white',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                zIndex: 10,
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'rgba(255, 0, 0, 0.9)';
+                e.target.style.color = 'white';
+                e.target.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+                e.target.style.color = 'white';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              ✕
+            </button>
+
             {/* Action Buttons */}
             {/* <div style={{
               display: "flex",
@@ -203,7 +199,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
                   Specification
                 </button>
               )}
-            </div> */}
+            </div>
 
             {/* Arrow pointer */}
             <div
