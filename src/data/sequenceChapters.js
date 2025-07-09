@@ -5,15 +5,15 @@ export const sequenceChapters = [
   {
     id: "Geom3D_393",
     hotspot: {
-      position: [27.78, 4.4, -22.5],
+      position: [27.78, 4.25, -22.3],
       rotation: [0, Math.PI / 1.8, 0],
       detailPosition: [27.78, 5, -22.7],
       detailRotation: [0, Math.PI / 2, 0],
-      // Mobile-specific positioning
+      // Mobile-specific positionin
       mobileDetailPosition: [27.78, 3.8 , -21.5],
       mobileDetailRotation: [0, Math.PI / 2, 0],
       // Hotspot label positioning
-      labelPosition: [27.78, 4.9, -21.9],
+      labelPosition: [27.78, 4.8, -21.7],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
       mobileLabelPosition: [27.78, 5, -21.5],

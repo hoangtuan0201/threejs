@@ -8,6 +8,7 @@ import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
+import { MeshInteraction } from "./MeshInteraction";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
 
 
@@ -510,6 +511,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           hiddenObjectsState={localHiddenState}
           onModelLoaded={onModelLoaded}
         />
+        {/* Mesh interaction for cursor pointer and zoom */}
+        <MeshInteraction />
       </Suspense>
 
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}

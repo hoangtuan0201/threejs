@@ -61,6 +61,10 @@ const FloatingChatButton = ({ onFocusChange }) => {
         if (chatContainerRef.current) {
           chatContainerRef.current.focus();
         }
+        // Also focus the input field
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       }, 100);
 
       // Notify parent that chat is focused
@@ -203,6 +207,10 @@ const FloatingChatButton = ({ onFocusChange }) => {
     e.stopPropagation();
     if (chatContainerRef.current) {
       chatContainerRef.current.focus();
+    }
+    // Focus the input field for immediate typing
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
     // Re-focus chat when clicked
     if (onFocusChange) {
