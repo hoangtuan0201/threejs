@@ -19,7 +19,7 @@ export const sequenceChapters = [
       mobileLabelPosition: [27.78, 5, -21.5],
       mobileLabelRotation: [0, 0, 0],
       title: "Smart Thermostat",
-      description: "Intelligent temperature control with AI that automatically learns your usage habits. T",
+      description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
       link: "https://vimeo.com/912200130"
     },
     lighting: {
@@ -64,7 +64,7 @@ export const sequenceChapters = [
       mobileDetailPosition: [31, 7.3, -21.3],
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
-      description: "Premium linear grille with adjustable airflow direction. The sleek design integrates seamlessly with modern interiors while providing optimal air distribution.",
+      description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/912201609"
     },
     lighting: {
@@ -104,7 +104,7 @@ export const sequenceChapters = [
       mobileDetailPosition: [16.6, 4.2, -31.8],
       mobileDetailRotation: [0, 0, 0],
       title: "Air Purification System",
-      description: "Advanced HEPA H13 filtration combined with UV-C sterilization and activated carbon filters. ",
+      description: "An Air Purification System uses HEPA (and optionally carbon/UV) filtration to remove allergens, pollutants, odors, and pathogens—improving air quality, reducing sickness, and boosting comfort and HVAC efficiency. ",
       link: "https://vimeo.com/912208263",
       labelPosition: [16.5, 4.8, -32.3],
       labelRotation: [0, 0, 0],
@@ -148,7 +148,7 @@ export const sequenceChapters = [
       mobileDetailPosition: [22.7, 4.7, -17.7],
       mobileDetailRotation: [0, 0, 0],
       title: "Outdoor Unit",
-      description: "High-efficiency outdoor condenser unit with variable speed compressor and smart defrost technology. Designed for optimal performance in all weather conditions with whisper-quiet operation.",
+      description: "The AirSmart Air Purification System delivers whole-home air filtration with HEPA-grade purity, removing pollutants and improving indoor air quality for healthier breathing.",
       link: "https://vimeo.com/912207265"
     },
     lighting: {
