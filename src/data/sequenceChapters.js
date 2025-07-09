@@ -20,7 +20,7 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
       title: "Smart Thermostat",
       description: "Intelligent temperature control with AI that automatically learns your usage habits. T",
-      link: "https://www.youtube.com/watch?v=mC1Ket54DW8"
+      link: "https://vimeo.com/912200130"
     },
     lighting: {
       mainSpotlight: {
@@ -42,7 +42,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [27.78, 4.7, -21.5],
       mobileRotation: [0, Math.PI / 2, 0],
-      videoId: "mC1Ket54DW8",
+      videoId: "https://vimeo.com/912200130",
       title: "Smart Thermostat Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -65,7 +65,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "Premium linear grille with adjustable airflow direction. The sleek design integrates seamlessly with modern interiors while providing optimal air distribution.",
-      link: "https://www.youtube.com/watch?v=mC1Ket54DW8"
+      link: "https://vimeo.com/912201609"
     },
     lighting: {
       mainSpotlight: {
@@ -86,7 +86,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [29.7, 7.3, -21.3],
       mobileRotation: [-0.1, Math.PI / 1, 0],
-      videoId: "Ks-_Mh1QhMc",
+      videoId: "https://vimeo.com/912201609",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -105,7 +105,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, 0, 0],
       title: "Air Purification System",
       description: "Advanced HEPA H13 filtration combined with UV-C sterilization and activated carbon filters. ",
-      link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      link: "https://vimeo.com/912208263",
       labelPosition: [16.5, 4.8, -32.3],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
@@ -130,7 +130,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [17.3, 5, -31.8],
       mobileRotation: [0, 0, 0],
-      videoId: "dQw4w9WgXcQ",
+      videoId: "https://vimeo.com/912208263",
       title: "Air Purification Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -149,7 +149,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, 0, 0],
       title: "Outdoor Unit",
       description: "High-efficiency outdoor condenser unit with variable speed compressor and smart defrost technology. Designed for optimal performance in all weather conditions with whisper-quiet operation.",
-      link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      link: "https://vimeo.com/912207265"
     },
     lighting: {
       mainSpotlight: {
@@ -169,7 +169,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [21.2, 4.7, -17.7],
       mobileRotation: [0, 0, 0],
-      videoId: "dQw4w9WgXcQ",
+      videoId: "https://vimeo.com/912207265",
       title: "Outdoor Unit Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
