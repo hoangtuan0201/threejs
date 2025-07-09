@@ -85,7 +85,7 @@ export default function App({ isChatFocused = false }) {
     window.resetNavigationGuide = () => {
       console.log('🔄 Resetting navigation guide flags');
       localStorage.removeItem('hasVisitedDetailScene');
-      localStorage.removeItem('hasShownNavigationGuide');
+      // Don't remove hasShownNavigationGuide - it resets on page refresh
       setShowNavigationGuide(false);
       // Reload page to reset all states
       window.location.reload();
