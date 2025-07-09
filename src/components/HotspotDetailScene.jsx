@@ -96,7 +96,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
         <Html
           position={[0, 0, 0]}
           center
-          distanceFactor={1.5}
+          distanceFactor={0.95} // Tăng distanceFactor để panel nhỏ lại, rõ nét hơn
           transform
           occlude
         >
@@ -104,26 +104,26 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
             style={{
               background: "rgba(0, 0, 0, 0.95)",
               color: "white",
-              padding: mobile.isMobile ? "8px" : "7px",
-              borderRadius: mobile.isMobile ? "6px" : "5px",
-              minWidth: mobile.isMobile ? "200px" : "180px",
-              maxWidth: mobile.isMobile ? "250px" : "220px",
+              padding: mobile.isMobile ? "14px" : "12px", // Tăng padding
+              borderRadius: mobile.isMobile ? "10px" : "8px",
+              minWidth: mobile.isMobile ? "220px" : "200px", // Tăng minWidth
+              maxWidth: mobile.isMobile ? "320px" : "260px", // Tăng maxWidth
               width: "auto",
               height: "auto",
-              minHeight: mobile.isMobile ? "50px" : "45px",
-              maxHeight: mobile.isMobile ? "110px" : "130px",
+              minHeight: mobile.isMobile ? "60px" : "55px",
+              maxHeight: mobile.isMobile ? "160px" : "180px",
               boxShadow: "0 3px 12px rgba(0, 0, 0, 0.7)",
               border: "1px solid rgba(255, 255, 255, 0.3)",
               position: "relative",
               zIndex: 1000,
               overflow: "hidden",
               wordWrap: "break-word",
-              backdropFilter: "blur(8px)",
+              // backdropFilter: "blur(8px)", // Tạm thời bỏ blur để chữ rõ hơn
               fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
           >
             {/* Close button */}
-            <button
+            {/* <button
               onClick={() => {
                 console.log('❌ Detail panel close button clicked - returning to main scene');
                 if (savedMainSceneState) {
@@ -158,11 +158,11 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
                 background: "rgba(255, 255, 255, 0.25)",
                 border: "1px solid rgba(255, 255, 255, 0.3)",
                 color: "white",
-                width: mobile.isMobile ? "20px" : "14px",
-                height: mobile.isMobile ? "20px" : "14px",
+                width: mobile.isMobile ? "24px" : "18px", // Tăng kích thước nút
+                height: mobile.isMobile ? "24px" : "18px",
                 borderRadius: "50%",
                 cursor: "pointer",
-                fontSize: mobile.isMobile ? "14px" : "10px",
+                fontSize: mobile.isMobile ? "18px" : "14px", // Tăng font-size
                 fontWeight: "bold",
                 display: "flex",
                 alignItems: "center",
@@ -174,55 +174,57 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
               }}
             >
               ×
-            </button>
+            </button> */}
 
             {/* Title */}
             <h3 style={{
-              margin: "0 0 6px 0",
-              fontSize: mobile.isMobile ? "9px" : "7px",
+              margin: "0 0 10px 0",
+              fontSize: mobile.isMobile ? "30px" : "25px", // Tăng font-size
               fontWeight: "700",
               color: "#fff",
-              textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+              textShadow: "0 1px 2px rgba(0,0,0,0)",
               letterSpacing: "0.3px"
             }}>
               {chapter.hotspot.title || chapter.title}
             </h3>
 
-            {savedMainSceneState && (
+            {/* {savedMainSceneState && (
               <div style={{
-                fontSize: mobile.isMobile ? "7px" : "5px",
+                fontSize: mobile.isMobile ? "11px" : "9px", // Tăng font-size
                 color: '#888',
-                marginBottom: '5px',
+                marginBottom: '8px',
                 fontStyle: 'italic'
               }}>
                 Click X to return
               </div>
-            )}
+            )} */}
 
             {/* Description */}
             <p style={{
-              fontSize: mobile.isMobile ? "7px" : "5px",
-              lineHeight: "1.4",
-              margin: "0 0 10px 0",
-              opacity: 0.95,
+              // distanceFactor={0.95}, // Tăng distanceFactor để panel nhỏ lại, rõ nét hơn
+              fontSize: mobile.isMobile ? "15px" : "11.5px", // Tăng font-size
+              lineHeight: "1.5",
+              margin: "0 0 14px 0",
+              opacity: 0.97,
               wordWrap: "break-word",
               overflowWrap: "break-word",
               hyphens: "auto",
-              textShadow: "0 1px 1px rgba(0,0,0,0.6)",
-              letterSpacing: "0.2px"
+              textShadow: "0 1px 1px rgba(0,0,0,0)",
+              letterSpacing: "0.2px",
+              // fontWeight: 500, // Thêm dòng này
             }}>
               {chapter.hotspot.description || 'Detailed information about this component.'}
             </p>
 
             {/* Action Buttons */}
-            <div style={{
+            {/* <div style={{
               display: "flex",
-              gap: "6px",
+              gap: "8px",
               flexDirection: "column",
-              marginTop: "8px"
-            }}>
+              marginTop: "10px"
+            }}> */}
               {/* Technical Specifications Link */}
-              {chapter.hotspot.link && (
+              {/* {chapter.hotspot.link && (
                 <button
                   onClick={() => {
                     window.open(chapter.hotspot.link, '_blank');
@@ -231,14 +233,14 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '6px',
+                    gap: '8px',
                     width: '100%',
-                    padding: mobile.isMobile ? '8px 12px' : '6px 10px',
-                    fontSize: mobile.isMobile ? '12px' : '10px',
+                    padding: mobile.isMobile ? '12px 16px' : '10px 14px', // Tăng padding
+                    fontSize: mobile.isMobile ? '15px' : '13px', // Tăng font-size
                     background: 'rgba(255, 255, 255, 0.15)',
                     color: 'white',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: mobile.isMobile ? '8px' : '6px',
+                    borderRadius: mobile.isMobile ? '10px' : '8px',
                     cursor: 'pointer',
                     fontWeight: '600',
                     transition: 'all 0.3s ease',
@@ -260,20 +262,20 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
                   Specification
                 </button>
               )}
-            </div>
+            </div> */}
 
             {/* Arrow pointer */}
             <div
               style={{
                 position: "absolute",
-                bottom: "-4px",
+                bottom: "-6px",
                 left: "50%",
                 transform: "translateX(-50%)",
                 width: "0",
                 height: "0",
-                borderLeft: "4px solid transparent",
-                borderRight: "4px solid transparent",
-                borderTop: "4px solid rgba(0, 0, 0, 0.95)",
+                borderLeft: "6px solid transparent",
+                borderRight: "6px solid transparent",
+                borderTop: "6px solid rgba(0, 0, 0, 0.95)",
               }}
             />
           </div>
@@ -285,7 +287,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
         theatreKey="DetailCamera"
         makeDefault
         fov={mobile.getCameraFOV()}
-        position={[29.446, 4.494, -22.034]} // Close to Smart Thermostat
+        position={[29.446, 4.494, -23.5]} // Lùi camera ra xa hơn
       />
     </>
   );
