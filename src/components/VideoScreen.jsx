@@ -136,7 +136,7 @@ export function VideoScreen({
                 border: '2px solid #333'
               }}
               onClick={() => {
-                const { type: vType, id: vId } = extractVideoInfo(videoId);
+                const { type: vType, id: vId } = extractVideoInfo(currentVideoId);
                 if (vType === 'youtube') {
                   window.open(`https://www.youtube.com/watch?v=${vId}`, '_blank');
                 } else if (vType === 'vimeo') {
