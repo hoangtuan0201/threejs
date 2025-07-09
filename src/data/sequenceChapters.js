@@ -141,7 +141,8 @@ export const sequenceChapters = [
     id: "Outdoor",
     hotspot: {
       position: [22.58, 4.45, -17.8],
-      rotation: [0, Math.PI / 2, 0],
+      rotation: [0, Math.PI / 1, 0],
+      labelPosition: [22.5, 4.85, -17.8],
       detailPosition: [22.58, 4.9, -17.8],
       detailRotation: [0, 0, 0],
       // Mobile-specific positioning

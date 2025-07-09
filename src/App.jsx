@@ -8,6 +8,10 @@ import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { SceneManager } from "./components/SceneManager";
 
+// Create project and main sheet for initial state
+const project = getProject("Fly Through", { state: theatreState });
+const mainSheet = project.sheet("Scene");
+
 import LoadingScreen from "./components/LoadingScreen";
 import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
 import ChapterNavigation from "./components/ChapterNavigation";
@@ -20,8 +24,6 @@ import { ThemeProvider } from "./theme/ThemeContext";
 
 import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
-
-// Remove sheet creation from App.jsx since SceneManager handles it
 
 // Theatre.js Studio disabled for production
 if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
@@ -37,6 +39,14 @@ if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
 }
 
 export default function App({ isChatFocused = false }) {
+  // Current sheet from SceneManager - initialize with mainSheet
+  const [currentSheet, setCurrentSheet] = useState(mainSheet);
+  const [currentScene, setCurrentScene] = useState('main'); // Track current scene
+
+  // Debug log for currentSheet changes
+  useEffect(() => {
+    console.log('App: currentSheet changed:', currentSheet);
+  }, [currentSheet]);
   const navigate = useNavigate();
   const [showControlPanel, setShowControlPanel] = useState(false); // Start with 3D experience
   const [showCompareSystem, setShowCompareSystem] = useState(false);
@@ -59,7 +69,7 @@ export default function App({ isChatFocused = false }) {
     startTime: sceneStartTime,
     lockScene,
     completeNavigation,
-  } = useSceneLock(null, 1000); // Pass null since SceneManager handles sheets
+  } = useSceneLock(currentSheet, 1000); // Use current sheet from SceneManager
 
   // Chapter navigation function - useSceneLock approach with smooth option
   const handleChapterNavigation = (position, options = {}) => {
@@ -215,6 +225,7 @@ export default function App({ isChatFocused = false }) {
             isNavigating={sceneLocked}
             scrollSensitivity={scrollSensitivity}
             onShowNavigationGuide={() => setShowNavigationGuide(true)}
+            onHideNavigationGuide={() => setShowNavigationGuide(false)}
             showNavigationGuide={showNavigationGuide}
             isChatFocused={isChatFocused}
             navigationData={{
@@ -224,16 +235,18 @@ export default function App({ isChatFocused = false }) {
               startTime: sceneStartTime,
               onComplete: completeNavigation,
             }}
+            onCurrentSheetChange={setCurrentSheet}
+            onCurrentSceneChange={setCurrentScene}
           />
         </Canvas>
       )}
 
-      {/* Chapter Navigation - show when in explore mode and model is loaded */}
+      {/* Chapter Navigation - show when in explore mode and model is loaded, hide in detail scene */}
       <ChapterNavigation
         currentPosition={currentSequencePosition}
         onNavigate={handleChapterNavigation}
         mobile={mobile}
-        isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
+        isVisible={!showControlPanel && !showCompareSystem && modelLoaded && currentScene === 'main'}
         isLocked={sceneLocked}
       />
 

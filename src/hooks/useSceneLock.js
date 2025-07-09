@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-function useSceneLock(sheet, delay = 3000) {
+function useSceneLock(sheet, delay = 4500) {
   const [locked, setLocked] = useState(false);
   const [targetPosition, setTargetPosition] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -9,6 +9,11 @@ function useSceneLock(sheet, delay = 3000) {
 
   const lockScene = (targetPos, options = {}) => {
     console.log(`Locking scene at position: ${targetPos}`, options);
+
+    if (!sheet || !sheet.sequence) {
+      console.warn('Sheet or sequence not available, ignoring lock request');
+      return;
+    }
 
     const clampedPos = Math.max(0, Math.min(6.7, targetPos));
     const stepSize = options.stepSize || 1.5; // Default step size or custom

@@ -10,11 +10,14 @@ export function VideoScreen({
   size = { width: 80, height: 45 },
   mobilePosition,
   mobileRotation,
-  mobileSize
+  mobileSize,
+  fallbackVideoId = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Default fallback
 }) {
   const mobile = useMobile();
   const [hasError, setHasError] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentVideoId, setCurrentVideoId] = useState(videoId);
 
   // Monitor network status
   useEffect(() => {
@@ -38,6 +41,23 @@ export function VideoScreen({
     };
   }, []);
 
+  // Reset loading state when video changes
+  useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+    setCurrentVideoId(videoId);
+  }, [videoId]);
+
+  // Auto-fallback when error occurs
+  useEffect(() => {
+    if (hasError && currentVideoId === videoId && fallbackVideoId !== videoId) {
+      console.log('Switching to fallback video:', fallbackVideoId);
+      setCurrentVideoId(fallbackVideoId);
+      setHasError(false);
+      setIsLoading(true);
+    }
+  }, [hasError, currentVideoId, videoId, fallbackVideoId]);
+
   // Extract video ID and type (YouTube or Vimeo)
   const extractVideoInfo = (url) => {
     if (url.includes('youtube.com/watch?v=')) {
@@ -55,12 +75,12 @@ export function VideoScreen({
     return { type: 'youtube', id: url };
   };
 
-  const { type: videoType, id: finalVideoId } = extractVideoInfo(videoId);
+  const { type: videoType, id: finalVideoId } = extractVideoInfo(currentVideoId);
 
-  // Embed URL for YouTube or Vimeo
+  // Embed URL for YouTube or Vimeo with better parameters
   const embedUrl = videoType === 'youtube'
-    ? `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1`
-    : `https://player.vimeo.com/video/${finalVideoId}?autoplay=1&loop=1&title=0&byline=0&portrait=0`;
+    ? `https://www.youtube.com/embed/${finalVideoId}?autoplay=1&loop=1&playlist=${finalVideoId}&mute=0&controls=1&rel=0&modestbranding=1&enablejsapi=1&origin=${window.location.origin}`
+    : `https://player.vimeo.com/video/${finalVideoId}?autoplay=1&loop=1&title=0&byline=0&portrait=0&muted=0&controls=1&background=0`;
 
   // Use mobile-specific values if available and on mobile
   const finalPosition = mobile.isMobile && mobilePosition ? mobilePosition : position;
@@ -78,7 +98,6 @@ export function VideoScreen({
             background: '#111',
             borderRadius: '12px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
-            border: '3px solid #444',
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
@@ -101,20 +120,20 @@ export function VideoScreen({
           {hasError || !isOnline ? (
             <div
               style={{
-                width: size.width,
-                height: size.height,
+                width: finalSize.width,
+                height: finalSize.height,
                 backgroundColor: '#1a1a1a',
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#fff',
-                fontSize: '14px',
+                fontSize: mobile.isMobile ? '12px' : '14px',
                 textAlign: 'center',
-                padding: '20px',
-                border: '2px solid #333',
+                padding: mobile.isMobile ? '15px' : '20px',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                border: '2px solid #333'
               }}
               onClick={() => {
                 const { type: vType, id: vId } = extractVideoInfo(videoId);
@@ -141,23 +160,84 @@ export function VideoScreen({
                 <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '5px' }}>
                   {!isOnline ? 'Không có kết nối internet' : 'Lỗi tải video'}
                 </div>
-                <div style={{ fontSize: '11px', opacity: 0.6, marginTop: '8px', padding: '4px 8px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>
-                  Click để xem trên YouTube
+                <div style={{ fontSize: mobile.isMobile ? '10px' : '11px', opacity: 0.6, marginTop: '8px', padding: '4px 8px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>
+                  Click để xem trên {videoType === 'youtube' ? 'YouTube' : 'Vimeo'}
                 </div>
               </div>
             </div>
           ) : (
-            <iframe
-              width={size.width}
-              height={size.height}
-              src={embedUrl}
-              title={title}
-              style={{ display: 'block', borderRadius: '8px', border: 'none', transform: 'scale(0.8)' }}
-              allow={videoType === 'youtube' ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' : 'autoplay; fullscreen; picture-in-picture'}
-              allowFullScreen
-              onError={() => setHasError(true)}
-              onLoad={() => setHasError(false)}
-            />
+            <div style={{ position: 'relative', width: finalSize.width, height: finalSize.height }}>
+              <iframe
+                width="100%"
+                height="100%"
+                src={embedUrl}
+                title={title}
+                style={{
+                  display: 'block',
+                  borderRadius: '8px',
+                  border: 'none',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0
+                }}
+                allow={videoType === 'youtube'
+                  ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                  : 'autoplay; fullscreen; picture-in-picture'}
+                allowFullScreen
+                onError={() => {
+                  console.error('Video failed to load:', embedUrl);
+                  setHasError(true);
+                  setIsLoading(false);
+                }}
+                onLoad={() => {
+                  console.log('Video loaded successfully:', embedUrl);
+                  setHasError(false);
+                  setIsLoading(false);
+                }}
+                loading="lazy"
+              />
+              {/* Loading overlay */}
+              {isLoading && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontSize: mobile.isMobile ? '11px' : '12px',
+                    borderRadius: '8px',
+                    pointerEvents: 'none',
+                    transition: 'opacity 0.3s ease',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}
+                >
+                  <div style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '2px solid #fff',
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></div>
+                  <div>Đang tải video...</div>
+                  <style>
+                    {`
+                      @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                      }
+                    `}
+                  </style>
+                </div>
+              )}
+            </div>
           )}
           <div
             style={{

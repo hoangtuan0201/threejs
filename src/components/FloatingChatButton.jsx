@@ -35,6 +35,11 @@ const FloatingChatButton = ({ onFocusChange }) => {
         setTimeout(() => {
           messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }, 100);
+
+        // Additional attempt with longer delay for when chat is just opened
+        setTimeout(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 300);
       }
     }
   };
@@ -42,6 +47,16 @@ const FloatingChatButton = ({ onFocusChange }) => {
   useEffect(() => {
     scrollToBottom();
   }, [chatHistory]);
+
+  // Auto-scroll when chat is opened
+  useEffect(() => {
+    if (isOpen) {
+      // Multiple attempts to ensure scroll works when chat opens
+      setTimeout(() => scrollToBottom(), 150);
+      setTimeout(() => scrollToBottom(), 400);
+      setTimeout(() => scrollToBottom(), 700);
+    }
+  }, [isOpen]);
 
   // Handle click outside to unfocus chat
   const handleClickOutside = useCallback((event) => {
@@ -65,6 +80,8 @@ const FloatingChatButton = ({ onFocusChange }) => {
         if (inputRef.current) {
           inputRef.current.focus();
         }
+        // Auto-scroll to bottom when chat is opened
+        scrollToBottom();
       }, 100);
 
       // Notify parent that chat is focused

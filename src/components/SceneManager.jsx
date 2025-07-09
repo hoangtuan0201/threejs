@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { SheetProvider } from "@theatre/r3f";
 import { getProject } from "@theatre/core";
 import { Scene } from './Scene';
@@ -11,39 +11,161 @@ const project = getProject("Fly Through", { state: theatreState });
 const mainSheet = project.sheet("Scene");
 const detailSheet = project.sheet("DetailScene");
 
-export function SceneManager({ 
-  onTourEnd, 
-  onHideControlPanel, 
-  onShowControlPanel, 
-  isExploreMode, 
-  onModelLoaded, 
-  onPositionChange, 
-  isNavigating, 
-  navigationData, 
-  scrollSensitivity, 
-  onShowNavigationGuide, 
-  showNavigationGuide, 
-  isChatFocused 
+export function SceneManager({
+  onTourEnd,
+  onHideControlPanel,
+  onShowControlPanel,
+  isExploreMode,
+  onModelLoaded,
+  onPositionChange,
+  isNavigating,
+  navigationData,
+  scrollSensitivity,
+  onShowNavigationGuide,
+  showNavigationGuide,
+  isChatFocused,
+  onCurrentSheetChange, // New prop to expose current sheet
+  onCurrentSceneChange // New prop to expose current scene
 }) {
   const [currentScene, setCurrentScene] = useState('main'); // 'main' or 'detail'
   const [activeHotspotChapter, setActiveHotspotChapter] = useState(null);
+  const [justReturnedFromDetail, setJustReturnedFromDetail] = useState(false); // Track when just returned
+  const [hasVisitedDetailScene, setHasVisitedDetailScene] = useState(() => {
+    // Check localStorage for persistent flag
+    return localStorage.getItem('hasVisitedDetailScene') === 'true';
+  }); // Permanent flag
   const savedMainSceneState = useRef(null); // Store main scene camera state
+
+  // Check for saved position on component mount
+  useEffect(() => {
+    const checkSavedPosition = () => {
+      try {
+        const savedState = localStorage.getItem('lastHotspotPosition');
+        if (savedState) {
+          const parsedState = JSON.parse(savedState);
+          const now = Date.now();
+          const savedTime = parsedState.timestamp || 0;
+          const timeDiff = now - savedTime;
+
+          // Only restore if saved within last 24 hours (86400000 ms)
+          if (timeDiff < 86400000) {
+            console.log('🔄 Found recent saved position on startup:', parsedState);
+            // Don't auto-restore on startup, just log that it's available
+          } else {
+            console.log('🗑️ Saved position too old, clearing localStorage');
+            localStorage.removeItem('lastHotspotPosition');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error checking saved position:', error);
+        localStorage.removeItem('lastHotspotPosition');
+      }
+    };
+
+    checkSavedPosition();
+  }, []);
+
+  // Expose current sheet and scene to parent
+  useEffect(() => {
+    const currentSheet = currentScene === 'detail' ? detailSheet : mainSheet;
+    console.log('SceneManager: Current scene:', currentScene, 'Sheet:', currentSheet);
+    if (onCurrentSheetChange) {
+      onCurrentSheetChange(currentSheet);
+    }
+    if (onCurrentSceneChange) {
+      onCurrentSceneChange(currentScene);
+    }
+  }, [currentScene, onCurrentSheetChange, onCurrentSceneChange]);
 
   // Handle hotspot click to switch to detail scene
   const handleHotspotDetailRequest = (chapter, mainSceneState) => {
     if (chapter && chapter.id === "Geom3D_393") {
+
+      // Mark that user has visited detail scene (permanent flag)
+      setHasVisitedDetailScene(true);
+      localStorage.setItem('hasVisitedDetailScene', 'true');
+
       // Save main scene state before switching
       savedMainSceneState.current = mainSceneState;
+
+      // Also save to localStorage for persistence
+      if (mainSceneState) {
+        const stateToSave = {
+          position: {
+            x: mainSceneState.position.x,
+            y: mainSceneState.position.y,
+            z: mainSceneState.position.z
+          },
+          target: mainSceneState.target ? {
+            x: mainSceneState.target.x,
+            y: mainSceneState.target.y,
+            z: mainSceneState.target.z
+          } : null,
+          sequencePosition: mainSceneState.sequencePosition,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('lastHotspotPosition', JSON.stringify(stateToSave));
+      }
+
       setActiveHotspotChapter(chapter);
       setCurrentScene('detail');
     }
   };
 
-  // Handle return to main scene
+  // Handle return to main scene with smooth transition
   const handleReturnToMain = () => {
-    setCurrentScene('main');
-    setActiveHotspotChapter(null);
-    // savedMainSceneState will be used by Scene component to restore position
+    console.log('🔙 Returning to main scene with smooth transition');
+
+    // Try to get saved state from memory first, then localStorage
+    let stateToRestore = savedMainSceneState.current;
+
+    if (!stateToRestore) {
+      // Try to restore from localStorage
+      try {
+        const savedState = localStorage.getItem('lastHotspotPosition');
+        if (savedState) {
+          const parsedState = JSON.parse(savedState);
+          console.log('📱 Found saved state in localStorage:', parsedState);
+
+          // Convert back to the expected format
+          stateToRestore = {
+            position: {
+              x: parsedState.position.x,
+              y: parsedState.position.y,
+              z: parsedState.position.z,
+              clone: () => ({ x: parsedState.position.x, y: parsedState.position.y, z: parsedState.position.z })
+            },
+            target: parsedState.target ? {
+              x: parsedState.target.x,
+              y: parsedState.target.y,
+              z: parsedState.target.z,
+              clone: () => ({ x: parsedState.target.x, y: parsedState.target.y, z: parsedState.target.z })
+            } : null,
+            sequencePosition: parsedState.sequencePosition
+          };
+
+          // Update the ref with restored state
+          savedMainSceneState.current = stateToRestore;
+        }
+      } catch (error) {
+        console.error('❌ Error parsing localStorage state:', error);
+      }
+    }
+
+    console.log('📍 Saved state available:', stateToRestore ? 'Yes' : 'No');
+    if (stateToRestore) {
+      console.log('📍 Will restore to sequence position:', stateToRestore.sequencePosition?.toFixed(3));
+    } else {
+      console.log('📍 No saved state - will restore to fallback position 1.0');
+    }
+
+    // Use requestAnimationFrame for smooth scene transition
+    requestAnimationFrame(() => {
+      setJustReturnedFromDetail(true); // Mark that we just returned
+      setCurrentScene('main');
+      setActiveHotspotChapter(null);
+      // savedMainSceneState will be used by Scene component to restore position
+    });
   };
 
   // Render detail scene
@@ -78,9 +200,15 @@ export function SceneManager({
         showNavigationGuide={showNavigationGuide}
         isChatFocused={isChatFocused}
         onHotspotDetailRequest={handleHotspotDetailRequest}
-        shouldRestorePosition={currentScene === 'main' && savedMainSceneState.current}
+        shouldRestorePosition={currentScene === 'main' && justReturnedFromDetail}
         savedSceneState={savedMainSceneState.current}
-        onSceneStateCleared={() => { savedMainSceneState.current = null; }}
+        hasVisitedDetailScene={hasVisitedDetailScene}
+        onSceneStateCleared={() => {
+          savedMainSceneState.current = null;
+          setJustReturnedFromDetail(false); // Clear the flag after restore
+          // Clear localStorage after successful restore
+          localStorage.removeItem('lastHotspotPosition');
+        }}
       />
     </SheetProvider>
   );

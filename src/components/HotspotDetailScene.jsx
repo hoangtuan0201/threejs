@@ -3,8 +3,9 @@ import { PerspectiveCamera } from "@theatre/r3f";
 import { Html } from "@react-three/drei";
 import { Model } from "./Model";
 import { useMobile } from "../hooks/useMobile";
+import { VideoScreen } from "./VideoScreen";
 
-export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isChatFocused, savedMainSceneState }) {
+export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, savedMainSceneState }) {
   const mobile = useMobile();
 
   // Handle escape key to return to main scene
@@ -36,14 +37,14 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
         <Model onModelLoaded={onModelLoaded} />
       </Suspense>
 
-      {/* Close Button - Fixed position */}
+      {/* Close Button - Fixed position with mobile support */}
       <Html
-        position={[29, 4.6, -22.25]}
-        distanceFactor={3}
+        position={mobile.isMobile ? [29.08, 4.78, -22.25] : [28.7 , 4.75, -22.3]}
+        distanceFactor={mobile.isMobile ? 4 : 4}
         occlude={false}
         style={{
           pointerEvents: 'auto',
-          zIndex: 1000,
+          zIndex: 9999,
         }}
       >
         <button
@@ -90,13 +91,13 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
 
       {/* Hotspot Details Panel - Same design as HotspotDetail.jsx */}
       <group
-        position={[27.78, 4.6, -21.7]}
+        position={mobile.isMobile ? [27.8, 4.8, -22.1] : [27.8, 4.75, -21.9]}
         rotation={[0, Math.PI / 1.8, 0]}
       >
         <Html
           position={[0, 0, 0]}
           center
-          distanceFactor={0.95} // Tăng distanceFactor để panel nhỏ lại, rõ nét hơn
+          distanceFactor={1} // Tăng distanceFactor để panel nhỏ lại, rõ nét hơn
           transform
           occlude
         >
@@ -111,7 +112,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
               width: "auto",
               height: "auto",
               minHeight: mobile.isMobile ? "60px" : "55px",
-              maxHeight: mobile.isMobile ? "160px" : "180px",
+              maxHeight: mobile.isMobile ? "180px" : "180px",
               boxShadow: "0 3px 12px rgba(0, 0, 0, 0.7)",
               border: "1px solid rgba(255, 255, 255, 0.3)",
               position: "relative",
@@ -122,64 +123,12 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
               fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
           >
-            {/* Close button */}
-            {/* <button
-              onClick={() => {
-                console.log('❌ Detail panel close button clicked - returning to main scene');
-                if (savedMainSceneState) {
-                  console.log('📍 Saved state available:', {
-                    position: [savedMainSceneState.position.x.toFixed(2), savedMainSceneState.position.y.toFixed(2), savedMainSceneState.position.z.toFixed(2)],
-                    sequencePosition: savedMainSceneState.sequencePosition?.toFixed(3)
-                  });
-                } else {
-                  console.log('⚠️ No saved state available');
-                }
-                onReturnToMain();
-              }}
-              onTouchStart={(e) => {
-                e.stopPropagation();
-              }}
-              onTouchEnd={() => {
-                console.log('❌ Detail panel close button touched - returning to main scene');
-                onReturnToMain();
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.4)';
-                e.target.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                e.target.style.transform = 'scale(1)';
-              }}
-              style={{
-                position: "absolute",
-                top: "8px",
-                right: "8px",
-                background: "rgba(255, 255, 255, 0.25)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                color: "white",
-                width: mobile.isMobile ? "24px" : "18px", // Tăng kích thước nút
-                height: mobile.isMobile ? "24px" : "18px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                fontSize: mobile.isMobile ? "18px" : "14px", // Tăng font-size
-                fontWeight: "bold",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 10000,
-                touchAction: "manipulation",
-                transition: "all 0.2s ease",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              ×
-            </button> */}
+          
 
             {/* Title */}
             <h3 style={{
               margin: "0 0 10px 0",
-              fontSize: mobile.isMobile ? "30px" : "25px", // Tăng font-size
+              fontSize: mobile.isMobile ? "25px" : "20px", // Tăng font-size
               fontWeight: "700",
               color: "#fff",
               textShadow: "0 1px 2px rgba(0,0,0,0)",
@@ -202,8 +151,8 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
             {/* Description */}
             <p style={{
               // distanceFactor={0.95}, // Tăng distanceFactor để panel nhỏ lại, rõ nét hơn
-              fontSize: mobile.isMobile ? "15px" : "11.5px", // Tăng font-size
-              lineHeight: "1.5",
+              fontSize: mobile.isMobile ? "13px" : "11.5px", // Tăng font-size
+              lineHeight: "1.4",
               margin: "0 0 14px 0",
               opacity: 0.97,
               wordWrap: "break-word",
@@ -282,12 +231,24 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isC
         </Html>
       </group>
 
+      {/* Floating Video Screen - positioned below hotspot detail, same size as detail panel */}
+      <VideoScreen
+        position={mobile.isMobile ? [28, 4.1, -22.1] : [27.8, 4.24, -21.72]} // Positioned below detail panel
+        rotation={[0, Math.PI / 1.8, 0]}
+        videoId="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // YouTube backup video - replace with actual AirSmart video
+        title="AirSmart Demo"
+        size={mobile.isMobile ? { width: 220, height: 124 } : { width: 200, height: 100 }}
+        mobilePosition={[28, 4.1, -22.1]}
+        mobileRotation={[0, Math.PI / 1.8, 0]}
+        mobileSize={{ width: 220, height: 124 }}
+      />
+
       {/* Camera for detail scene - positioned close to Smart Thermostat */}
       <PerspectiveCamera
         theatreKey="DetailCamera"
         makeDefault
-        fov={mobile.getCameraFOV()}
-        position={[29.446, 4.494, -23.5]} // Lùi camera ra xa hơn
+        fov={mobile.isMobile ? 100 : 75} // PC: 70, Mobile: responsive
+        position={mobile.isMobile ? [29.446, 4.3, -23.8] : [29.446, 4.494, -23.5]} // Mobile camera positioning
       />
     </>
   );

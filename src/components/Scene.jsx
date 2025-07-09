@@ -21,7 +21,7 @@ import { useMobile } from "../hooks/useMobile";
 
 
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
@@ -30,6 +30,18 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
   const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
   const [localHiddenState, setLocalHiddenState] = useState(false); // Local state for 3D toggle
+  const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
+  const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown
+  const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
+
+  // Reset navigation guide flag for first-time users (who haven't visited detail scene)
+  useEffect(() => {
+    if (!hasVisitedDetailScene && hasShownNavigationGuide) {
+      setHasShownNavigationGuide(false);
+    }
+  }, [hasVisitedDetailScene, hasShownNavigationGuide]);
+
+  // Remove local state - use prop from SceneManager instead
 
 
 
@@ -67,15 +79,20 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Function to capture current camera state
   const captureCurrentCameraState = () => {
     if (camera && sheet && sheet.sequence) {
+      const currentSequencePosition = sheet.sequence.position;
       const state = {
         position: camera.position.clone(),
         target: controls ? controls.target.clone() : null,
-        sequencePosition: sheet.sequence.position
+        sequencePosition: currentSequencePosition
       };
-      console.log('🎬 Capturing camera state:', {
-        position: [state.position.x.toFixed(2), state.position.y.toFixed(2), state.position.z.toFixed(2)],
-        sequencePosition: state.sequencePosition.toFixed(3)
-      });
+
+
+      // Ensure we have a valid sequence position (fallback to 1 if at start)
+      if (state.sequencePosition < 0.1) {
+        console.log('⚠️ Sequence position too low, setting to 1.0');
+        state.sequencePosition = 1.0;
+      }
+
       return state;
     }
     return null;
@@ -83,34 +100,122 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   // Restore camera position when returning from detail scene
   useEffect(() => {
-    if (shouldRestorePosition && savedSceneState && camera && sheet) {
-      console.log('🔄 Restoring camera state:', {
-        position: [savedSceneState.position.x.toFixed(2), savedSceneState.position.y.toFixed(2), savedSceneState.position.z.toFixed(2)],
-        sequencePosition: savedSceneState.sequencePosition?.toFixed(3)
-      });
+    if (shouldRestorePosition && camera && sheet) {
+      // Set restoring flag to prevent other useEffects from resetting
+      console.log('🚫 Setting isRestoring=true to prevent auto-reset');
+      setIsRestoring(true);
 
-      // Restore camera position
-      camera.position.copy(savedSceneState.position);
+      // Immediate restore to prevent jitter - use requestAnimationFrame for smooth transition
+      const performRestore = () => {
+        let targetSequencePosition = 1.0; // Default fallback position
 
-      // Restore controls target
-      if (controls && savedSceneState.target) {
-        controls.target.copy(savedSceneState.target);
-        controls.update();
-      }
 
-      // Restore sequence position
-      if (sheet.sequence && savedSceneState.sequencePosition !== undefined) {
-        sheet.sequence.position = savedSceneState.sequencePosition;
-      }
 
-      console.log('✅ Camera state restored successfully');
+        if (savedSceneState && savedSceneState.sequencePosition !== undefined) {
+          console.log('🔄 Restoring camera state:', {
+            position: [savedSceneState.position.x.toFixed(2), savedSceneState.position.y.toFixed(2), savedSceneState.position.z.toFixed(2)],
+            sequencePosition: savedSceneState.sequencePosition?.toFixed(3)
+          });
 
-      // Clear the saved state
-      if (onSceneStateCleared) {
-        onSceneStateCleared();
-      }
+          // Use saved position if it's reasonable (> 0.1) - Lower threshold
+          if (savedSceneState.sequencePosition > 0.1) {
+            targetSequencePosition = savedSceneState.sequencePosition;
+            console.log('✅ Using saved sequence position:', targetSequencePosition);
+          } else {
+            console.log('⚠️ Saved position too low:', savedSceneState.sequencePosition, 'using fallback position 1.0');
+          }
+
+          // Restore sequence position FIRST to prevent jitter
+          if (sheet.sequence) {
+            sheet.sequence.position = targetSequencePosition;
+            setTargetPosition(targetSequencePosition);
+          }
+
+          // Then restore camera position smoothly
+          requestAnimationFrame(() => {
+            camera.position.copy(savedSceneState.position);
+
+            // Restore controls target
+            if (controls && savedSceneState.target) {
+              controls.target.copy(savedSceneState.target);
+              controls.update();
+            }
+          });
+        } else {
+          console.log('❌ No saved state available! This should not happen.');
+
+          // Try to get from localStorage as fallback
+          try {
+            const localState = localStorage.getItem('lastHotspotPosition');
+            if (localState) {
+              const parsedState = JSON.parse(localState);
+              console.log('📱 Found localStorage fallback:', parsedState);
+              targetSequencePosition = parsedState.sequencePosition || 1.0;
+            }
+          } catch (error) {
+            console.error('❌ Error reading localStorage:', error);
+          }
+
+          if (sheet.sequence) {
+            sheet.sequence.position = targetSequencePosition;
+            setTargetPosition(targetSequencePosition);
+          }
+        }
+
+        console.log('✅ Camera state restored successfully to position:', targetSequencePosition);
+
+        // Mark as navigated to prevent future auto-resets
+        setHasNavigated(true);
+
+        // Mark navigation guide as shown to prevent popup during restore
+        console.log('🚫 Marking navigation guide as shown to prevent popup during restore');
+        setHasShownNavigationGuide(true);
+
+        // Force close navigation guide if it's currently showing
+        if (onHideNavigationGuide) {
+          console.log('🚫 Force closing navigation guide during restore');
+          onHideNavigationGuide();
+        }
+
+        // Clear the saved state immediately
+        if (onSceneStateCleared) {
+          onSceneStateCleared();
+        }
+
+        // Clear restoring flag with shorter delay
+        setTimeout(() => {
+          console.log('✅ Setting isRestoring=false - restore complete');
+          setIsRestoring(false);
+          setJustCompletedRestore(true);
+
+          // Clear the justCompletedRestore flag after shorter delay
+          setTimeout(() => {
+            setJustCompletedRestore(false);
+          }, 500);
+        }, 100); // Much shorter delay
+      };
+
+      // Execute restore immediately
+      performRestore();
     }
   }, [shouldRestorePosition, savedSceneState, camera, controls, sheet, onSceneStateCleared]);
+
+  // Show navigation guide when entering explore mode for the first time
+  useEffect(() => {
+    // Only show if:
+    // 1. In explore mode
+    // 2. Not currently navigating
+    // 3. User hasn't navigated yet (first time)
+    // 4. Not currently restoring from detail scene
+    // 5. Haven't already shown the guide
+    // Note: Allow first-time users to see guide even if they haven't visited detail scene
+    if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated && !isRestoring && !justCompletedRestore && !hasShownNavigationGuide && !hasVisitedDetailScene) {
+      if (onShowNavigationGuide) {
+        onShowNavigationGuide();
+        setHasShownNavigationGuide(true);
+      }
+    }
+  }, [isExploreMode, isNavigating, navigationData?.isNavigating, hasNavigated, isRestoring, justCompletedRestore, hasShownNavigationGuide, hasVisitedDetailScene, onShowNavigationGuide]);
 
   // Update camera position based on mobile detection (optimized)
   useEffect(() => {
@@ -160,7 +265,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
       if (navStart !== null && startTime !== null) {
         const elapsed = performance.now() - startTime;
-        const duration = 3000; // 1.5 seconds for smooth navigation
+
+        // Slower transitions for sequences 2-3 and 3-4
+        let duration = 3000; // Default 4.5 seconds
+        if ((navStart >= 1.7 && navStart <= 2.3 && navTarget >= 3.7 && navTarget <= 4.3) || // 2 to 4 (Air Purification)
+            (navStart >= 3.7 && navStart <= 4.3 && navTarget >= 6.2 && navTarget <= 6.8)) { // 4 to 6.5 (Outdoor)
+          duration = 6000; // 7 seconds for slower transition
+        }
+
         const progress = Math.min(elapsed / duration, 1);
 
         // Smooth easing function (ease-out-cubic)
@@ -229,82 +341,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     });
   });
 
-  // Reset function for tour end
-  const resetScene = () => {
-    setActiveChapter(null);
-    setSelectedHotspot(null);
-    setShowVideoScreen(null);
-    // Reset camera to initial position - start from 0.15 to avoid wall clipping
-    sheet.sequence.position = 0.15;
-    setTargetPosition(0.15);
-    // Show ControlPanel again
-    if (onShowControlPanel) {
-      onShowControlPanel();
-    }
-  };
 
-  // Initialize targetPosition and ensure proper sequence start
-  useEffect(() => {
-    // Don't reset during navigation or if navigationData is active or if user has navigated
-    if (isNavigating || navigationData?.isNavigating || hasNavigated) {
-      return;
-    }
-
-    const currentPos = sheet.sequence.position;
-
-    if (isNaN(currentPos) || currentPos === undefined) {
-      sheet.sequence.position = 0.15; // Ensure Theatre.js sequence starts at 0.15 to avoid wall clipping
-      setTargetPosition(0.15);
-    } else {
-      setTargetPosition(currentPos);
-    }
-  }, [sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
-
-  // Ensure proper initialization when entering explore mode
-  useEffect(() => {
-    if (isExploreMode && !isNavigating && !navigationData?.isNavigating && !hasNavigated) {
-      // Force Theatre.js sequence to start at position 0.15 when entering explore mode to avoid wall clipping
-      // Add small delay to ensure Theatre.js is ready
-      setTimeout(() => {
-        sheet.sequence.position = 0.15;
-        setTargetPosition(0.15);
-        // Show navigation guide when first entering explore mode
-        if (onShowNavigationGuide) {
-          onShowNavigationGuide();
-        }
-      }, 50);
-    }
-  }, [isExploreMode, sheet.sequence, isNavigating, navigationData?.isNavigating, hasNavigated]);
-
-  // Force initial sequence position when component mounts - ONLY ONCE
-  const mountedRef = useRef(false);
-  useEffect(() => {
-    // Only run once on mount
-    if (mountedRef.current) {
-      return;
-    }
-
-    // Don't initialize if navigation is active or user has navigated
-    if (navigationData?.isNavigating || hasNavigated) {
-      return;
-    }
-
-    mountedRef.current = true;
-
-    // Ensure sequence starts at 0.1 on mount to avoid wall clipping
-    const initializeSequence = () => {
-      if (sheet && sheet.sequence && !navigationData?.isNavigating && !hasNavigated) {
-        sheet.sequence.position = 0.15;
-        setTargetPosition(0.15);
-      }
-    };
-
-    // Run immediately and with a small delay to ensure Theatre.js is ready
-    initializeSequence();
-    const timer = setTimeout(initializeSequence, 100);
-
-    return () => clearTimeout(timer);
-  }, []); // Empty dependency array - only run once
 
   // Enhanced keyboard navigation for escape key and arrow keys
   useEffect(() => {
@@ -315,9 +352,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       switch (event.key) {
         case 'Escape':
           event.preventDefault();
-          resetScene();
           // Navigate back to homepage
-          navigate("/");
+          navigate("/homepage");
           break;
 
         case 'ArrowLeft':
