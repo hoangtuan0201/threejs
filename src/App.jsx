@@ -116,7 +116,7 @@ export default function App({ isChatFocused = false }) {
 
     
       {/* Theatre.js Studio Button - Development only */}
-      {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
+      {/* {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
         <button
           onClick={() => {
             console.log("Toggling Theatre.js Studio...");
@@ -147,7 +147,7 @@ export default function App({ isChatFocused = false }) {
         >
           🎬 Studio
         </button>
-      )}
+      )} */}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
       {!showControlPanel && !showCompareSystem && (
