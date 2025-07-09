@@ -1,0 +1,292 @@
+import { Suspense, useEffect } from "react";
+import { PerspectiveCamera } from "@theatre/r3f";
+import { Html } from "@react-three/drei";
+import { Model } from "./Model";
+import { useMobile } from "../hooks/useMobile";
+
+export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, isChatFocused, savedMainSceneState }) {
+  const mobile = useMobile();
+
+  // Handle escape key to return to main scene
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        console.log('⌨️ Escape key pressed - returning to main scene');
+        onReturnToMain();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onReturnToMain]);
+
+  if (!chapter) return null;
+
+  return (
+    <>
+      <color attach="background" args={["#84a4f4"]} />
+
+      {/* Enhanced lighting for detail scene */}
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
+      <directionalLight position={[-10, -10, -5]} intensity={0.6} />
+      <pointLight position={[0, 10, 0]} intensity={0.5} />
+
+      <Suspense fallback={null}>
+        <Model onModelLoaded={onModelLoaded} />
+      </Suspense>
+
+      {/* Close Button - Fixed position */}
+      <Html
+        position={[29, 4.6, -22.25]}
+        distanceFactor={3}
+        occlude={false}
+        style={{
+          pointerEvents: 'auto',
+          zIndex: 1000,
+        }}
+      >
+        <button
+          onClick={() => {
+            console.log('❌ Close button clicked - returning to main scene');
+            if (savedMainSceneState) {
+              console.log('📍 Saved state available:', {
+                position: [savedMainSceneState.position.x.toFixed(2), savedMainSceneState.position.y.toFixed(2), savedMainSceneState.position.z.toFixed(2)],
+                sequencePosition: savedMainSceneState.sequencePosition?.toFixed(3)
+              });
+            } else {
+              console.log('⚠️ No saved state available');
+            }
+            onReturnToMain();
+          }}
+          style={{
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            border: '1px solid white',
+            color: 'white',
+            fontSize: '10px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+            e.target.style.transform = 'scale(1.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            e.target.style.transform = 'scale(1)';
+          }}
+        >
+          ✕
+        </button>
+      </Html>
+
+      {/* Hotspot Details Panel - Same design as HotspotDetail.jsx */}
+      <group
+        position={[27.78, 4.6, -21.7]}
+        rotation={[0, Math.PI / 1.8, 0]}
+      >
+        <Html
+          position={[0, 0, 0]}
+          center
+          distanceFactor={1.5}
+          transform
+          occlude
+        >
+          <div
+            style={{
+              background: "rgba(0, 0, 0, 0.95)",
+              color: "white",
+              padding: mobile.isMobile ? "8px" : "7px",
+              borderRadius: mobile.isMobile ? "6px" : "5px",
+              minWidth: mobile.isMobile ? "200px" : "180px",
+              maxWidth: mobile.isMobile ? "250px" : "220px",
+              width: "auto",
+              height: "auto",
+              minHeight: mobile.isMobile ? "50px" : "45px",
+              maxHeight: mobile.isMobile ? "110px" : "130px",
+              boxShadow: "0 3px 12px rgba(0, 0, 0, 0.7)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              position: "relative",
+              zIndex: 1000,
+              overflow: "hidden",
+              wordWrap: "break-word",
+              backdropFilter: "blur(8px)",
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => {
+                console.log('❌ Detail panel close button clicked - returning to main scene');
+                if (savedMainSceneState) {
+                  console.log('📍 Saved state available:', {
+                    position: [savedMainSceneState.position.x.toFixed(2), savedMainSceneState.position.y.toFixed(2), savedMainSceneState.position.z.toFixed(2)],
+                    sequencePosition: savedMainSceneState.sequencePosition?.toFixed(3)
+                  });
+                } else {
+                  console.log('⚠️ No saved state available');
+                }
+                onReturnToMain();
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+              }}
+              onTouchEnd={() => {
+                console.log('❌ Detail panel close button touched - returning to main scene');
+                onReturnToMain();
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.4)';
+                e.target.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+                e.target.style.transform = 'scale(1)';
+              }}
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "8px",
+                background: "rgba(255, 255, 255, 0.25)",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+                color: "white",
+                width: mobile.isMobile ? "20px" : "14px",
+                height: mobile.isMobile ? "20px" : "14px",
+                borderRadius: "50%",
+                cursor: "pointer",
+                fontSize: mobile.isMobile ? "14px" : "10px",
+                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 10000,
+                touchAction: "manipulation",
+                transition: "all 0.2s ease",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+              }}
+            >
+              ×
+            </button>
+
+            {/* Title */}
+            <h3 style={{
+              margin: "0 0 6px 0",
+              fontSize: mobile.isMobile ? "9px" : "7px",
+              fontWeight: "700",
+              color: "#fff",
+              textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+              letterSpacing: "0.3px"
+            }}>
+              {chapter.hotspot.title || chapter.title}
+            </h3>
+
+            {savedMainSceneState && (
+              <div style={{
+                fontSize: mobile.isMobile ? "7px" : "5px",
+                color: '#888',
+                marginBottom: '5px',
+                fontStyle: 'italic'
+              }}>
+                Click X to return
+              </div>
+            )}
+
+            {/* Description */}
+            <p style={{
+              fontSize: mobile.isMobile ? "7px" : "5px",
+              lineHeight: "1.4",
+              margin: "0 0 10px 0",
+              opacity: 0.95,
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+              hyphens: "auto",
+              textShadow: "0 1px 1px rgba(0,0,0,0.6)",
+              letterSpacing: "0.2px"
+            }}>
+              {chapter.hotspot.description || 'Detailed information about this component.'}
+            </p>
+
+            {/* Action Buttons */}
+            <div style={{
+              display: "flex",
+              gap: "6px",
+              flexDirection: "column",
+              marginTop: "8px"
+            }}>
+              {/* Technical Specifications Link */}
+              {chapter.hotspot.link && (
+                <button
+                  onClick={() => {
+                    window.open(chapter.hotspot.link, '_blank');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    width: '100%',
+                    padding: mobile.isMobile ? '8px 12px' : '6px 10px',
+                    fontSize: mobile.isMobile ? '12px' : '10px',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: mobile.isMobile ? '8px' : '6px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                    letterSpacing: '0.3px',
+                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+                    e.target.style.transform = 'translateY(-1px)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  Specification
+                </button>
+              )}
+            </div>
+
+            {/* Arrow pointer */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "-4px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "0",
+                height: "0",
+                borderLeft: "4px solid transparent",
+                borderRight: "4px solid transparent",
+                borderTop: "4px solid rgba(0, 0, 0, 0.95)",
+              }}
+            />
+          </div>
+        </Html>
+      </group>
+
+      {/* Camera for detail scene - positioned close to Smart Thermostat */}
+      <PerspectiveCamera
+        theatreKey="DetailCamera"
+        makeDefault
+        fov={mobile.getCameraFOV()}
+        position={[29.446, 4.494, -22.034]} // Close to Smart Thermostat
+      />
+    </>
+  );
+}

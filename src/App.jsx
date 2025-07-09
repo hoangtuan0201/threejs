@@ -6,7 +6,7 @@ import { getProject } from "@theatre/core";
 import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
-import { Scene } from "./components/Scene";
+import { SceneManager } from "./components/SceneManager";
 
 import LoadingScreen from "./components/LoadingScreen";
 import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
@@ -21,7 +21,7 @@ import { ThemeProvider } from "./theme/ThemeContext";
 import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
 
-const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
+// Remove sheet creation from App.jsx since SceneManager handles it
 
 // Theatre.js Studio disabled for production
 if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
@@ -59,7 +59,7 @@ export default function App({ isChatFocused = false }) {
     startTime: sceneStartTime,
     lockScene,
     completeNavigation,
-  } = useSceneLock(sheet, 1000);
+  } = useSceneLock(null, 1000); // Pass null since SceneManager handles sheets
 
   // Chapter navigation function - useSceneLock approach with smooth option
   const handleChapterNavigation = (position, options = {}) => {
@@ -205,28 +205,26 @@ export default function App({ isChatFocused = false }) {
             };
           }}
         >
-          <SheetProvider sheet={sheet}>
-            <Scene
-              onTourEnd={endTour}
-              onHideControlPanel={() => setShowControlPanel(false)}
-              onShowControlPanel={() => setShowControlPanel(true)}
-              isExploreMode={!showControlPanel}
-              onModelLoaded={handleModelLoaded}
-              onPositionChange={setCurrentSequencePosition}
-              isNavigating={sceneLocked}
-              scrollSensitivity={scrollSensitivity}
-              onShowNavigationGuide={() => setShowNavigationGuide(true)}
-              showNavigationGuide={showNavigationGuide}
-              isChatFocused={isChatFocused}
-              navigationData={{
-                isNavigating: sceneNavigating,
-                targetPosition: sceneTargetPosition,
-                startPosition: sceneStartPosition,
-                startTime: sceneStartTime,
-                onComplete: completeNavigation,
-              }}
-            />
-          </SheetProvider>
+          <SceneManager
+            onTourEnd={endTour}
+            onHideControlPanel={() => setShowControlPanel(false)}
+            onShowControlPanel={() => setShowControlPanel(true)}
+            isExploreMode={!showControlPanel}
+            onModelLoaded={handleModelLoaded}
+            onPositionChange={setCurrentSequencePosition}
+            isNavigating={sceneLocked}
+            scrollSensitivity={scrollSensitivity}
+            onShowNavigationGuide={() => setShowNavigationGuide(true)}
+            showNavigationGuide={showNavigationGuide}
+            isChatFocused={isChatFocused}
+            navigationData={{
+              isNavigating: sceneNavigating,
+              targetPosition: sceneTargetPosition,
+              startPosition: sceneStartPosition,
+              startTime: sceneStartTime,
+              onComplete: completeNavigation,
+            }}
+          />
         </Canvas>
       )}
 

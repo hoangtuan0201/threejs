@@ -21,7 +21,7 @@ import { useMobile } from "../hooks/useMobile";
 
 
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
@@ -62,7 +62,55 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   });
 
-  const { gl, camera } = useThree();
+  const { gl, camera, controls } = useThree();
+
+  // Function to capture current camera state
+  const captureCurrentCameraState = () => {
+    if (camera && sheet && sheet.sequence) {
+      const state = {
+        position: camera.position.clone(),
+        target: controls ? controls.target.clone() : null,
+        sequencePosition: sheet.sequence.position
+      };
+      console.log('🎬 Capturing camera state:', {
+        position: [state.position.x.toFixed(2), state.position.y.toFixed(2), state.position.z.toFixed(2)],
+        sequencePosition: state.sequencePosition.toFixed(3)
+      });
+      return state;
+    }
+    return null;
+  };
+
+  // Restore camera position when returning from detail scene
+  useEffect(() => {
+    if (shouldRestorePosition && savedSceneState && camera && sheet) {
+      console.log('🔄 Restoring camera state:', {
+        position: [savedSceneState.position.x.toFixed(2), savedSceneState.position.y.toFixed(2), savedSceneState.position.z.toFixed(2)],
+        sequencePosition: savedSceneState.sequencePosition?.toFixed(3)
+      });
+
+      // Restore camera position
+      camera.position.copy(savedSceneState.position);
+
+      // Restore controls target
+      if (controls && savedSceneState.target) {
+        controls.target.copy(savedSceneState.target);
+        controls.update();
+      }
+
+      // Restore sequence position
+      if (sheet.sequence && savedSceneState.sequencePosition !== undefined) {
+        sheet.sequence.position = savedSceneState.sequencePosition;
+      }
+
+      console.log('✅ Camera state restored successfully');
+
+      // Clear the saved state
+      if (onSceneStateCleared) {
+        onSceneStateCleared();
+      }
+    }
+  }, [shouldRestorePosition, savedSceneState, camera, controls, sheet, onSceneStateCleared]);
 
   // Update camera position based on mobile detection (optimized)
   useEffect(() => {
@@ -524,10 +572,17 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           // Find the chapter and show hotspot details + video screen
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
           if (chapter && chapter.hotspot) {
-            setSelectedHotspot(chapter);
-            // Show video screen when hotspot is clicked
-            if (chapter.videoScreen) {
-              setShowVideoScreen(chapter);
+            // Check if this is Smart Thermostat - switch to detail scene
+            if (chapter.id === "Geom3D_393" && onHotspotDetailRequest) {
+              // Capture current camera state before switching
+              const currentState = captureCurrentCameraState();
+              onHotspotDetailRequest(chapter, currentState);
+            } else {
+              setSelectedHotspot(chapter);
+              // Show video screen when hotspot is clicked
+              if (chapter.videoScreen) {
+                setShowVideoScreen(chapter);
+              }
             }
           }
         }}
