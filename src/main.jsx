@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import AppRouter from "./router/AppRouter";
 import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
 import "./index.css";
@@ -8,5 +8,5 @@ import "./index.css";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <App />
+    <AppRouter />
 );

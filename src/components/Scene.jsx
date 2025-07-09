@@ -1,4 +1,5 @@
 import { Suspense, useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { useThree, useFrame } from "@react-three/fiber";
 
@@ -20,6 +21,7 @@ import { useMobile } from "../hooks/useMobile";
 
 
 export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false }) {
+  const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
   const [targetPosition, setTargetPosition] = useState(0); // Target position for smooth scrolling
@@ -265,9 +267,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'Escape':
           event.preventDefault();
           resetScene();
-          if (onTourEnd) {
-            onTourEnd();
-          }
+          // Navigate back to homepage
+          navigate("/");
           break;
 
         case 'ArrowLeft':

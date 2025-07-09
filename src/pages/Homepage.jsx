@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Button, Container, Stack } from "@mui/material";
 import { keyframes } from "@mui/system";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../theme/ThemeContext";
 import ColorModeSelect from "../theme/ColorModeSelect.jsx";
 import FileManagerPopup from "../components/FileManagerPopup";
@@ -56,8 +57,9 @@ const spin = keyframes`
   }
 `;
 
-export default function Homepage({ onExplore }) {
+export default function Homepage() {
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [showFileManager, setShowFileManager] = useState(false);
 
@@ -65,18 +67,7 @@ export default function Homepage({ onExplore }) {
     setIsVisible(true);
   }, []);
 
-  const handleClick = (type) => {
-    if (type === "explore") {
-      onExplore();
-    } else if (type === "compare") {
-      if (window.onCompare) {
-        window.onCompare();
-      }
-    } else if (type === "download") {
-      // Open file manager popup instead of direct download
-      setShowFileManager(true);
-    }
-  };
+
 
   const handleCloseFileManager = () => {
     setShowFileManager(false);
@@ -174,6 +165,7 @@ export default function Homepage({ onExplore }) {
                 variant="h6"
                 sx={{
                   color: theme.colors.text.primary,
+                  fontFamily: '"Untitled Sans", sans-serif',
                   fontWeight: 600,
                   fontSize: { xs: "0.9rem", sm: "1.2rem" }, // Show smaller text on mobile
                   letterSpacing: "1px",
@@ -233,6 +225,7 @@ export default function Homepage({ onExplore }) {
           <Typography
             variant="h1"
             sx={{
+              fontFamily: '"Untitled Sans", sans-serif',
               fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4.5rem", lg: "5rem" },
               fontWeight: 700,
               lineHeight: 1.1,
@@ -259,6 +252,7 @@ export default function Homepage({ onExplore }) {
          <Typography
             variant="h5"
             sx={{
+              fontFamily: '"Untitled Sans", sans-serif',
               color: theme.colors.text.secondary,
               fontWeight: 400,
               mb: { xs: 4, sm: 6 },
@@ -289,7 +283,7 @@ export default function Homepage({ onExplore }) {
             <Button
               variant="contained"
               size="large"
-              onClick={() => handleClick("explore")}
+              onClick={() => navigate("/experience")}
               sx={{
                   background: theme.gradients.accent,
                 color: theme.colors.text.inverse,
@@ -327,7 +321,7 @@ export default function Homepage({ onExplore }) {
             <Button
               variant="outlined"
               size="large"
-              onClick={() => handleClick("compare")}
+              onClick={() => navigate("/compare")}
               sx={{
                 color: theme.colors.text.primary,
                 borderColor: theme.colors.border.medium,
@@ -358,7 +352,7 @@ export default function Homepage({ onExplore }) {
             <Button
               variant="outlined"
               size="large"
-              onClick={() => handleClick("download")}
+              onClick={() => setShowFileManager(true)}
               sx={{
                 color: theme.colors.text.primary,
                 borderColor: theme.colors.border.medium,

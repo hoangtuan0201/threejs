@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { SheetProvider } from "@theatre/r3f";
 import { getProject } from "@theatre/core";
@@ -6,8 +7,7 @@ import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough.json";
 import { Scene } from "./components/Scene";
-import Homepage from "./pages/Homepage";
-import CompareSystem from "./pages/CompareSystem";
+
 import LoadingScreen from "./components/LoadingScreen";
 import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
 import ChapterNavigation from "./components/ChapterNavigation";
@@ -24,27 +24,29 @@ import useSceneLock from "./hooks/useSceneLock";
 const sheet = getProject("Fly Through", { state: theatreState }).sheet("Scene");
 
 // Theatre.js Studio disabled for production
-if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  studio.initialize();
-  studio.extend(extension);
+// if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+//   studio.initialize();
+//   studio.extend(extension);
 
-  // Force show studio UI
-  setTimeout(() => {
-    studio.ui.restore();
-  }, 1000);
+//   // Force show studio UI
+//   setTimeout(() => {
+//     studio.ui.restore();
+//   }, 1000);
 
-  window.__THEATRE_ALREADY_INIT__ = true;
-}
+//   window.__THEATRE_ALREADY_INIT__ = true;
+// }
 
 export default function App() {
-  const [showControlPanel, setShowControlPanel] = useState(true);
+  const navigate = useNavigate();
+  const [showControlPanel, setShowControlPanel] = useState(false); // Start with 3D experience
   const [showCompareSystem, setShowCompareSystem] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start loading immediately
   const [modelLoaded, setModelLoaded] = useState(false);
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
   const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
   const [showNavigationGuide, setShowNavigationGuide] = useState(false);
   const [isChatFocused, setIsChatFocused] = useState(false);
+
 
   // Mobile detection and responsive utilities
   const mobile = useMobile();
@@ -71,23 +73,7 @@ export default function App() {
     }
   };
 
-  const startTour = () => {
-    setIsLoading(true);
-    setShowControlPanel(false);
-    setShowCompareSystem(false);
-  };
 
-  const showCompare = () => {
-    setShowControlPanel(false);
-    setShowCompareSystem(true);
-  };
-
-  const backToHome = () => {
-    setShowControlPanel(true);
-    setShowCompareSystem(false);
-    setIsLoading(false);
-    setModelLoaded(false);
-  };
 
   const endTour = () => {
     setShowControlPanel(true);
@@ -97,10 +83,7 @@ export default function App() {
   };
 
   const handleGoHome = () => {
-    setShowControlPanel(true);
-    setShowCompareSystem(false);
-    setIsLoading(false);
-    setModelLoaded(false);
+    navigate("/");
   };
 
   const handleModelLoaded = () => {
@@ -113,26 +96,18 @@ export default function App() {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-
-    // Set up global navigation function for Homepage
-    window.onCompare = showCompare;
-
-    return () => {
-      delete window.onCompare;
-    };
   }, []);
 
   return (
     <ThemeProvider>
-      {showControlPanel && <Homepage onExplore={startTour} />}
-      {showCompareSystem && <CompareSystem onBack={backToHome} />}
+      {/* App.jsx now only handles 3D experience */}
 
       {/* Loading Screen */}
       {isLoading && !modelLoaded && <LoadingScreen />}
 
     
       {/* Theatre.js Studio Button - Development only */}
-      {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
+      {/* {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
         <button
           onClick={() => {
             console.log("Toggling Theatre.js Studio...");
@@ -163,7 +138,7 @@ export default function App() {
         >
           🎬 Studio
         </button>
-      )}
+      )} */}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
       {!showControlPanel && !showCompareSystem && (
@@ -272,8 +247,7 @@ export default function App() {
         isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
       />
 
-      {/* Floating Chat Button - Always visible */}
-      <FloatingChatButton onFocusChange={setIsChatFocused} />
+
 
       {/* Mobile Home Button - Only visible in 3D explore mode */}
       <MobileHomeButton

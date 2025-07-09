@@ -137,7 +137,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-      const response = await fetch('https://api2.heartstribute.com/ask', {
+      const response = await fetch('https://api3.heartstribute.com/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,8 +216,10 @@ const FloatingChatButton = ({ onFocusChange }) => {
         position: 'fixed',
         bottom: mobile.getResponsiveValue('20px', '24px', '32px'),
         right: mobile.getResponsiveValue('20px', '24px', '32px'),
-        zIndex: 2000, // Higher than 3D scene and other UI elements
+        zIndex: 9999, // Highest z-index to ensure visibility
         pointerEvents: 'none', // Allow clicks to pass through container
+        display: 'block', // Ensure visibility
+        visibility: 'visible', // Force visible
         '& > *': {
           pointerEvents: 'auto', // But enable clicks on children
         },
@@ -246,7 +248,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
             outline: 'none', // Remove focus outline
             // Ensure scroll isolation from 3D scene
             pointerEvents: 'auto',
-            zIndex: 1700, // Higher than 3D scene
+            zIndex: 9998, // Just below container
             '@keyframes slideUp': {
               '0%': {
                 opacity: 0,

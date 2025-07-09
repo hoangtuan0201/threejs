@@ -1,6 +1,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { Box, Typography, Button, Container, Card, CardContent, IconButton } from "@mui/material";
 import { keyframes } from "@mui/system";
+import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -74,8 +75,9 @@ function RotatingModel({ modelPath, scale = 1 }) {
   );
 }
 
-export default function CompareSystem({ onBack }) {
+export default function CompareSystem() {
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -318,7 +320,20 @@ export default function CompareSystem({ onBack }) {
             }}
           >
             {/* Logo */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1, md: 2 } }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: { xs: 0.5, sm: 1, md: 2 },
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  transform: "scale(1.02)",
+                  opacity: 0.8,
+                }
+              }}
+              onClick={() => navigate("/")}
+            >
               <img
                 src="/airsmart.svg"
                 alt="AirSmart Logo"
@@ -330,6 +345,7 @@ export default function CompareSystem({ onBack }) {
               <Typography
                 variant="h6"
                 sx={{
+                  fontFamily: '"Untitled Sans", sans-serif',
                   color: theme.colors.text.primary,
                   fontWeight: 600,
                   fontSize: { xs: "0.9rem", sm: "1rem", md: "1.2rem" },
@@ -364,7 +380,7 @@ export default function CompareSystem({ onBack }) {
                 }}
               />
               <Button
-                onClick={onBack}
+                onClick={() => navigate("/")}
                 sx={{
                   color: theme.colors.text.secondary,
                   fontWeight: 600,
@@ -412,6 +428,7 @@ export default function CompareSystem({ onBack }) {
           <Typography
             variant="h2"
             sx={{
+              fontFamily: '"Untitled Sans", sans-serif',
               fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem" },
               fontWeight: 700,
               lineHeight: 1.1,
@@ -428,6 +445,7 @@ export default function CompareSystem({ onBack }) {
                    <Typography
                       variant="h5"
                       sx={{
+                        fontFamily: '"Untitled Sans", sans-serif',
                         color: theme.colors.text.secondary,
                         fontWeight: 400,
                         mb: { xs: 2, sm: 3, md: 4},
@@ -594,6 +612,7 @@ export default function CompareSystem({ onBack }) {
                     <Typography
                       variant="h5"
                       sx={{
+                        fontFamily: '"Untitled Sans", sans-serif',
                         color: "#2563eb",
                         fontWeight: 700,
                         fontSize: { xs: "1rem", sm: "1.2rem", md: "1.4rem", lg: "1.5rem" },
@@ -676,6 +695,7 @@ export default function CompareSystem({ onBack }) {
                       <Box>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: "#2563eb",
                             fontWeight: 700,
                             fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -686,6 +706,7 @@ export default function CompareSystem({ onBack }) {
                         </Typography>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: theme.isDark ? "rgba(255, 255, 255, 0.95)" : "#000000",
                             fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
                             fontWeight: 500,
@@ -703,6 +724,7 @@ export default function CompareSystem({ onBack }) {
                       <Box>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: "#2563eb",
                             fontWeight: 700,
                             fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -713,6 +735,7 @@ export default function CompareSystem({ onBack }) {
                         </Typography>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: theme.isDark ? "rgba(255, 255, 255, 0.95)" : "#000000",
                             fontSize: { xs: "0.8rem", sm: "0.85rem", md: "0.95rem" },
                             lineHeight: 1.6,
@@ -730,6 +753,7 @@ export default function CompareSystem({ onBack }) {
                       <Box>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: "#2563eb",
                             fontWeight: 700,
                             fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -740,6 +764,7 @@ export default function CompareSystem({ onBack }) {
                         </Typography>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: theme.isDark ? "rgba(255, 255, 255, 0.95)" : "#000000",
                             fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
                             fontWeight: 600,
@@ -790,6 +815,7 @@ export default function CompareSystem({ onBack }) {
                     <Typography
                       variant="h5"
                       sx={{
+                        fontFamily: '"Untitled Sans", sans-serif',
                         color: "#6b7280",
                         fontWeight: 700,
                         fontSize: { xs: "1rem", sm: "1.2rem", md: "1.4rem", lg: "1.5rem" },
@@ -872,6 +898,7 @@ export default function CompareSystem({ onBack }) {
                       <Box>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: "#6b7280",
                             fontWeight: 700,
                             fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -882,6 +909,7 @@ export default function CompareSystem({ onBack }) {
                         </Typography>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: theme.isDark ? "rgba(255, 255, 255, 0.95)" : "#000000",
                             fontSize: { xs: "0.8rem", sm: "0.85rem", md: "0.95rem" },
                             lineHeight: 1.6,
@@ -899,6 +927,7 @@ export default function CompareSystem({ onBack }) {
                       <Box>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: "#6b7280",
                             fontWeight: 700,
                             fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -909,6 +938,7 @@ export default function CompareSystem({ onBack }) {
                         </Typography>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: theme.isDark ? "rgba(255, 255, 255, 0.95)" : "#000000",
                             fontSize: { xs: "0.8rem", sm: "0.85rem", md: "0.95rem" },
                             lineHeight: 1.6,
@@ -926,6 +956,7 @@ export default function CompareSystem({ onBack }) {
                       <Box>
                         <Typography
                           sx={{
+                            fontFamily: '"Untitled Sans", sans-serif',
                             color: "#ef4444",
                             fontWeight: 700,
                             fontSize: { xs: "0.9rem", sm: "1rem" },

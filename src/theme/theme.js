@@ -94,6 +94,16 @@ export const commonTheme = {
   },
   zIndex: {
     tooltip: 3000
+  },
+  typography: {
+    fontFamily: '"Untitled Sans", sans-serif',
+    fontWeights: {
+      light: 300,
+      regular: 400,
+      medium: 500,
+      semibold: 600,
+      bold: 700
+    }
   }
 };
 
