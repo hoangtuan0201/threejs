@@ -25,18 +25,18 @@ import { ThemeProvider } from "./theme/ThemeContext";
 import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
 
-// Theatre.js Studio disabled for production
-if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  studio.initialize();
-  studio.extend(extension);
+// // Theatre.js Studio disabled for production
+// if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+//   studio.initialize();
+//   studio.extend(extension);
 
-  // Force show studio UI
-  setTimeout(() => {
-    studio.ui.restore();
-  }, 1000);
+//   // Force show studio UI
+//   setTimeout(() => {
+//     studio.ui.restore();
+//   }, 1000);
 
-  window.__THEATRE_ALREADY_INIT__ = true;
-}
+//   window.__THEATRE_ALREADY_INIT__ = true;
+// }
 
 export default function App({ isChatFocused = false }) {
   // Current sheet from SceneManager - initialize with mainSheet
