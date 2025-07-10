@@ -29,7 +29,7 @@ const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
 
   // Add entrance animation
   useEffect(() => {
-    if (isVisible && mobile.isMobile) {
+    if (isVisible) {
       const timer = setTimeout(() => setShowButton(true), 500); // Delay to show after scene loads
       return () => clearTimeout(timer);
     } else {
@@ -44,7 +44,7 @@ const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
   };
 
   // Only show on mobile and when visible
-  if (!mobile.isMobile || !isVisible) return null;
+  if (!isVisible) return null;
 
   const styles = {
     button: {
