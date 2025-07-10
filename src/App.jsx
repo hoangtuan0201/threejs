@@ -27,7 +27,8 @@ import useSceneLock from "./hooks/useSceneLock";
 
 // // Theatre.js Studio disabled for production
 // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-//   studio.initialize();
+  studio.initialize()
+  studio.ui.hide()
 //   studio.extend(extension);
 
 //   // Force show studio UI
@@ -94,17 +95,17 @@ export default function App({ isChatFocused = false }) {
     // Add global function to reset navigation guide (for testing)
     window.resetNavigationGuide = () => {
       localStorage.removeItem('hasVisitedDetailScene');
-      console.log('🔄 Manual reset - cleared hasVisitedDetailScene');
+      // console.log('🔄 Manual reset - cleared hasVisitedDetailScene');
       setShowNavigationGuide(false);
       window.location.reload();
     };
 
     // Add global function to check localStorage state
     window.checkNavigationState = () => {
-      console.log('📊 Navigation State:', {
-        hasVisitedDetailScene: localStorage.getItem('hasVisitedDetailScene'),
-        showNavigationGuide: showNavigationGuide
-      });
+      // console.log('📊 Navigation State:', {
+      //   hasVisitedDetailScene: localStorage.getItem('hasVisitedDetailScene'),
+      //   showNavigationGuide: showNavigationGuide
+      // });
     };
 
     // Auto-close navigation guide after 8 seconds if still showing

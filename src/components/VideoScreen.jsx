@@ -51,7 +51,7 @@ export function VideoScreen({
   // Auto-fallback when error occurs
   useEffect(() => {
     if (hasError && currentVideoId === videoId && fallbackVideoId !== videoId) {
-      console.log('Switching to fallback video:', fallbackVideoId);
+      // console.log('Switching to fallback video:', fallbackVideoId);
       setCurrentVideoId(fallbackVideoId);
       setHasError(false);
       setIsLoading(true);

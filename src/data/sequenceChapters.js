@@ -52,16 +52,16 @@ export const sequenceChapters = [
   {
     id: "indoor",
     hotspot: {
-      position: [31.4, 6.35, -20.7],
+      position: [31.4, 6.6, -20.7],
       rotation: [0.1, Math.PI / 1, 0],
-      detailPosition: [31.3 , 7, -20.3],
+      detailPosition: [31.6 , 7.3, -20.3],
       detailRotation: [0, Math.PI / 1, 0],
      // Hotspot label positioning
-       mobileLabelPosition: [31.4, 7, -20.5],
+      mobileLabelPosition: [31.4, 7, -20.5],
       // Hotspot label positioning
       labelPosition:  [31.5, 7, -20.8],
       // Mobile-specific positioning
-      mobileDetailPosition: [31, 7.3, -21.3],
+      mobileDetailPosition: [31.35, 7.3, -20.3],
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
@@ -69,7 +69,7 @@ export const sequenceChapters = [
     },
     lighting: {
       mainSpotlight: {
-        position: [31.4, 8, -20.9],
+        position: [31.4, 9.5, -20.9],
         intensity: 1,
         angle: Math.PI / 4,
         penumbra: 0.4,
@@ -81,10 +81,10 @@ export const sequenceChapters = [
 
     },
     videoScreen: {
-      position: [29.7, 7, -20.3],
+      position: [29.7, 7.3, -20.3],
       rotation: [-0.1, Math.PI / 1, 0],
       // Mobile-specific positioning
-      mobilePosition: [29.7, 7.3, -21.3],
+      mobilePosition: [29.7, 7.5, -20.3],
       mobileRotation: [-0.1, Math.PI / 1, 0],
       videoId: "https://vimeo.com/912201609",
       title: "Linear Grille Demo",
@@ -98,10 +98,10 @@ export const sequenceChapters = [
     hotspot: {
       position: [16.8, 4.3, -32.3],
       rotation: [0, Math.PI / 1, 0],
-      detailPosition: [15.3, 4.5, -32.3],
+      detailPosition: [14.8, 4.5, -32.3],
       detailRotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobileDetailPosition: [16.6, 4.2, -31.8],
+      mobileDetailPosition: [17.5, 4.2, -32.3],
       mobileDetailRotation: [0, 0, 0],
       title: "Air Purification System",
       description: "An Air Purification System uses HEPA (and optionally carbon/UV) filtration to remove allergens, pollutants, odors, and pathogens—improving air quality, reducing sickness, and boosting comfort and HVAC efficiency. ",
@@ -128,7 +128,7 @@ export const sequenceChapters = [
       position: [17.8, 4.7, -32.3],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobilePosition: [17.3, 5, -31.8],
+      mobilePosition: [17.3, 5.25, -32.3],
       mobileRotation: [0, 0, 0],
       videoId: "https://vimeo.com/912208263",
       title: "Air Purification Demo",

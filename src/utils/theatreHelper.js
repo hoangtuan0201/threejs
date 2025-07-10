@@ -3,7 +3,7 @@
 export const exportTheatreState = () => {
   if (window.studio) {
     const state = window.studio.createContentOfSaveFile();
-    console.log('Theatre.js State:', JSON.stringify(state, null, 2));
+    // console.log('Theatre.js State:', JSON.stringify(state, null, 2));
     
     // Download as file
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });

@@ -173,7 +173,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
         // Zoom to mesh if it's Geom3D_393
         if (chapter.id === "Geom3D_393") {
           zoomToMesh("Geom3D_393");
-          console.log("it work")
+          // console.log("it work")
         }
         onHotspotClick(chapter.id);
       }}

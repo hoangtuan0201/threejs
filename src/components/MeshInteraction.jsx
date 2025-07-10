@@ -20,8 +20,8 @@ export function MeshInteraction() {
       const intersects = raycaster.intersectObjects(scene.children, true);
       if (intersects.length > 0) {
         const clickedObject = intersects[0].object;
-        console.log('🎯 Clicked mesh name:', clickedObject.name || 'unnamed');
-        console.log('🎯 Clicked object:', clickedObject);
+        // console.log('🎯 Clicked mesh name:', clickedObject.name || 'unnamed');
+        // console.log('🎯 Clicked object:', clickedObject);
       }
     };
 
@@ -59,7 +59,7 @@ export function MeshInteraction() {
       // Add zoom on click
       const onPointerClick = (event) => {
         event.stopPropagation();
-        console.log('Mesh clicked:', targetMesh.name);
+        // console.log('Mesh clicked:', targetMesh.name);
 
         // Zoom to mesh
         if (camera && controls) {

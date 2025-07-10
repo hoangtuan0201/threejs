@@ -40,7 +40,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
 
       {/* Hotspot Details Panel - Same design as HotspotDetail.jsx */}
       <group
-        position={mobile.isMobile ? [27.8, 4.8, -22.1] : [27.8, 4.75, -21.9]}
+        position={mobile.isMobile ? [27.8, 4.8, -22.1] : [27.8, 4.55, -22.9]}
         rotation={[0, Math.PI / 1.8, 0]}
       >
         <Html
@@ -218,14 +218,15 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
           </div>
         </Html>
       </group>
-
+      
       {/* Floating Video Screen - positioned below hotspot detail, same size as detail panel */}
+      
       <VideoScreen
-        position={mobile.isMobile ? [28, 4.1, -22.1] : [27.8, 4.24, -21.72]} // Positioned below detail panel
+        position={mobile.isMobile ? [28, 4.1, -22.1] : [27.75, 4.22, -21.32]} // Positioned below detail panel
         rotation={[0, Math.PI / 1.8, 0]}
         videoId="https://vimeo.com/912200130" // YouTube backup video - replace with actual AirSmart video
         title="Thermostat"
-        size={mobile.isMobile ? { width: 220, height: 124 } : { width: 200, height: 100 }}
+        size={mobile.isMobile ? { width: 220, height: 124 } : { width: 340, height: 200  }}
         mobilePosition={[28, 4.1, -22.1]}
         mobileRotation={[0, Math.PI / 1.8, 0]}
         mobileSize={{ width: 220, height: 124 }}
@@ -235,7 +236,7 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
       <PerspectiveCamera
         theatreKey="DetailCamera"
         makeDefault
-        fov={mobile.isMobile ? 100 : 75} // PC: 70, Mobile: responsive
+        fov={mobile.isMobile ? 100 : 100} // PC: 70, Mobile: responsive
         position={mobile.isMobile ? [29.446, 4.3, -23.8] : [29.446, 4.494, -23.5]} // Mobile camera positioning
       />
     </>

@@ -8,7 +8,7 @@ function useSceneLock(sheet, delay = 4500) {
   const startTimeRef = useRef(null);
 
   const lockScene = (targetPos, options = {}) => {
-    console.log(`Locking scene at position: ${targetPos}`, options);
+    // console.log(`Locking scene at position: ${targetPos}`, options);
 
     if (!sheet || !sheet.sequence) {
       console.warn('Sheet or sequence not available, ignoring lock request');
@@ -26,21 +26,21 @@ function useSceneLock(sheet, delay = 4500) {
     startPositionRef.current = sheet.sequence.position;
     startTimeRef.current = performance.now();
 
-    console.log(`Starting navigation from ${startPositionRef.current} to ${clampedPos} with stepSize: ${stepSize}`);
+    // console.log(`Starting navigation from ${startPositionRef.current} to ${clampedPos} with stepSize: ${stepSize}`);
 
     // Adjust delay based on step size for smoother navigation
     const adjustedDelay = options.smooth ? delay * 0.5 : delay; // Shorter delay for smooth navigation
 
     // Unlock after delay (but keep navigating until animation completes)
     setTimeout(() => {
-      console.log(`Unlocking scene after ${adjustedDelay}ms`);
+      // console.log(`Unlocking scene after ${adjustedDelay}ms`);
       setLocked(false);
     }, adjustedDelay);
   };
 
   const completeNavigation = () => {
-    console.log('🏁 completeNavigation called');
-    console.log('  - Setting isNavigating to false');
+    // console.log('🏁 completeNavigation called');
+    // console.log('  - Setting isNavigating to false');
     setIsNavigating(false);
     setTargetPosition(null);
     startPositionRef.current = null;
