@@ -4,10 +4,10 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   if (!isVisible) return null;
 
   const chapters = [
-    { position: 1, label: "Thermostat" },
-    { position: 2, label: "Linear Grille" },
-    { position: 4, label: "Air Purification" },
-    { position: 6.5, label: "Outdoor Unit" }
+    { position: 1.5, label: "Smart Thermostat" },
+    { position: 2.5, label: "Linear Grille" },
+    { position: 8, label: "Air Purification" },
+    { position: 11.8, label: "Outdoor Unit" }
   ];
 
   const currentIndex = chapters.findIndex(chapter =>

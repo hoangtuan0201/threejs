@@ -5,7 +5,7 @@ import { SheetProvider } from "@theatre/r3f";
 import { getProject } from "@theatre/core";
 import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
-import theatreState from "./states/FlyThrough.json";
+import theatreState from "./states/FlyThrough2.json";
 import { SceneManager } from "./components/SceneManager";
 
 // Create project and main sheet for initial state
@@ -26,15 +26,15 @@ import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
 
 // // Theatre.js Studio disabled for production
-// if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+ if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
   studio.initialize()
   studio.ui.hide()
-//   studio.extend(extension);
+   studio.extend(extension);
 
-//   // Force show studio UI
-//   setTimeout(() => {
-//     studio.ui.restore();
-//   }, 1000);
+   // Force show studio UI
+   setTimeout(() => {
+     studio.ui.restore();
+   }, 1000);
 
 //   // Add export function for development
 //   window.exportTheatreState = () => {
@@ -51,8 +51,8 @@ import useSceneLock from "./hooks/useSceneLock";
 //     URL.revokeObjectURL(url);
 //   };
 
-//   window.__THEATRE_ALREADY_INIT__ = true;
-// }
+   window.__THEATRE_ALREADY_INIT__ = true;
+ }
 
 export default function App({ isChatFocused = false }) {
   // Current sheet from SceneManager - initialize with mainSheet
@@ -80,33 +80,11 @@ export default function App({ isChatFocused = false }) {
     // Immediately close any existing navigation guide
     setShowNavigationGuide(false);
 
-    // Add global function to force close navigation guide
-    window.forceCloseNavigationGuide = () => {
-      setShowNavigationGuide(false);
-    };
+ 
 
 
 
-    // Add global function to manually show navigation guide (for testing)
-    window.showNavigationGuide = () => {
-      setShowNavigationGuide(true);
-    };
-
-    // Add global function to reset navigation guide (for testing)
-    window.resetNavigationGuide = () => {
-      localStorage.removeItem('hasVisitedDetailScene');
-      // console.log('🔄 Manual reset - cleared hasVisitedDetailScene');
-      setShowNavigationGuide(false);
-      window.location.reload();
-    };
-
-    // Add global function to check localStorage state
-    window.checkNavigationState = () => {
-      // console.log('📊 Navigation State:', {
-      //   hasVisitedDetailScene: localStorage.getItem('hasVisitedDetailScene'),
-      //   showNavigationGuide: showNavigationGuide
-      // });
-    };
+   
 
     // Auto-close navigation guide after 8 seconds if still showing
     if (showNavigationGuide) {
@@ -177,38 +155,6 @@ export default function App({ isChatFocused = false }) {
       {isLoading && !modelLoaded && <LoadingScreen />}
 
     
-      {/* Theatre.js Studio Button - Development only */}
-      {/* {import.meta.env.DEV && !showControlPanel && !showCompareSystem && !isLoading && modelLoaded && (
-        <button
-          onClick={() => {
-            if (window.__THEATRE_STUDIO_VISIBLE) {
-              studio.ui.hide();
-              window.__THEATRE_STUDIO_VISIBLE = false;
-            } else {
-              studio.ui.restore();
-              window.__THEATRE_STUDIO_VISIBLE = true;
-            }
-          }}
-          style={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            zIndex: 10000,
-            background: "rgba(255, 100, 0, 0.9)",
-            color: "white",
-            border: "none",
-            padding: "10px 15px",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-          }}
-        >
-          🎬 Studio
-        </button>
-      )}   */}
 
       {/* Canvas - show when not showing control panel, but hide with opacity until model loads */}
       {!showControlPanel && !showCompareSystem && (

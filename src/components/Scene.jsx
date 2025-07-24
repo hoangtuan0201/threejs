@@ -8,7 +8,7 @@ import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
-import { MeshInteraction } from "./MeshInteraction";
+import { MeshInteraction } from "./AlertMesh/";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
 
 
@@ -262,8 +262,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         // Slower transitions for sequences 2-3 and 3-4
         let duration = 3000; // Default 4.5 seconds
         if ((navStart >= 1.7 && navStart <= 2.3 && navTarget >= 3.7 && navTarget <= 4.3) || // 2 to 4 (Air Purification)
-            (navStart >= 3.7 && navStart <= 4.3 && navTarget >= 6.2 && navTarget <= 6.8)) { // 4 to 6.5 (Outdoor)
-          duration = 6000; // 7 seconds for slower transition
+            (navStart >= 4 && navStart <= 9 && navTarget >= 9 && navTarget <= 12)) { // 4 to 6.5 (Outdoor)
+          duration = 7000; // 7 seconds for slower transition
         }
 
         const progress = Math.min(elapsed / duration, 1);
@@ -304,12 +304,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Auto-show/hide active chapter based on scroll position
     const currentPosition = sheet.sequence.position;
 
-    // Manual range definitions since removed from data
+    // Updated range definitions to match new sequence positions
     const chapterRanges = {
-      "Geom3D_393": [0.3, 1],
-      "indoor": [1, 2.4],
-      "Air Purification": [3, 4.3],
-      "Outdoor": [4.3, 6.5]
+      "Geom3D_393": [1.0, 2.0],      // Smart Thermostat
+      "indoor": [2.0, 3.0],          // Linear Grille
+      "Air Purification": [7.5, 8.5], // Air Purification
+      "Outdoor": [11.3, 12.3]        // Outdoor Unit
     };
 
     sequenceChapters.forEach((chapter) => {
@@ -320,13 +320,10 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
         // Set active chapter when entering sequence range
         if (isInRange) {
-          if (chapter.id === "Geom3D_393" || chapter.id === "indoor") {
-            setActiveChapter(chapter);
-          }
+          setActiveChapter(chapter);
         } else {
           // Clear active chapter when leaving sequence range
-          if ((chapter.id === "Geom3D_393" && activeChapter?.id === "Geom3D_393") ||
-              (chapter.id === "indoor" && activeChapter?.id === "indoor")) {
+          if (activeChapter?.id === chapter.id) {
             setActiveChapter(null);
           }
         }
@@ -352,8 +349,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowLeft':
           event.preventDefault();
           // Smooth navigation backward using setTargetPosition (like scroll)
-          if (targetPosition > 0.15) {
-            const newPosition = Math.max(0.15, targetPosition - 0.3);
+          if (targetPosition > 0.1) {
+            const newPosition = Math.max(0.1, targetPosition - 0.3);
             setTargetPosition(newPosition);
             setHasNavigated(true);
           }
@@ -362,8 +359,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowRight':
           event.preventDefault();
           // Smooth navigation forward using setTargetPosition (like scroll)
-          if (targetPosition < 6.5) {
-            const newPosition = Math.min(6.5, targetPosition + 0.3);
+          if (targetPosition < 12.5) {
+            const newPosition = Math.min(12.5, targetPosition + 0.3);
             setTargetPosition(newPosition);
             setHasNavigated(true);
           }
@@ -413,8 +410,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         // Calculate new position based on current targetPosition
         let newPosition = prevTarget + (deltaY * finalSensitivity);
 
-        // Limit within range [0.15, 6.7] (entire sequence) - start from 0.15 to avoid wall clipping
-        newPosition = Math.max(0.15, Math.min(6.5, newPosition));
+        // Limit within range [0.1, 12.5] (entire sequence) - start from 0.1 to avoid wall clipping
+        newPosition = Math.max(0.1, Math.min(12.5, newPosition));
 
 
 

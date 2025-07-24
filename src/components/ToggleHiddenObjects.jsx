@@ -11,7 +11,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
     const currentPosition = sheet.sequence.position;
 
     // Auto-show objects when leaving the range 3.0-4.2 if they are hidden
-    if ((currentPosition < 3.7 || currentPosition > 4.3) && isHidden) {
+    if ((currentPosition < 7 || currentPosition > 8.2) && isHidden) {
       setIsHidden(false);
       onToggleHidden(false);
     }
@@ -19,7 +19,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
 
   // Check if button should be hidden at start
   const currentPosition = sheet.sequence.position;
-  const shouldHideAtStart = currentPosition < 0.15;
+  const shouldHideAtStart = currentPosition < 0.1;
 
 
 
@@ -35,7 +35,7 @@ const ToggleHiddenObjects = ({ onToggleHidden, isVisible }) => {
   if (!isVisible || shouldHideAtStart) return null;
 
   return (
-    <group position={[17.1, 5.7, -32.2]} >
+    <group position={[14.75, 4.8, -33.3]} >
       {/* Clickable Text Label - similar to hotspot labels */}
       <Html
         occlude

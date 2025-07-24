@@ -19,9 +19,10 @@ export function MeshInteraction() {
 
       const intersects = raycaster.intersectObjects(scene.children, true);
       if (intersects.length > 0) {
-        const clickedObject = intersects[0].object;
-        // console.log('🎯 Clicked mesh name:', clickedObject.name || 'unnamed');
-        // console.log('🎯 Clicked object:', clickedObject);
+      
+
+        // Show alert for any clicked mesh - COMMENTED FOR LATER USE
+        // alert(`Mesh Name: ${clickedObject.name || 'Unnamed Mesh'}`);
       }
     };
 

@@ -18,11 +18,10 @@ export const hiddenObjects = [
     "Geom3D__146",
     "Geom3D__147",
     "Geom3D_148",
-    "Geom3D_266",
     "Geom3D_265",
     "Geom3D_263",
     "Geom3D_264",
-    "Geom3D__104",
+    "Geom3D__104", //roof
     "Geom3D__99",
     "Geom3D_278",
     "Geom3D_611",
@@ -45,7 +44,7 @@ export const hiddenObjects = [
     "Geom3D__97",
     "Geom3D_268",
     "Geom3D_267",
-    "Geom3D__29",
+    // "Geom3D__29", //wall
     "Geom3D_Naamloos",
     "Geom3D_467",
     "Geom3D__744",
@@ -87,5 +86,19 @@ export const hiddenObjects = [
     "Geom3D_461",
     "Geom3D__743",
     "Geom3D_352",
-    "Geom3D_351"
+    "Geom3D_351",
+    //Door
+    "Geom3D__266",
+    "Geom3D__500",
+    "Geom3D__498",
+    "Geom3D__499",
+    "Geom3D__694",
+    "Geom3D__695",
+    "Geom3D__696",
+    "Geom3D__697",
+    "Geom3D__701",
+    "Geom3D__698",
+    "Geom3D__700",
+    "Geom3D__699"
+
 ];

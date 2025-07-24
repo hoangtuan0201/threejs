@@ -1,9 +1,11 @@
 export const sequenceChapters = [
   {
-    id: "start"
+    id: "start",
+    position: 0.1
   },
   {
     id: "Geom3D_393",
+    position: 1.5,
     hotspot: {
       position: [27.78, 4.25, -22.3],
       rotation: [0, Math.PI / 1.8, 0],
@@ -51,6 +53,7 @@ export const sequenceChapters = [
   },
   {
     id: "indoor",
+    position: 2.5,
     hotspot: {
       position: [31.4, 6.6, -20.7],
       rotation: [0.1, Math.PI / 1, 0],
@@ -95,28 +98,29 @@ export const sequenceChapters = [
   },
   {
     id: "Air Purification",
+    position: 8,
     hotspot: {
-      position: [16.8, 4.3, -32.3],
-      rotation: [0, Math.PI / 1, 0],
-      detailPosition: [14.8, 4.5, -32.3],
-      detailRotation: [0, 0, 0],
+      position: [14.75, 4, -34],
+      rotation: [0, Math.PI / 2, 0],
+      detailPosition: [14.8, 4.2, -34],
+      detailRotation: [0, -1.6, 0],
       // Mobile-specific positioning
-      mobileDetailPosition: [17.5, 4.2, -32.3],
-      mobileDetailRotation: [0, 0, 0],
+      mobileDetailPosition: [14.8, 4.2, -34.3],
+      mobileDetailRotation: [0, -1.6, 0],
       title: "Air Purification System",
       description: "An Air Purification System uses HEPA (and optionally carbon/UV) filtration to remove allergens, pollutants, odors, and pathogens—improving air quality, reducing sickness, and boosting comfort and HVAC efficiency. ",
       link: "https://vimeo.com/912208263",
-      labelPosition: [16.5, 4.8, -32.3],
+      labelPosition: [14.75, 4.4, -34.3],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
-      mobileLabelPosition: [16.5, 4.8, -32.3],
+      mobileLabelPosition: [14.75, 4.4, -34.3],
       mobileLabelRotation: [0, 0, 0],
     },
     lighting: {
       mainSpotlight: {
-        position: [16.3, 6, -32.3],
-        intensity: 2,
-        angle: Math.PI / 3,
+        position: [15.7, 7, -33],
+        intensity: 1.5,
+        angle: Math.PI / 4,
         penumbra: 0.4,
         color: "#ffff00",
         distance: 12,
@@ -139,14 +143,15 @@ export const sequenceChapters = [
   },
   {
     id: "Outdoor",
+    position: 11.8,
     hotspot: {
-      position: [22.58, 4.45, -17.8],
+      position: [22.58, 4.45, -18],
       rotation: [0, Math.PI / 1, 0],
-      labelPosition: [22.5, 4.85, -17.8],
-      detailPosition: [22.58, 4.9, -17.8],
+      labelPosition: [22.5, 4.85, -18],
+      detailPosition: [22.7, 4.9, -18],
       detailRotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobileDetailPosition: [22.7, 4.7, -17.7],
+      mobileDetailPosition: [22.7, 4.7, -17.8],
       mobileDetailRotation: [0, 0, 0],
       title: "Outdoor Unit",
       description: "The AirSmart Air Purification System delivers whole-home air filtration with HEPA-grade purity, removing pollutants and improving indoor air quality for healthier breathing.",
@@ -165,7 +170,7 @@ export const sequenceChapters = [
       }
     },
     videoScreen: {
-      position: [21, 4.9, -17.8],
+      position: [21, 4.9, -18],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
       mobilePosition: [21.2, 4.7, -17.7],
