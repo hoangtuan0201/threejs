@@ -225,7 +225,7 @@ export function VideoScreen({
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }}></div>
-                  <div>Đang tải video...</div>
+                  <div>loading......</div>
                   <style>
                     {`
                       @keyframes spin {

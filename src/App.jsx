@@ -26,15 +26,15 @@ import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
 
 // // Theatre.js Studio disabled for production
- if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+//  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
   studio.initialize()
   studio.ui.hide()
-   studio.extend(extension);
+  //  studio.extend(extension);
 
    // Force show studio UI
-   setTimeout(() => {
-     studio.ui.restore();
-   }, 1000);
+  //  setTimeout(() => {
+  //    studio.ui.restore();
+  //  }, 1000);
 
 //   // Add export function for development
 //   window.exportTheatreState = () => {
@@ -51,8 +51,8 @@ import useSceneLock from "./hooks/useSceneLock";
 //     URL.revokeObjectURL(url);
 //   };
 
-   window.__THEATRE_ALREADY_INIT__ = true;
- }
+//    window.__THEATRE_ALREADY_INIT__ = true;
+//  }
 
 export default function App({ isChatFocused = false }) {
   // Current sheet from SceneManager - initialize with mainSheet
