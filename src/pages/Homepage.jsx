@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../theme/ThemeContext";
 import ColorModeSelect from "../theme/ColorModeSelect.jsx";
 import FileManagerPopup from "../components/FileManagerPopup";
+import MoreFeaturesDialog from '../components/MoreFeaturesDialog';
 
 // Animation keyframes
 const fadeInUp = keyframes`
@@ -62,6 +63,7 @@ export default function Homepage() {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [showFileManager, setShowFileManager] = useState(false);
+  const [showMoreFeatures, setShowMoreFeatures] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
@@ -349,6 +351,7 @@ export default function Homepage() {
               Compare Systems
             </Button>
 
+
             <Button
               variant="outlined"
               size="large"
@@ -379,6 +382,36 @@ export default function Homepage() {
             >
               Download Brochure
             </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => setShowMoreFeatures(true)}
+                sx={{
+                  color: theme.colors.text.primary,
+                  borderColor: theme.colors.border.medium,
+                  borderWidth: 2,
+                  fontWeight: 600,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
+                  borderRadius: 2,
+                  textTransform: "none",
+                  px: { xs: 4, sm: 4 },
+                  py: { xs: 1.8, sm: 1.5 },
+                  minWidth: { xs: 200, sm: 200 },
+                  width: { xs: "100%", sm: "auto" },
+                  minHeight: { xs: 48, sm: 44 }, // Better touch targets on mobile
+                  background: theme.colors.background.overlay,
+                  backdropFilter: "blur(10px)",
+                  '&:hover': {
+                    bgcolor: theme.colors.background.secondary,
+                    borderColor: theme.colors.border.dark,
+                    transform: "translateY(-1px)",
+                    boxShadow: theme.shadows.md,
+                  },
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+              >
+                More Features...
+              </Button>
           </Stack>
 
         </Box>
@@ -391,6 +424,8 @@ export default function Homepage() {
         folderName="Brochures & Documents"
         userRole="Customer"
       />
+
+      <MoreFeaturesDialog open={showMoreFeatures} onClose={() => setShowMoreFeatures(false)} />
 
     </Box>
   );
