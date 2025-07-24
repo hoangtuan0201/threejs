@@ -107,15 +107,19 @@ export default function App({ isChatFocused = false }) {
     targetPosition: sceneTargetPosition,
     startPosition: sceneStartPosition,
     startTime: sceneStartTime,
+    duration: sceneDuration,
     lockScene,
     completeNavigation,
-  } = useSceneLock(currentSheet, 1000); // Use current sheet from SceneManager
+  } = useSceneLock(currentSheet, 3000); // Use current sheet from SceneManager
 
   // Chapter navigation function - useSceneLock approach with smooth option
   const handleChapterNavigation = (position, options = {}) => {
     if (options.smooth) {
-      // For smooth navigation, use reduced step size
-      lockScene(position, { stepSize: options.stepSize || 0.15 });
+      // For smooth navigation, use reduced step size and custom duration
+      lockScene(position, {
+        stepSize: options.stepSize || 0.15,
+        duration: options.duration || 3000
+      });
     } else {
       // Default discrete navigation
       lockScene(position);
@@ -240,6 +244,7 @@ export default function App({ isChatFocused = false }) {
               targetPosition: sceneTargetPosition,
               startPosition: sceneStartPosition,
               startTime: sceneStartTime,
+              duration: sceneDuration,
               onComplete: completeNavigation,
             }}
             onCurrentSheetChange={setCurrentSheet}

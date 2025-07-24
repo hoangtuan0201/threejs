@@ -6,7 +6,8 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   const chapters = [
     { position: 1.5, label: "Smart Thermostat" },
     { position: 2.5, label: "Linear Grille" },
-    { position: 8, label: "Air Purification" },
+    { position: 4.5, label: "New Scene" },
+    { position: 7.5, label: "Air Purification" },
     { position: 11.8, label: "Outdoor Unit" }
   ];
 
@@ -20,16 +21,18 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   const handlePrevious = () => {
     if (canGoBack) {
       const targetPosition = chapters[currentIndex - 1].position;
-      // Smooth navigation with reduced step size
-      onNavigate(targetPosition, { smooth: true, stepSize: 0.3 });
+      // Navigation time: 7s for chapters after 2.5s, default for others
+      const navigationTime = targetPosition > 2.5 ? 7000 : 3000;
+      onNavigate(targetPosition, { smooth: true, stepSize: 0.3, duration: navigationTime });
     }
   };
 
   const handleNext = () => {
     if (canGoForward) {
       const targetPosition = chapters[currentIndex + 1].position;
-      // Smooth navigation with reduced step size
-      onNavigate(targetPosition, { smooth: true, stepSize: 0.3 });
+      // Navigation time: 7s for chapters after 2.5s, default for others
+      const navigationTime = targetPosition > 2.5 ? 7000 : 3000;
+      onNavigate(targetPosition, { smooth: true, stepSize: 0.3, duration: navigationTime });
     }
   };
 

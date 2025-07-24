@@ -95,7 +95,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         sequencePosition: currentSequencePosition
       };
 
-
       // Ensure we have a valid sequence position (fallback to 1 if at start)
       if (state.sequencePosition < 0.1) {
         state.sequencePosition = 1.0;
@@ -210,26 +209,23 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   }, [isExploreMode, hasVisitedDetailScene]); // Removed hasShownNavigationGuide to prevent loop
 
-  // Update camera position based on mobile detection (optimized)
+  // Update camera FOV based on mobile detection (basic)
   useEffect(() => {
     const newFOV = mobile.getCameraFOV();
-
-    // Only update FOV, let Theatre.js handle position
-    if (camera.fov !== newFOV) {
+    if (camera && camera.fov !== newFOV) {
       camera.fov = newFOV;
       camera.updateProjectionMatrix();
     }
-  }, [camera, mobile.isMobile]);
+  }, [camera, mobile.isMobile, mobile.isTablet]);
 
-  // Handle resize events (optimized)
+  // Handle resize events (basic)
   useEffect(() => {
     const handleResize = () => {
-      const newFOV = mobile.getCameraFOV();
-
-      // Only update FOV and aspect ratio
-      camera.fov = newFOV;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      if (camera) {
+        camera.fov = mobile.getCameraFOV();
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -239,31 +235,23 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, [camera, mobile.getCameraFOV]);
+  }, [camera, mobile]);
 
-  // Temporarily disabled useFrame for Theatre.js sequence editing
-  useFrame(({ camera }) => {
-    // Let Theatre.js control camera position, only override FOV for mobile
-    const targetFOV = mobile.getCameraFOV();
-
-    // Only update FOV, let Theatre.js handle position
-    if (camera.fov !== targetFOV) {
-      camera.fov = targetFOV;
-      camera.updateProjectionMatrix();
-    }
-
-    // 🎯 Handle chapter navigation with smooth animation
+  // Handle chapter navigation with smooth animation
+  useFrame(() => {
     if (navigationData?.isNavigating && navigationData.targetPosition !== null) {
-      const { targetPosition: navTarget, startPosition: navStart, startTime, onComplete } = navigationData;
+      const { targetPosition: navTarget, startPosition: navStart, startTime, onComplete, duration: customDuration } = navigationData;
 
       if (navStart !== null && startTime !== null) {
         const elapsed = performance.now() - startTime;
 
-        // Slower transitions for sequences 2-3 and 3-4
-        let duration = 3000; // Default 4.5 seconds
-        if ((navStart >= 1.7 && navStart <= 2.3 && navTarget >= 3.7 && navTarget <= 4.3) || // 2 to 4 (Air Purification)
-            (navStart >= 4 && navStart <= 9 && navTarget >= 9 && navTarget <= 12)) { // 4 to 6.5 (Outdoor)
-          duration = 7000; // 7 seconds for slower transition
+        // Use custom duration if provided, otherwise use logic based on target position
+        let duration = customDuration || 3000; // Default 3 seconds
+        if (!customDuration) {
+          // 7s for chapters after position 2.5 (Air Purification and Outdoor Unit)
+          if (navTarget > 2.5) {
+            duration = 7000;
+          }
         }
 
         const progress = Math.min(elapsed / duration, 1);
@@ -644,8 +632,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <PerspectiveCamera
         theatreKey="Camera"
         makeDefault
-        fov={mobile.getCameraFOV()}
-        position={[33.5381764274176, 5.205671442619433, -22.03415991352903]} // Initial position from Theatre.js state
+        fov={75} // Default FOV, will be overridden by FOVManager
+        position={[33.5381764274176, 5.205671442619433, -22.03415991352903]}
       />
 
     </>

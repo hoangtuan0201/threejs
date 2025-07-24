@@ -11,14 +11,14 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 1.8, 0],
       detailPosition: [27.78, 5, -22.7],
       detailRotation: [0, Math.PI / 2, 0],
-      // Mobile-specific positionin
+      // Mobile-specific positioning
       mobileDetailPosition: [27.78, 3.8 , -21.5],
       mobileDetailRotation: [0, Math.PI / 2, 0],
       // Hotspot label positioning
       labelPosition: [27.78, 4.8, -21.7],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
-      mobileLabelPosition: [27.78, 5, -21.5],
+      mobileLabelPosition: [27.78, 4.8, -21.7],
       mobileLabelRotation: [0, 0, 0],
       title: "Smart Thermostat",
       description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
@@ -96,9 +96,10 @@ export const sequenceChapters = [
       mobileSize: { width: 340, height: 200 }
     }
   },
+  
   {
     id: "Air Purification",
-    position: 8,
+    position: 7.5,
     hotspot: {
       position: [14.75, 4, -34],
       rotation: [0, Math.PI / 2, 0],
@@ -150,8 +151,11 @@ export const sequenceChapters = [
       labelPosition: [22.5, 4.85, -18],
       detailPosition: [22.7, 4.9, -18],
       detailRotation: [0, 0, 0],
+      // mobile label
+      mobileLabelPosition: [21.8  , 5, -18],
+
       // Mobile-specific positioning
-      mobileDetailPosition: [22.7, 4.7, -17.8],
+      mobileDetailPosition: [22, 4.1, -17.8],
       mobileDetailRotation: [0, 0, 0],
       title: "Outdoor Unit",
       description: "The AirSmart Air Purification System delivers whole-home air filtration with HEPA-grade purity, removing pollutants and improving indoor air quality for healthier breathing.",
@@ -173,7 +177,7 @@ export const sequenceChapters = [
       position: [21, 4.9, -18],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobilePosition: [21.2, 4.7, -17.7],
+      mobilePosition: [22, 5, -17.7],
       mobileRotation: [0, 0, 0],
       videoId: "https://vimeo.com/912207265",
       title: "Outdoor Unit Demo",

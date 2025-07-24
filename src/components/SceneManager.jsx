@@ -1,7 +1,44 @@
 import { useState, useRef, useEffect } from 'react';
 import { SheetProvider } from "@theatre/r3f";
+import { useThree, useFrame } from "@react-three/fiber";
 import { Scene } from './Scene';
 import { HotspotDetailScene } from './HotspotDetailScene';
+import { useMobile } from "../hooks/useMobile";
+
+// FOV Manager Component to handle FOV when switching scenes
+function FOVManager({ currentScene }) {
+  const { camera } = useThree();
+  const mobile = useMobile();
+
+  // Force update FOV when scene changes
+  useEffect(() => {
+    if (camera && currentScene === 'main') {
+      // Delay to ensure Theatre.js has finished restoring
+      const timeoutId = setTimeout(() => {
+        const targetFOV = mobile.getCameraFOV();
+        if (Math.abs(camera.fov - targetFOV) > 0.1) {
+          camera.fov = targetFOV;
+          camera.updateProjectionMatrix();
+        }
+      }, 150); // Small delay to let Theatre.js finish
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentScene, camera, mobile]);
+
+  // Continuous FOV monitoring for main scene
+  useFrame(() => {
+    if (camera && currentScene === 'main') {
+      const targetFOV = mobile.getCameraFOV();
+      if (Math.abs(camera.fov - targetFOV) > 1) {
+        camera.fov = targetFOV;
+        camera.updateProjectionMatrix();
+      }
+    }
+  });
+
+  return null;
+}
 
 export function SceneManager({
   onTourEnd,
@@ -162,6 +199,7 @@ export function SceneManager({
   if (currentScene === 'detail' && activeHotspotChapter) {
     return (
       <SheetProvider sheet={detailSheet}>
+        <FOVManager currentScene={currentScene} />
         <HotspotDetailScene
           chapter={activeHotspotChapter}
           onReturnToMain={handleReturnToMain}
@@ -176,6 +214,7 @@ export function SceneManager({
   // Default main scene
   return (
     <SheetProvider sheet={mainSheet}>
+      <FOVManager currentScene={currentScene} />
       <Scene
         onTourEnd={onTourEnd}
         onHideControlPanel={onHideControlPanel}

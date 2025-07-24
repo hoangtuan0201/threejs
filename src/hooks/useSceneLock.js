@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 
-function useSceneLock(sheet, delay = 4500) {
+function useSceneLock(sheet, delay = 3000) {
   const [locked, setLocked] = useState(false);
   const [targetPosition, setTargetPosition] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [duration, setDuration] = useState(null);
   const startPositionRef = useRef(null);
   const startTimeRef = useRef(null);
 
@@ -15,12 +16,14 @@ function useSceneLock(sheet, delay = 4500) {
       return;
     }
 
-    const clampedPos = Math.max(0, Math.min(6.7, targetPos));
+    const clampedPos = Math.max(0, Math.min(12.5, targetPos)); // Updated max to 12.5
     const stepSize = options.stepSize || 1.5; // Default step size or custom
+    const customDuration = options.duration || null; // Custom duration
 
     setLocked(true);
     setTargetPosition(clampedPos);
     setIsNavigating(true);
+    setDuration(customDuration);
 
     // Store start position and time for smooth animation
     startPositionRef.current = sheet.sequence.position;
@@ -43,6 +46,7 @@ function useSceneLock(sheet, delay = 4500) {
     // console.log('  - Setting isNavigating to false');
     setIsNavigating(false);
     setTargetPosition(null);
+    setDuration(null);
     startPositionRef.current = null;
     startTimeRef.current = null;
   };
@@ -51,6 +55,7 @@ function useSceneLock(sheet, delay = 4500) {
     locked,
     targetPosition,
     isNavigating,
+    duration,
     startPosition: startPositionRef.current,
     startTime: startTimeRef.current,
     lockScene,
