@@ -12,7 +12,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
   const [chatHistory, setChatHistory] = useState([
     {
       type: 'bot',
-      message: 'Hi! How can I help you with AirSmart systems?',
+      message: 'Hello\n This is AirSmart AI, how can I help you?',
       timestamp: new Date()
     }
   ]);
