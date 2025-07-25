@@ -158,13 +158,30 @@ const FloatingChatButton = ({ onFocusChange }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-      const response = await fetch('https://api3.heartstribute.com/ask', {
+      // VoiceFlow session management
+      let sessionId = localStorage.getItem('voiceflow_session_id');
+      if (!sessionId) {
+        try {
+          const sessionRes = await fetch('http://localhost:4000/voice-flow/session');
+          if (sessionRes.ok) {
+            const sessionData = await sessionRes.json();
+            sessionId = sessionData.sessionId;
+            localStorage.setItem('voiceflow_session_id', sessionId);
+          }
+        } catch (err) {
+          console.error('Error getting VoiceFlow session:', err);
+        }
+      }
+
+      // Call VoiceFlow interact API
+      const response = await fetch('http://localhost:4000/voice-flow/interact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          question: userMessage
+          sessionId,
+          message: userMessage
         }),
         signal: controller.signal
       });
@@ -176,13 +193,54 @@ const FloatingChatButton = ({ onFocusChange }) => {
       }
 
       const data = await response.json();
+      // DEBUG: Log the full response to see its structure
+      console.log('Full VoiceFlow Response:', JSON.stringify(data, null, 2));
+
+      // Function to recursively search for text content
+      const extractMessage = (obj) => {
+        if (!obj) return null;
+        // Direct text/message properties
+        if (typeof obj === 'string') return obj;
+        if (obj.text && typeof obj.text === 'string') return obj.text;
+        if (obj.message && typeof obj.message === 'string') return obj.message;
+        // Array handling
+        if (Array.isArray(obj)) {
+          for (const item of obj) {
+            const result = extractMessage(item);
+            if (result) return result;
+          }
+        }
+        // Object handling
+        if (typeof obj === 'object') {
+          // Check common VoiceFlow structures
+          if (obj.payload) {
+            const result = extractMessage(obj.payload);
+            if (result) return result;
+          }
+          if (obj.slate?.content) {
+            const result = extractMessage(obj.slate.content);
+            if (result) return result;
+          }
+          if (obj.children) {
+            const result = extractMessage(obj.children);
+            if (result) return result;
+          }
+          // Recursively check all properties
+          for (const value of Object.values(obj)) {
+            const result = extractMessage(value);
+            if (result) return result;
+          }
+        }
+        return null;
+      };
+
+      const botMessage = extractMessage(data) || 'I apologize, but I couldn\'t process your request at the moment.';
 
       // Add bot response
       const botResponse = {
         type: 'bot',
-        message: data.answer || 'I apologize, but I couldn\'t process your request at the moment.',
+        message: botMessage,
         timestamp: new Date(),
-        sourceCount: data.source_count || 0
       };
 
       setChatHistory(prev => [...prev, botResponse]);
