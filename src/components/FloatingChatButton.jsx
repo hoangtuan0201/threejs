@@ -12,7 +12,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
   const [chatHistory, setChatHistory] = useState([
     {
       type: 'bot',
-      message: 'Hello\n This is AirSmart AI, how can I help you?',
+      message: 'Hello\nThis is AirSmart AI, how can I help you?',
       timestamp: new Date()
     }
   ]);
@@ -162,7 +162,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
       let sessionId = localStorage.getItem('voiceflow_session_id');
       if (!sessionId) {
         try {
-          const sessionRes = await fetch('http://localhost:4000/voice-flow/session');
+          const sessionRes = await fetch('https://api2.heartstribute.com/voice-flow/session');
           if (sessionRes.ok) {
             const sessionData = await sessionRes.json();
             sessionId = sessionData.sessionId;
@@ -174,7 +174,7 @@ const FloatingChatButton = ({ onFocusChange }) => {
       }
 
       // Call VoiceFlow interact API
-      const response = await fetch('http://localhost:4000/voice-flow/interact', {
+      const response = await fetch('https://api2.heartstribute.com/voice-flow/interact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
