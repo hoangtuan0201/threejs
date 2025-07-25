@@ -99,7 +99,7 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   return (
     <primitive
       object={scene}
-      onClick={handleMeshClick} // TEMPORARILY DISABLED to prevent group-related errors
+      // onClick={handleMeshClick} // TEMPORARILY DISABLED to prevent group-related errors
     />
   );
 }

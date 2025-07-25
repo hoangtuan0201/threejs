@@ -26,33 +26,33 @@ import { useMobile } from "./hooks/useMobile";
 import useSceneLock from "./hooks/useSceneLock";
 
 // // Theatre.js Studio disabled for production
- if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  studio.initialize()
-  studio.ui.hide()
-   studio.extend(extension);
+//  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+//   studio.initialize()
+//   studio.ui.hide()
+//    studio.extend(extension);
 
-  //  Force show studio UI
-   setTimeout(() => {
-     studio.ui.restore();
-   }, 1000);
+//   //  Force show studio UI
+//    setTimeout(() => {
+//      studio.ui.restore();
+//    }, 1000);
 
-  // Add export function for development
-  window.exportTheatreState = () => {
-    const state = project.getState();
-    console.log('Theatre.js State:', JSON.stringify(state, null, 2));
+//   // Add export function for development
+//   window.exportTheatreState = () => {
+//     const state = project.getState();
+//     console.log('Theatre.js State:', JSON.stringify(state, null, 2));
 
-    // Download as file
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'FlyThrough.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+//     // Download as file
+//     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+//     const url = URL.createObjectURL(blob);
+//     const a = document.createElement('a');
+//     a.href = url;
+//     a.download = 'FlyThrough.json';
+//     a.click();
+//     URL.revokeObjectURL(url);
+//   };
 
-   window.__THEATRE_ALREADY_INIT__ = true;
- }
+//    window.__THEATRE_ALREADY_INIT__ = true;
+//  }
 
 export default function App({ isChatFocused = false }) {
   // Current sheet from SceneManager - initialize with mainSheet

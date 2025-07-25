@@ -378,7 +378,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       const deltaY = event.deltaY;
-      const baseSensitivity = mobile.getTouchSensitivity() * 0.4; // Base responsive scroll sensitivity
+      const baseSensitivity = mobile.getTouchSensitivity() * 0.3; // Base responsive scroll sensitivity
       const finalSensitivity = baseSensitivity * scrollSensitivity; // Apply user-controlled sensitivity
 
       // Use functional update to ensure latest value
@@ -446,7 +446,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       // Reduced touch sensitivity for mobile
-      const touchSensitivity = mobile.isMobile ? 0.003 : 0.003; // Lower sensitivity for mobile
+      const touchSensitivity = mobile.isMobile ? 0.004 : 0.004; // Lower sensitivity for mobile
 
 
 
