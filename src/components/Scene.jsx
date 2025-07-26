@@ -8,8 +8,8 @@ import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
-import { MeshInteraction } from "./AlertMesh/";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
+import DoorAnimation from "./DoorAnimation";
 
 
 import { sequenceChapters } from "../data/sequenceChapters";
@@ -74,7 +74,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   useFrame(() => {
     // Only update position every 3 frames to reduce React warnings and improve performance
     frameCountRef.current++;
-    if (frameCountRef.current % 3 === 0 && onPositionChange) {
+    if (frameCountRef.current % 5 === 0 && onPositionChange) {
       const currentPos = sheet.sequence.position;
       if (Math.abs(currentPos - lastPositionRef.current) > 0.02) {
         lastPositionRef.current = currentPos;
@@ -192,14 +192,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   // Show navigation guide when entering explore mode for the first time
   useEffect(() => {
-    // Only show if:
-    // 1. In explore mode
-    // 2. Not currently navigating
-    // 3. User hasn't navigated yet (first time)
-    // 4. Not currently restoring from detail scene
-    // 5. Haven't already shown the guide
-    // Note: Allow first-time users to see guide even if they haven't visited detail scene
-    // Show navigation guide only once on first explore mode entry
+    
     if (isExploreMode && !hasTriggeredGuideRef.current && !hasVisitedDetailScene) {
       if (onShowNavigationGuide) {
         hasTriggeredGuideRef.current = true; // Mark as triggered
@@ -275,7 +268,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         }
       }
     } else if (!isNavigating) {
-      // Normal scroll behavior when not locked
+      // comment these to turn off useframe
       if (targetPosition !== sheet.sequence.position) {
         const diff = targetPosition - sheet.sequence.position;
         const speed = 0.02; // Smooth scrolling speed
@@ -385,7 +378,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       const deltaY = event.deltaY;
-      const baseSensitivity = mobile.getTouchSensitivity() * 0.4; // Base responsive scroll sensitivity
+      const baseSensitivity = mobile.getTouchSensitivity() * 0.3; // Base responsive scroll sensitivity
       const finalSensitivity = baseSensitivity * scrollSensitivity; // Apply user-controlled sensitivity
 
       // Use functional update to ensure latest value
@@ -399,7 +392,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         let newPosition = prevTarget + (deltaY * finalSensitivity);
 
         // Limit within range [0.1, 12.5] (entire sequence) - start from 0.1 to avoid wall clipping
-        newPosition = Math.max(0.1, Math.min(12.5, newPosition));
+        newPosition = Math.max(0, Math.min(12.5, newPosition));
 
 
 
@@ -453,7 +446,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       // Reduced touch sensitivity for mobile
-      const touchSensitivity = mobile.isMobile ? 0.003 : 0.003; // Lower sensitivity for mobile
+      const touchSensitivity = mobile.isMobile ? 0.004 : 0.004; // Lower sensitivity for mobile
 
 
 
@@ -577,8 +570,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           hiddenObjectsState={localHiddenState}
           onModelLoaded={onModelLoaded}
         />
-        {/* Mesh interaction for cursor pointer and zoom */}
-        <MeshInteraction />
+        {/* Door animation controller */}
+        <DoorAnimation />
       </Suspense>
 
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}

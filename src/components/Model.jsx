@@ -31,13 +31,17 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
     }
   }, [scene, modelReady, onModelLoaded]);
 
-  // Handle mesh click events - COMMENTED FOR LATER USE
-  // const handleMeshClick = (event) => {
-  //   event.stopPropagation();
-  //   const meshName = event.object.name || 'Unnamed Mesh';
-  //   console.log('Clicked mesh:', meshName); // Debug log
-  //   alert(`Mesh Name: ${meshName}`);
-  // };
+  // Handle mesh click events - TEMPORARILY DISABLED to prevent group-related errors
+  const handleMeshClick = (event) => {
+    try {
+      event.stopPropagation();
+      const meshName = event.object?.name || 'Unnamed Mesh';
+      console.log('Clicked mesh:', meshName); // Debug log
+      alert(`Mesh Name: ${meshName}`);
+    } catch (error) {
+      console.warn('Error in handleMeshClick:', error);
+    }
+  };
 
   // Traverse the model and enable shadows for all meshes + make specific objects transparent when sequence > 2
   useEffect(() => {
@@ -95,7 +99,7 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   return (
     <primitive
       object={scene}
-      // onClick={handleMeshClick} // COMMENTED FOR LATER USE
+      // onClick={handleMeshClick} // TEMPORARILY DISABLED to prevent group-related errors
     />
   );
 }

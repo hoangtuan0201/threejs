@@ -27,14 +27,14 @@ import useSceneLock from "./hooks/useSceneLock";
 
 // // Theatre.js Studio disabled for production
 //  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  studio.initialize()
-  studio.ui.hide()
-  //  studio.extend(extension);
+//   studio.initialize()
+//   studio.ui.hide()
+//    studio.extend(extension);
 
-   // Force show studio UI
-  //  setTimeout(() => {
-  //    studio.ui.restore();
-  //  }, 1000);
+//   //  Force show studio UI
+//    setTimeout(() => {
+//      studio.ui.restore();
+//    }, 1000);
 
 //   // Add export function for development
 //   window.exportTheatreState = () => {
