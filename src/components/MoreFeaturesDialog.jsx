@@ -123,11 +123,37 @@ export default function MoreFeaturesDialog({ open, onClose }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ background: theme.colors.background.secondary, color: theme.colors.text.primary }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            background: theme.colors.background.primary,
+            borderRadius: 3,
+            width: '95vw',
+            maxWidth: '420px',
+            maxHeight: 'none',
+          }
+        }
+      }}
+    >
+      <DialogTitle
+        sx={{
+          background: theme.colors.background.secondary,
+          color: theme.colors.text.primary,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          py: 2,
+          px: 3,
+        }}
+      >
         More Features
       </DialogTitle>
-      <DialogContent sx={{ background: theme.colors.background.primary }}>
+      <DialogContent sx={{ background: theme.colors.background.primary, px: 3, py: 2 }}>
         {step === 'select' && (
           <Stack spacing={2} sx={{ mt: 2 }}>
             {OPTIONS.map((opt) => (
@@ -139,9 +165,11 @@ export default function MoreFeaturesDialog({ open, onClose }) {
                   fontWeight: 600,
                   color: theme.colors.text.primary,
                   borderColor: theme.colors.border.medium,
+                  borderRadius: 2,
+                  background: theme.colors.background.secondary,
                   '&:hover': {
                     borderColor: theme.colors.border.dark,
-                    backgroundColor: theme.colors.background.secondary
+                    backgroundColor: theme.colors.background.tertiary
                   }
                 }}>
                 {opt.label}
@@ -207,9 +235,11 @@ export default function MoreFeaturesDialog({ open, onClose }) {
                   mb: 2,
                   color: theme.colors.text.primary,
                   borderColor: theme.colors.border.medium,
+                  borderRadius: 2,
+                  background: theme.colors.background.secondary,
                   '&:hover': {
                     borderColor: theme.colors.border.dark,
-                    backgroundColor: theme.colors.background.secondary,
+                    backgroundColor: theme.colors.background.tertiary,
                   },
                 }}
               >
@@ -223,24 +253,22 @@ export default function MoreFeaturesDialog({ open, onClose }) {
                 />
               </Button>
             )}
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2, background: theme.isDark ? 'rgba(255, 86, 86, 0.1)' : 'rgba(255, 86, 86, 0.05)', border: `1px solid ${theme.isDark ? 'rgba(255, 86, 86, 0.3)' : 'rgba(255, 86, 86, 0.2)'}` }}>{error}</Alert>}
             <Stack direction="row" spacing={2}>
-              <Button onClick={handleBack} disabled={loading}>Back</Button>
-              <Button type="submit" variant="contained" disabled={loading}>
+              <Button onClick={handleBack} disabled={loading} sx={{ color: theme.colors.text.secondary, borderColor: theme.colors.border.medium, borderRadius: 2, '&:hover': { borderColor: theme.colors.border.dark, background: theme.colors.background.tertiary } }}>Back</Button>
+              <Button type="submit" variant="contained" disabled={loading} sx={{ borderRadius: 2 }}>
                 {loading ? <CircularProgress size={24} /> : 'Submit'}
               </Button>
             </Stack>
           </Box>
         )}
         {step === 'done' && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            Your request has been submitted! Our team will contact you soon.
-          </Alert>
+          <Alert severity="success" sx={{ mt: 2, borderRadius: 2 }}>{'Your request has been submitted! Our team will contact you soon.'}</Alert>
         )}
       </DialogContent>
-      <DialogActions sx={{ background: theme.colors.background.secondary }}>
-        <Button onClick={onClose} color="secondary">Close</Button>
+      <DialogActions sx={{ background: theme.colors.background.secondary, borderTop: `1px solid ${theme.colors.border.light}`, px: 3, py: 2, borderRadius: '0 0 24px 24px' }}>
+        <Button onClick={onClose} color="secondary" sx={{ color: theme.colors.text.secondary, borderColor: theme.colors.border.medium, borderRadius: 2, '&:hover': { borderColor: theme.colors.border.dark, background: theme.colors.background.tertiary } }}>Close</Button>
       </DialogActions>
     </Dialog>
   );
-} 
+}
