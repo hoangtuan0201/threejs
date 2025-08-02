@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
 import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
 // Add module-level constant for model URL
-const MODEL_URL = convertToSignedUrl("https://s3.ap-southeast-2.wasabisys.com/airsmart/HouseCombined2.glb");
+const MODEL_URL = "./3ddd.glb"; // Adjust path as needed
 console.log('Model URL:', MODEL_URL); // Debug log to verify URL
 export function Model({ hiddenObjectsState, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
