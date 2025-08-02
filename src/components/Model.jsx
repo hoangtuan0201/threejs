@@ -1,15 +1,19 @@
 import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
-
-// const modelUrl = "https://s3.ap-southeast-2.wasabisys.com/airsmart/3d-models%2FHlkl1k5uvxMTrURUu5SL%2F1751031112397.glb?AWSAccessKeyId=OQL1BX7MOF71KL0MM0UM&Expires=1751895706&Signature=ceF4cC3O4u67JxAFCvx7hlW1rmA%3D";
-
+import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
+// Add module-level constant for model URL
+const MODEL_URL = convertToSignedUrl("https://s3.ap-southeast-2.wasabisys.com/airsmart/HouseCombined2.glb");
+console.log('Model URL:', MODEL_URL); // Debug log to verify URL
 export function Model({ hiddenObjectsState, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
   const originalMaterials = useRef(new Map());
 
   // Load model with error handling
-  const { scene, error } = useGLTF("/HouseCombined2.glb");
+  const { scene, error } = useGLTF(MODEL_URL);
+
+
+  console.log('Model URL:', MODEL_URL);
 
   // Handle loading errors
   useEffect(() => {
@@ -87,10 +91,6 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
     }
   }, [scene, hiddenObjectsState]);
 
-
-
-
-
   // Don't render if scene is not loaded or there's an error
   if (!scene || error) {
     return null;
@@ -104,4 +104,5 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   );
 }
 
-useGLTF.preload("/HouseCombined2.glb");
+// Preload the model
+useGLTF.preload(MODEL_URL);
