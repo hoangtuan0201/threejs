@@ -12,6 +12,7 @@ import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting } from "./HDREnvironment";
 import { RenderingOptimizer } from "./RenderingOptimizer";
+import { EnhancedBackground } from "./Background";
 
 
 import { sequenceChapters } from "../data/sequenceChapters";
@@ -546,7 +547,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   return (
     <>
-      <color attach="background" args={["#84a4f4"]} />
+      {/* Industrial Background - sử dụng industrial.jpg làm background */}
+      <EnhancedBackground
+        type="industrial"
+        industrialOpacity={1.0}
+        fallbackColor="#84a4f4"
+        enableIndustrial={true}
+      />
 
       {/* Rendering optimization for HDR/PBR workflow */}
       <RenderingOptimizer />

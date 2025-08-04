@@ -6,6 +6,7 @@ import { useMobile } from "../hooks/useMobile";
 import { VideoScreen } from "./VideoScreen";
 import { EnhancedLighting } from "./HDREnvironment";
 import { RenderingOptimizer } from "./RenderingOptimizer";
+import { EnhancedBackground } from "./Background";
 
 export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, savedMainSceneState }) {
   const mobile = useMobile();
@@ -26,7 +27,13 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
 
   return (
     <>
-      <color attach="background" args={["#84a4f4"]} />
+      {/* Industrial Background cho detail scene */}
+      <EnhancedBackground
+        type="industrial"
+        industrialOpacity={0.8}
+        fallbackColor="#84a4f4"
+        enableIndustrial={true}
+      />
 
       {/* Rendering optimization for HDR/PBR workflow */}
       <RenderingOptimizer />
