@@ -10,7 +10,7 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  * Based on Three.js discourse recommendations for Sketchfab-like quality
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/royal_esplanade_1k.hdr', // Better HDR texture for realistic lighting
+  hdrUrl = '/textures/empty_play_room_2k.hdr', // Better HDR texture for realistic lighting
   intensity = 1.0,
   backgroundIntensity = 0.3,
   enableBackground = false,
@@ -34,7 +34,7 @@ export function HDREnvironment({
     // Configure renderer for HDR workflow
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = mobile.isMobile ? 1.2 : 1.5; // Increased exposure for better visibility
+      gl.toneMappingExposure = 0.3 // Increased exposure for better visibility
       gl.outputEncoding = THREE.sRGBEncoding;
     }
 
@@ -64,7 +64,7 @@ export function HDREnvironment({
     
     // Apply environment map to scene with enhanced intensity for realistic look
     scene.environment = envMap;
-    scene.environmentIntensity = intensity * 1.5; // Increased for more realistic reflections
+    scene.environmentIntensity = intensity * 2; // Increased for more realistic reflections
 
     // Optionally set as background
     if (enableBackground) {
@@ -105,17 +105,17 @@ export function EnhancedLighting({
 }) {
   const hdrConfig = useHDRConfig();
 
-  // Use responsive configuration with enhanced realistic settings
+  // Use responsive configuration with enhanced realistic settings - Tăng độ sáng tổng thể
   const config = {
     ambientIntensity: type === 'detail'
-      ? hdrConfig.hdr.intensity * 0.2  // Reduced ambient for more contrast
-      : hdrConfig.hdr.intensity * 0.15,
+      ? hdrConfig.hdr.intensity * 0.4  // Tăng ambient light cho detail scene
+      : hdrConfig.hdr.intensity * 0.3,  // Tăng ambient light cho main scene
     directionalIntensity: type === 'detail'
-      ? hdrConfig.hdr.intensity * 1.2  // Increased directional for better shadows
-      : hdrConfig.hdr.intensity * 1.0,
+      ? hdrConfig.hdr.intensity * 1.8  // Tăng directional light cho detail scene
+      : hdrConfig.hdr.intensity * 1.5,  // Tăng directional light cho main scene
     hdrIntensity: type === 'detail'
-      ? hdrConfig.hdr.intensity * 1.8  // Much higher HDR intensity for realistic look
-      : hdrConfig.hdr.intensity * 1.5,
+      ? hdrConfig.hdr.intensity * 2.2  // Tăng HDR intensity cho detail scene
+      : hdrConfig.hdr.intensity * 1.8,  // Tăng HDR intensity cho main scene
   };
   
 
@@ -124,65 +124,34 @@ export function EnhancedLighting({
     <>
       {/* HDR Environment */}
       {enableHDR && (
-        <HDREnvironment 
+        <HDREnvironment
           intensity={config.hdrIntensity}
           enableBackground={false}
           backgroundIntensity={0.2}
         />
       )}
-      
-      {/* Ambient lighting - reduced since HDR provides most ambient */}
-      <ambientLight intensity={config.ambientIntensity} />
-      
-      {/* Key directional light with optimized shadows */}
-      <directionalLight
-        position={[15, 20, 10]}
-        intensity={config.directionalIntensity * 1.2}
-        castShadow={true}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-near={0.1}
-        shadow-camera-far={50}
-        shadow-bias={-0.001}
-        shadow-normalBias={0.05}
-      />
-      
-      {/* Secondary shadow casting light for better shadow definition */}
-      <directionalLight
-        position={[-10, 15, -8]}
-        intensity={config.directionalIntensity * 0.8}
-        castShadow={true}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
-        shadow-camera-left={-10}
-        shadow-camera-right={10}
-        shadow-camera-near={0.1}
-        shadow-camera-far={40}
-        shadow-bias={-0.0005}
-        shadow-normalBias={0.03}
+
+      {/* Ambient Light - tương tự như trong code vanilla Three.js */}
+      <ambientLight
+        color={0x404040}
+        intensity={config.ambientIntensity * 1.5} // Tăng độ sáng ambient light
       />
 
-      {/* Fill light for softer shadows */}
+      {/* Directional Light - tương tự như trong code vanilla Three.js */}
       <directionalLight
-        position={[-5, 10, -5]}
-        intensity={config.directionalIntensity * 0.2}
+        color={0xffffff}
+        intensity={config.directionalIntensity * 1.3} // Tăng độ sáng directional light
+        position={[0, 20, 20]} // Vị trí tương tự code gốc
         castShadow={true}
+        shadow-camera-top={4}
+        shadow-camera-bottom={-4}
+        shadow-camera-left={-4}
+        shadow-camera-right={4}
+        shadow-camera-near={0.1}
+        shadow-camera-far={40}
+        shadow-bias={-0.002} // Tương tự code gốc
       />
-      
-      {/* Subtle rim light for detail scene */}
-      {type === 'detail' && (
-        <directionalLight
-          position={[0, 5, 10]}
-          intensity={0.2}
-          castShadow={true}
-        />
-      )}
+
     </>
   );
 }

@@ -17,7 +17,7 @@ export function RenderingOptimizer() {
 
     // Configure renderer for HDR workflow with realistic colors
     gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = mobile.isMobile ? 1.2 : 1.5; // Increased for better visibility
+    gl.toneMappingExposure = 0.6   // Increased for better visibility
     gl.outputEncoding = THREE.sRGBEncoding;
 
     // Enable antialiasing for better quality
@@ -38,7 +38,7 @@ export function RenderingOptimizer() {
     gl.physicallyCorrectLights = true;
 
     // Optimize for HDR content with realistic gamma
-    gl.gammaFactor = 2.2;
+    gl.gammaFactor = 3;
     
   }, [gl, mobile.isMobile]);
 
@@ -75,7 +75,7 @@ export function useMaterialEnhancer() {
     if (material.isMeshStandardMaterial || material.isMeshPhysicalMaterial) {
       // Enhance PBR workflow for realistic look
       material.metalness = material.metalness || 0.1; // Slight metalness for more realistic look
-      material.roughness = material.roughness || 0.4; // Slightly smoother for better reflections
+      material.roughness = material.roughness || 0.5; // Slightly smoother for better reflections
 
       // Enhanced color and lighting response
       if (material.color) {
