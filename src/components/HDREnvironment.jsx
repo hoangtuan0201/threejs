@@ -10,7 +10,7 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  * Based on Three.js discourse recommendations for Sketchfab-like quality
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/empty_play_room_2k.hdr', // Better HDR texture for realistic lighting
+  hdrUrl = '/textures/modern_bathroom_2k.hdr', // Better HDR texture for realistic lighting
   intensity = 1.0,
   backgroundIntensity = 0.3,
   enableBackground = false,
