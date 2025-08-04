@@ -10,6 +10,8 @@ import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
+import { EnhancedLighting } from "./HDREnvironment";
+import { RenderingOptimizer } from "./RenderingOptimizer";
 
 
 import { sequenceChapters } from "../data/sequenceChapters";
@@ -546,11 +548,23 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     <>
       <color attach="background" args={["#84a4f4"]} />
 
-      {/* Enhanced lighting setup for better visibility */}
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[10, 10, 5]} intensity={0.6} castShadow />
-      <directionalLight position={[-10, -10, -5]} intensity={0.6} />
-      <directionalLight position={[0, 10, 10]} intensity={0.6} />
+      {/* Rendering optimization for HDR/PBR workflow */}
+      <RenderingOptimizer />
+
+      {/* Enhanced HDR lighting setup for realistic PBR rendering */}
+      <EnhancedLighting type="main" enableHDR={true} shadowQuality="medium" />
+
+      {/* Ground plane for shadow visibility */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial
+          color="#f0f0f0"
+          transparent
+          opacity={0.1}
+          roughness={0.8}
+          metalness={0.0}
+        />
+      </mesh>
 
       <fog attach="fog" color="#84a4f4" near={0} far={40} />
 

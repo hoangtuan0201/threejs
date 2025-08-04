@@ -1,15 +1,17 @@
 import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
+import { useMaterialEnhancer } from "./RenderingOptimizer";
 
 // const modelUrl = "https://s3.ap-southeast-2.wasabisys.com/airsmart/3d-models%2FHlkl1k5uvxMTrURUu5SL%2F1751031112397.glb?AWSAccessKeyId=OQL1BX7MOF71KL0MM0UM&Expires=1751895706&Signature=ceF4cC3O4u67JxAFCvx7hlW1rmA%3D";
 
 export function Model({ hiddenObjectsState, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
   const originalMaterials = useRef(new Map());
+  const { enhanceMaterial } = useMaterialEnhancer();
 
   // Load model with error handling
-  const { scene, error } = useGLTF("/HouseCombined2.glb");
+  const { scene, error, nodes, materials } = useGLTF("/HouseCombined2.glb");
 
   // Handle loading errors
   useEffect(() => {
@@ -26,7 +28,7 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
         // Add small delay to ensure model is fully processed
         setTimeout(() => {
           onModelLoaded();
-        }, 500);
+        }, 1000);
       }
     }
   }, [scene, modelReady, onModelLoaded]);
@@ -43,17 +45,29 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
     }
   };
 
-  // Traverse the model and enable shadows for all meshes + make specific objects transparent when sequence > 2
+  // Traverse the model and enable shadows for all meshes + optimize for PBR rendering
   useEffect(() => {
     if (scene) {
       scene.traverse((child) => {
         if (child.isMesh) {
+          // Enable shadows with optimized settings
           child.castShadow = true;
           child.receiveShadow = true;
+
+          // Optimize shadow rendering
+          if (child.geometry) {
+            child.geometry.computeBoundingSphere();
+          }
 
           // Store original material if not already stored
           if (!originalMaterials.current.has(child.name) && child.material) {
             originalMaterials.current.set(child.name, child.material.clone());
+          }
+
+          // Optimize material for PBR rendering with HDR
+          if (child.material) {
+            // Apply material enhancements for HDR/PBR workflow
+            enhanceMaterial(child.material);
           }
 
           // Handle hidden objects based on toggle state
@@ -97,6 +111,7 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   }
 
   return (
+    
     <primitive
       object={scene}
       // onClick={handleMeshClick} // TEMPORARILY DISABLED to prevent group-related errors
