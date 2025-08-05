@@ -14,7 +14,6 @@ import { EnhancedLighting } from "./HDREnvironment";
 import { RenderingOptimizer } from "./RenderingOptimizer";
 import { EnhancedBackground } from "./Background";
 
-
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
 
@@ -585,7 +584,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       />
 
 
-
       <Suspense fallback={null}>
         <Model
           hiddenObjectsState={localHiddenState}
@@ -594,7 +592,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         {/* Door animation controller */}
         <DoorAnimation />
       </Suspense>
-
+    
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}
       <HotspotsRenderer
         sequenceChapters={sequenceChapters}

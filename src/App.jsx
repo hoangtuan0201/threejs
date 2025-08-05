@@ -7,6 +7,7 @@ import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough2.json";
 import { SceneManager } from "./components/SceneManager";
+import { SoftShadows } from '@react-three/drei'
 
 // Create project and main sheet for initial state
 const project = getProject("Fly Through", { state: theatreState });
@@ -27,8 +28,8 @@ import useSceneLock from "./hooks/useSceneLock";
 
 // // Theatre.js Studio disabled for production
 //  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  studio.initialize()
-  studio.ui.hide()
+//   studio.initialize()
+//   studio.ui.hide()
 //    studio.extend(extension);
 
 //   //  Force show studio UI
@@ -80,12 +81,6 @@ export default function App({ isChatFocused = false }) {
     // Immediately close any existing navigation guide
     setShowNavigationGuide(false);
 
- 
-
-
-
-   
-
     // Auto-close navigation guide after 8 seconds if still showing
     if (showNavigationGuide) {
       const autoCloseTimer = setTimeout(() => {
@@ -125,7 +120,7 @@ export default function App({ isChatFocused = false }) {
       lockScene(position);
     }
   };
-
+  
 
 
   const endTour = () => {
@@ -180,7 +175,7 @@ export default function App({ isChatFocused = false }) {
             transition: "opacity 0.3s ease", // Smooth fade in when model loads
           }}
           shadows
-          dpr={[1, 2]} // Higher DPR for better quality on retina displays
+          dpr={[1, 1.5]} // Higher DPR for better quality on retina displays
           camera={{
             position: mobile.getCameraPosition(), // Responsive camera position
             fov: mobile.getCameraFOV(), // Responsive FOV based on device
@@ -196,6 +191,7 @@ export default function App({ isChatFocused = false }) {
             stencil: false,
             depth: true,
           }}
+          
           onCreated={({ gl, camera }) => {
             // Responsive camera adjustments using mobile hook
             const handleResize = () => {
@@ -226,6 +222,8 @@ export default function App({ isChatFocused = false }) {
             };
           }}
         >
+          <color attach="background" args={["#d0d0d0"]} />
+          
           <SceneManager
             onTourEnd={endTour}
             onHideControlPanel={() => setShowControlPanel(false)}
@@ -262,6 +260,7 @@ export default function App({ isChatFocused = false }) {
         isVisible={!showControlPanel && !showCompareSystem && modelLoaded && currentScene === 'main'}
         isLocked={sceneLocked}
       />
+      
 
       {/* Scroll Sensitivity Control */}
       <ScrollSensitivityControl

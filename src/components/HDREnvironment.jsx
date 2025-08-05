@@ -2,15 +2,15 @@ import { useEffect, useRef } from 'react';
 import { useThree, useLoader } from '@react-three/fiber';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import * as THREE from 'three';
+import { SoftShadows } from '@react-three/drei';
 import { useMobile } from '../hooks/useMobile';
 import { useHDRConfig } from '../hooks/useHDRConfig';
 
 /**
- * HDR Environment component for realistic PBR lighting
- * Based on Three.js discourse recommendations for Sketchfab-like quality
+ * HDR Environment for realistic PBR lighting
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/modern_bathroom_2k.hdr', // Better HDR texture for realistic lighting
+  hdrUrl = '/textures/modern_bathroom_2k.hdr',
   intensity = 1.0,
   backgroundIntensity = 0.3,
   enableBackground = false,
@@ -19,139 +19,102 @@ export function HDREnvironment({
   const { gl, scene } = useThree();
   const mobile = useMobile();
   const pmremGeneratorRef = useRef();
-  
-  // Load HDR texture with fallback handling
+
+  // Load HDR texture
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
-    // Configure loader for better performance on mobile
-    if (mobile.isMobile) {
-      loader.setDataType(THREE.UnsignedByteType);
-    }
+    if (mobile.isMobile) loader.setDataType(THREE.UnsignedByteType);
   });
 
   useEffect(() => {
     if (!gl || !scene || !hdrTexture) return;
 
-    // Configure renderer for HDR workflow
+    // Tone mapping
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = 0.3 // Increased exposure for better visibility
+      gl.toneMappingExposure = 0.25;
       gl.outputEncoding = THREE.sRGBEncoding;
     }
 
-    // Enable shadows with optimized settings - FORCE ENABLE
+    // Enable shadows
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = true; // Force auto update
-    
-    // Optimize for mobile performance
-    if (mobile.isMobile) {
-      gl.shadowMap.autoUpdate = false; // Manual shadow updates for better performance
-      gl.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio
-    } else {
-      gl.setPixelRatio(window.devicePixelRatio);
-    }
+    gl.shadowMap.autoUpdate = true;
 
-    // Create and configure PMREM generator
+    // Optimize pixel ratio
+    gl.setPixelRatio(
+      mobile.isMobile ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio
+    );
+
+    // PMREM for HDR
     if (!pmremGeneratorRef.current) {
       pmremGeneratorRef.current = new THREE.PMREMGenerator(gl);
       pmremGeneratorRef.current.compileEquirectangularShader();
     }
 
     const pmremGenerator = pmremGeneratorRef.current;
-    
-    // Generate environment map from HDR texture
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-    
-    // Apply environment map to scene with enhanced intensity for realistic look
-    scene.environment = envMap;
-    scene.environmentIntensity = intensity * 2; // Increased for more realistic reflections
 
-    // Optionally set as background
+    scene.environment = envMap;
+    scene.environmentIntensity = intensity * 2;
+
     if (enableBackground) {
       scene.background = envMap;
-      scene.backgroundIntensity = backgroundIntensity * 1.2;
+      scene.backgroundIntensity = backgroundIntensity;
     }
 
-    // Cleanup function
     return () => {
-      if (envMap) {
-        envMap.dispose();
-      }
+      envMap?.dispose();
     };
   }, [gl, scene, hdrTexture, intensity, backgroundIntensity, enableBackground, enableToneMapping, mobile.isMobile]);
 
-  // Cleanup PMREM generator on unmount
   useEffect(() => {
     return () => {
-      if (pmremGeneratorRef.current) {
-        pmremGeneratorRef.current.dispose();
-      }
-      if (hdrTexture) {
-        hdrTexture.dispose();
-      }
+      pmremGeneratorRef.current?.dispose();
+      hdrTexture?.dispose();
     };
   }, [hdrTexture]);
 
-  return null; // This component doesn't render anything visible
+  return null;
 }
 
 /**
- * Enhanced lighting setup component
- * Provides optimized lighting for both main scene and detail scene
+ * Optimized Lighting for Large Models with Soft Shadows
  */
 export function EnhancedLighting({
-  type = 'main', // 'main' or 'detail'
+  type = 'main',
   enableHDR = true
 }) {
   const hdrConfig = useHDRConfig();
 
-  // Use responsive configuration with enhanced realistic settings - Tăng độ sáng tổng thể
   const config = {
-    ambientIntensity: type === 'detail'
-      ? hdrConfig.hdr.intensity * 0.4  // Tăng ambient light cho detail scene
-      : hdrConfig.hdr.intensity * 0.3,  // Tăng ambient light cho main scene
-    directionalIntensity: type === 'detail'
-      ? hdrConfig.hdr.intensity * 1.8  // Tăng directional light cho detail scene
-      : hdrConfig.hdr.intensity * 1.5,  // Tăng directional light cho main scene
-    hdrIntensity: type === 'detail'
-      ? hdrConfig.hdr.intensity * 2.2  // Tăng HDR intensity cho detail scene
-      : hdrConfig.hdr.intensity * 1.8,  // Tăng HDR intensity cho main scene
+    ambientIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 0.4 : hdrConfig.hdr.intensity * 0.3,
+    directionalIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 2 : hdrConfig.hdr.intensity * 1.6,
+    hdrIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 2.2 : hdrConfig.hdr.intensity * 1.8,
   };
-  
-
 
   return (
     <>
-      {/* HDR Environment */}
-      {enableHDR && (
-        <HDREnvironment
-          intensity={config.hdrIntensity}
-          enableBackground={false}
-          backgroundIntensity={0.2}
-        />
-      )}
+  {/* HDR Environment */}
+      {enableHDR && <HDREnvironment intensity={2} enableBackground={false} />}
 
-      {/* Ambient Light - tương tự như trong code vanilla Three.js */}
-      <ambientLight
-        color={0x404040}
-        intensity={config.ambientIntensity * 1.5} // Tăng độ sáng ambient light
-      />
+      {/* Ambient light để sáng tổng thể */}
+      <ambientLight intensity={0.5} />
 
-      {/* Directional Light - tương tự như trong code vanilla Three.js */}
+      {/* Directional light chính từ trên trần xuống */}
       <directionalLight
-        color={0xffffff}
-        intensity={config.directionalIntensity * 1.3} // Tăng độ sáng directional light
-        position={[0, 20, 20]} // Vị trí tương tự code gốc
-        castShadow={true}
-        shadow-camera-top={4}
-        shadow-camera-bottom={-4}
-        shadow-camera-left={-4}
-        shadow-camera-right={4}
-        shadow-camera-near={0.1}
-        shadow-camera-far={40}
-        shadow-bias={-0.002} // Tương tự code gốc
+        intensity={6}
+        position={[0, 8, 0]}     // từ trên xuống
+        castShadow
+        shadow-mapSize={2048}
+        shadow-camera-top={50}
+        shadow-camera-bottom={-50}
+        shadow-camera-left={-50}
+        shadow-camera-right={50}
+        shadow-camera-near={1}
+        shadow-camera-far={300}
+        shadow-bias={-0.001}
       />
 
-    </>
+      </>
   );
 }

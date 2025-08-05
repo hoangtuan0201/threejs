@@ -2,121 +2,103 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
 import { useMaterialEnhancer } from "./RenderingOptimizer";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 
-// const modelUrl = "https://s3.ap-southeast-2.wasabisys.com/airsmart/3d-models%2FHlkl1k5uvxMTrURUu5SL%2F1751031112397.glb?AWSAccessKeyId=OQL1BX7MOF71KL0MM0UM&Expires=1751895706&Signature=ceF4cC3O4u67JxAFCvx7hlW1rmA%3D";
 
 export function Model({ hiddenObjectsState, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
+  const { scene, error } = useGLTF("/HouseCombined2.glb");
 
-  // Load model with error handling
-  const { scene, error, nodes, materials } = useGLTF("/HouseCombined2.glb");
+// Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
+const applyRealisticShader = (material) => {
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uTime = { value: 0 };
+    shader.uniforms.uAOBoost = { value: 0.2 };       // giảm AO boost
 
-  // Handle loading errors
-  useEffect(() => {
-    if (error) {
-      console.error('Model loading error:', error);
-    }
-  }, [error]);
+    shader.fragmentShader = shader.fragmentShader.replace(
+      `#include <dithering_fragment>`,
+      `
+        // 🔹 Fresnel rim lighting subtle
+        vec3 rimColor = vec3(0.08, 0.1, 0.12); // nhẹ hơn, hơi xanh
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
 
-  // Notify when model is loaded successfully
+        // 🔹 Subtle AO boost (darken crevices slightly)
+        gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
+
+        #include <dithering_fragment>
+      `
+    );
+
+    material.userData.shader = shader;
+  };
+  material.needsUpdate = true;
+};
+
+
+  // Update shader uniforms for dynamic effects
+  useFrame(({ clock }) => {
+    scene?.traverse((child) => {
+      if (child.isMesh && child.material?.userData?.shader) {
+        child.material.userData.shader.uniforms.uTime.value = clock.elapsedTime;
+      }
+    });
+  });
+
+  // Notify when model is loaded
   useEffect(() => {
     if (scene && !modelReady) {
       setModelReady(true);
-      if (onModelLoaded) {
-        // Add small delay to ensure model is fully processed
-        setTimeout(() => {
-          onModelLoaded();
-        }, 1000);
-      }
+      onModelLoaded?.();
     }
   }, [scene, modelReady, onModelLoaded]);
 
-  // Handle mesh click events - TEMPORARILY DISABLED to prevent group-related errors
-  const handleMeshClick = (event) => {
-    try {
-      event.stopPropagation();
-      const meshName = event.object?.name || 'Unnamed Mesh';
-      console.log('Clicked mesh:', meshName); // Debug log
-      alert(`Mesh Name: ${meshName}`);
-    } catch (error) {
-      console.warn('Error in handleMeshClick:', error);
-    }
-  };
-
-  // Traverse the model and enable shadows for all meshes + optimize for PBR rendering
+  // Traverse model and enhance realism
   useEffect(() => {
-    if (scene) {
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          // Enable shadows with optimized settings
-          child.castShadow = true;
-          child.receiveShadow = true;
+    if (!scene) return;
 
-          // Optimize shadow rendering
-          if (child.geometry) {
-            child.geometry.computeBoundingSphere();
-          }
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        // Enable soft shadows
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.geometry?.computeBoundingSphere();
 
-          // Store original material if not already stored
-          if (!originalMaterials.current.has(child.name) && child.material) {
-            originalMaterials.current.set(child.name, child.material.clone());
-          }
-
-          // Optimize material for PBR rendering with HDR
-          if (child.material) {
-            // Apply material enhancements for HDR/PBR workflow
-            enhanceMaterial(child.material);
-          }
-
-          // Handle hidden objects based on toggle state
-          if (hiddenObjects.includes(child.name)) {
-            if (hiddenObjectsState) {
-              if (child.material) {
-                // Clone material to avoid affecting other objects
-                child.material = child.material.clone();
-                child.material.transparent = true;
-                child.material.opacity = 0.3; // 30% opacity when hidden
-              }
-            } else {
-              if (child.material) {
-                // Restore opacity when not hidden
-                child.material = child.material.clone();
-                child.material.transparent = false;
-                child.material.opacity = 1.0; // Full opacity
-              }
-            }
-          }
-
-          // Restore original material
-          else {
-            const originalMaterial = originalMaterials.current.get(child.name);
-            if (originalMaterial) {
-              child.material = originalMaterial.clone();
-            }
-          }
+        // Store original material
+        if (!originalMaterials.current.has(child.name) && child.material) {
+          originalMaterials.current.set(child.name, child.material.clone());
         }
-      });
-    }
+
+        // Enhance material for realistic PBR
+        if (child.material) {
+          // Basic HDR/PBR enhancement
+          enhanceMaterial(child.material);
+
+          // Make reflections sharper and realistic
+          child.material.envMapIntensity = 1.5;
+
+          // Apply shader enhance
+          applyRealisticShader(child.material);
+        }
+
+        // Hidden object handling
+        if (hiddenObjects.includes(child.name)) {
+          child.material = child.material.clone();
+          child.material.transparent = true;
+          child.material.opacity = hiddenObjectsState ? 0.3 : 1.0;
+        } else {
+          const originalMaterial = originalMaterials.current.get(child.name);
+          if (originalMaterial) child.material = originalMaterial.clone();
+        }
+      }
+    });
   }, [scene, hiddenObjectsState]);
 
+  if (!scene || error) return null;
 
-
-
-
-  // Don't render if scene is not loaded or there's an error
-  if (!scene || error) {
-    return null;
-  }
-
-  return (
-    
-    <primitive
-      object={scene}
-      // onClick={handleMeshClick} // TEMPORARILY DISABLED to prevent group-related errors
-    />
-  );
+  return <primitive object={scene} />;
 }
 
 useGLTF.preload("/HouseCombined2.glb");
