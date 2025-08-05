@@ -4,28 +4,29 @@ import { hiddenObjects } from "../data/hiddenObjects";
 import { useMaterialEnhancer } from "./RenderingOptimizer";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-
-
+import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
+const MODEL_URL = "https://s3.ap-southeast-2.wasabisys.com/airsmart/HouseCombined2.glb"; // Adjust path as needed
+const SIGNED_MODEL_URL = convertToSignedUrl(MODEL_URL);
 export function Model({ hiddenObjectsState, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
-  const { scene, error } = useGLTF("/HouseCombined2.glb");
+  const { scene, error } = useGLTF(SIGNED_MODEL_URL);
 
 // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
 const applyRealisticShader = (material) => {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = { value: 0 };
-    shader.uniforms.uAOBoost = { value: 0.2 };       // giảm AO boost
+    shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
 
     shader.fragmentShader = shader.fragmentShader.replace(
       `#include <dithering_fragment>`,
       `
         // 🔹 Fresnel rim lighting subtle
-        vec3 rimColor = vec3(0.08, 0.1, 0.12); // nhẹ hơn, hơi xanh
+        vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
         gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
 
-        // 🔹 Subtle AO boost (darken crevices slightly)
+        // 🔹 Subtle AO boost (darken crevices more)
         gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
 
         #include <dithering_fragment>
@@ -101,4 +102,4 @@ const applyRealisticShader = (material) => {
   return <primitive object={scene} />;
 }
 
-useGLTF.preload("/HouseCombined2.glb");
+useGLTF.preload(SIGNED_MODEL_URL);
