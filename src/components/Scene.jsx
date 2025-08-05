@@ -573,7 +573,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         />
       </mesh>
 
-      <fog attach="fog" color="#84a4f4" near={0} far={40} />
+      <fog attach="fog" color="#84a4f4" near={0} far={100} />
 
       {/* Hotspot Lighting - spotlights shining down on each hotspot */}
       <HotspotLighting sequenceChapters={sequenceChapters} />

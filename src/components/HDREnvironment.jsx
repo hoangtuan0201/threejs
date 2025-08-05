@@ -10,7 +10,7 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  * HDR Environment for realistic PBR lighting
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/modern_bathroom_2k.hdr',
+  hdrUrl = '/textures/old_apartments_walkway_4k.hdr',
   intensity = 1.0,
   backgroundIntensity = 0.3,
   enableBackground = false,
@@ -31,7 +31,7 @@ export function HDREnvironment({
     // Tone mapping
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = 0.25;
+      gl.toneMappingExposure = 0.2;
       gl.outputEncoding = THREE.sRGBEncoding;
     }
 
