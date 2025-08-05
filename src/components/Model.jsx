@@ -5,13 +5,13 @@ import { useMaterialEnhancer } from "./RenderingOptimizer";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
-const MODEL_URL = "https://s3.ap-southeast-2.wasabisys.com/airsmart/HouseCombined2.glb"; // Adjust path as needed
+const MODEL_URL = "./3ddd.glb"; // Adjust path as needed
 const SIGNED_MODEL_URL = convertToSignedUrl(MODEL_URL);
 export function Model({ hiddenObjectsState, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
-  const { scene, error } = useGLTF(SIGNED_MODEL_URL);
+  const { scene, error } = useGLTF(MODEL_URL);
 
 // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
 const applyRealisticShader = (material) => {
@@ -102,4 +102,4 @@ const applyRealisticShader = (material) => {
   return <primitive object={scene} />;
 }
 
-useGLTF.preload(SIGNED_MODEL_URL);
+useGLTF.preload(MODEL_URL);
