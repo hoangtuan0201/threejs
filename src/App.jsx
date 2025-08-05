@@ -8,11 +8,13 @@ import extension from "@theatre/r3f/dist/extension";
 import theatreState from "./states/FlyThrough2.json";
 import { SceneManager } from "./components/SceneManager";
 import { SoftShadows } from '@react-three/drei'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import * as THREE from 'three';
+
 
 // Create project and main sheet for initial state
 const project = getProject("Fly Through", { state: theatreState });
 const mainSheet = project.sheet("Scene");
-
 import LoadingScreen from "./components/LoadingScreen";
 import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
 import ChapterNavigation from "./components/ChapterNavigation";
@@ -175,6 +177,7 @@ export default function App({ isChatFocused = false }) {
             transition: "opacity 0.3s ease", // Smooth fade in when model loads
           }}
           shadows
+    
           dpr={[1, 1.5]} // Higher DPR for better quality on retina displays
           camera={{
             position: mobile.getCameraPosition(), // Responsive camera position
@@ -189,7 +192,7 @@ export default function App({ isChatFocused = false }) {
             alpha: false,
             powerPreference: "high-performance",
             stencil: false,
-            depth: true,
+            depth: true,           
           }}
           
           onCreated={({ gl, camera }) => {
@@ -249,8 +252,12 @@ export default function App({ isChatFocused = false }) {
             onCurrentSceneChange={setCurrentScene}
             project={project}
           />
+          
+
+
         </Canvas>
       )}
+        
 
       {/* Chapter Navigation - show when in explore mode and model is loaded, hide in detail scene */}
       <ChapterNavigation

@@ -2,6 +2,7 @@ import { Suspense, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { useThree, useFrame } from "@react-three/fiber";
+import * as THREE from 'three';
 
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
