@@ -2,6 +2,7 @@ import { Suspense, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { useThree, useFrame } from "@react-three/fiber";
+import * as THREE from 'three';
 
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
@@ -10,7 +11,9 @@ import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
-
+import { EnhancedLighting } from "./HDREnvironment";
+import { RenderingOptimizer } from "./RenderingOptimizer";
+import { EnhancedBackground } from "./Background";
 
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
@@ -544,15 +547,33 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   return (
     <>
-      <color attach="background" args={["#84a4f4"]} />
+      {/* Industrial Background - sử dụng industrial.jpg làm background */}
+      <EnhancedBackground
+        type="industrial"
+        industrialOpacity={1.0}
+        fallbackColor="#84a4f4"
+        enableIndustrial={true}
+      />
 
-      {/* Enhanced lighting setup for better visibility */}
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[10, 10, 5]} intensity={0.6} castShadow />
-      <directionalLight position={[-10, -10, -5]} intensity={0.6} />
-      <directionalLight position={[0, 10, 10]} intensity={0.6} />
+      {/* Rendering optimization for HDR/PBR workflow */}
+      <RenderingOptimizer />
 
-      <fog attach="fog" color="#84a4f4" near={0} far={40} />
+      {/* Enhanced HDR lighting setup for realistic PBR rendering */}
+      <EnhancedLighting type="main" enableHDR={true} shadowQuality="medium" />
+
+      {/* Ground plane for shadow visibility */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial
+          color="#f0f0f0"
+          transparent
+          opacity={0.1}
+          roughness={0.8}
+          metalness={0.0}
+        />
+      </mesh>
+
+      <fog attach="fog" color="#84a4f4" near={0} far={100} />
 
       {/* Hotspot Lighting - spotlights shining down on each hotspot */}
       <HotspotLighting sequenceChapters={sequenceChapters} />
@@ -564,7 +585,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       />
 
 
-
       <Suspense fallback={null}>
         <Model
           hiddenObjectsState={localHiddenState}
@@ -573,7 +593,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         {/* Door animation controller */}
         <DoorAnimation />
       </Suspense>
-
+    
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}
       <HotspotsRenderer
         sequenceChapters={sequenceChapters}

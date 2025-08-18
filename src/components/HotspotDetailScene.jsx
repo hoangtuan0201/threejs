@@ -4,6 +4,9 @@ import { Html } from "@react-three/drei";
 import { Model } from "./Model";
 import { useMobile } from "../hooks/useMobile";
 import { VideoScreen } from "./VideoScreen";
+import { EnhancedLighting } from "./HDREnvironment";
+import { RenderingOptimizer } from "./RenderingOptimizer";
+import { EnhancedBackground } from "./Background";
 
 export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, savedMainSceneState }) {
   const mobile = useMobile();
@@ -24,13 +27,31 @@ export function HotspotDetailScene({ chapter, onReturnToMain, onModelLoaded, sav
 
   return (
     <>
-      <color attach="background" args={["#84a4f4"]} />
+      {/* Industrial Background cho detail scene */}
+      <EnhancedBackground
+        type="industrial"
+        industrialOpacity={0.8}
+        fallbackColor="#84a4f4"
+        enableIndustrial={true}
+      />
 
-      {/* Enhanced lighting for detail scene */}
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
-      <directionalLight position={[-10, -10, -5]} intensity={0.6} />
-      <pointLight position={[0, 10, 0]} intensity={0.5} />
+      {/* Rendering optimization for HDR/PBR workflow */}
+      <RenderingOptimizer />
+
+      {/* Enhanced HDR lighting for detail scene with higher intensity */}
+      <EnhancedLighting type="detail" enableHDR={true} shadowQuality="high" />
+
+      {/* Ground plane for shadow visibility in detail scene */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
+        <planeGeometry args={[50, 50]} />
+        <meshStandardMaterial
+          color="#f5f5f5"
+          transparent
+          opacity={0.15}
+          roughness={0.9}
+          metalness={0.0}
+        />
+      </mesh>
 
       <Suspense fallback={null}>
         <Model onModelLoaded={onModelLoaded} />

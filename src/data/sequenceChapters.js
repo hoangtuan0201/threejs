@@ -27,13 +27,13 @@ export const sequenceChapters = [
     lighting: {
       mainSpotlight: {
         position: [28, 5.8, -22.5],
-        intensity: 0.8,
+        intensity: 1.5,
         angle: Math.PI / 4,
         penumbra: 0.4,
         color: "#ffff00",
         distance: 12,
         decay: 2,
-        castShadow: false
+        castShadow: true
       },
 
     },
@@ -73,13 +73,13 @@ export const sequenceChapters = [
     lighting: {
       mainSpotlight: {
         position: [31.4, 9.5, -20.9],
-        intensity: 1,
+        intensity: 1.5,
         angle: Math.PI / 4,
         penumbra: 0.4,
         color: "#ffff00",
         distance: 12,
         decay: 2,
-        castShadow: false
+        castShadow: true
       },
 
     },
@@ -126,7 +126,7 @@ export const sequenceChapters = [
         color: "#ffff00",
         distance: 12,
         decay: 2,
-        castShadow: false
+        castShadow: true
       }
     },
     videoScreen: {
@@ -164,7 +164,7 @@ export const sequenceChapters = [
     lighting: {
       mainSpotlight: {
         position: [22.58, 7.5, -17.6],
-        intensity: 0.75,
+        intensity: 1.5,
         angle: Math.PI / 6,
         penumbra: 0.4,
         color: "#ffff00",
