@@ -10,7 +10,7 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  * HDR Environment for realistic PBR lighting
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/old_apartments_walkway_4k.hdr',
+  hdrUrl = '/textures/empty_play_room_2k.hdr',
   intensity = 1.0,
   backgroundIntensity = 0.3,
   enableBackground = false,
@@ -31,7 +31,7 @@ export function HDREnvironment({
     // Tone mapping
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = 0.17;
+      gl.toneMappingExposure = 0.2;
       gl.outputEncoding = THREE.sRGBEncoding;
     }
 
@@ -97,8 +97,6 @@ export function EnhancedLighting({
   {/* HDR Environment */}
       {enableHDR && <HDREnvironment intensity={2} enableBackground={false} />}
 
-      {/* Ambient light để sáng tổng thể */}
-      <ambientLight intensity={0.5} />
 
       {/* Directional light chính từ trên trần xuống */}
       <directionalLight

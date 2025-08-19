@@ -13,34 +13,34 @@ export function RenderingOptimizer() {
   const mobile = useMobile();
 
   useEffect(() => {
-    if (!gl) return;
+  if (!gl) return;
 
-    // Configure renderer for HDR workflow with realistic colors
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 0.25   // Increased for better visibility
-    gl.outputEncoding = THREE.sRGBEncoding;
+  // Tone mapping (chuẩn PBR/HDR)
+  gl.toneMapping = THREE.ACESFilmicToneMapping;
+  gl.toneMappingExposure = 1.0; // 1.0 là trung tính, bạn có thể chỉnh 0.8 - 1.2 tùy cảnh
 
-    // Enable antialiasing for better quality
-    gl.antialias = true;
+  // Color space
+  gl.outputColorSpace = THREE.SRGBColorSpace;
 
-    // Configure pixel ratio for optimal performance
-    const pixelRatio = mobile.isMobile
-      ? Math.min(window.devicePixelRatio, 2)
-      : window.devicePixelRatio;
-    gl.setPixelRatio(pixelRatio);
+  // Antialias
+  gl.antialias = true;
 
-    // FORCE ENABLE shadows with high quality settings
-    gl.shadowMap.enabled = true;
-    gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = true; // Always auto-update for visible shadows
+  // Pixel ratio
+  const pixelRatio = mobile.isMobile
+    ? Math.min(window.devicePixelRatio, 2)
+    : window.devicePixelRatio;
+  gl.setPixelRatio(pixelRatio);
 
-    // Configure color management for realistic rendering
-    gl.physicallyCorrectLights = true;
+  // Shadows
+  gl.shadowMap.enabled = true;
+  gl.shadowMap.type = THREE.PCFSoftShadowMap;
+  gl.shadowMap.autoUpdate = true;
 
-    // Optimize for HDR content with realistic gamma
-    gl.gammaFactor = 2;
-    
-  }, [gl, mobile.isMobile]);
+  // Lighting physically correct
+  gl.physicallyCorrectLights = true;
+
+}, [gl, mobile.isMobile]);
+
 
   // Auto-update shadows on mobile when needed
   useEffect(() => {
@@ -74,7 +74,7 @@ export function useMaterialEnhancer() {
     // Optimize metallic/roughness workflow for realistic appearance
     if (material.isMeshStandardMaterial || material.isMeshPhysicalMaterial) {
       // Enhance PBR workflow for realistic look
-      material.metalness = 0.5; // Slight metalness for more realistic look
+      material.metalness = 0.3; // Slight metalness for more realistic look
       material.roughness = 0.5; // Slightly smoother for better reflections
 
 
