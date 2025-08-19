@@ -57,7 +57,7 @@ export const sequenceChapters = [
     hotspot: {
       position: [31.4, 6.6, -20.7],
       rotation: [0.1, Math.PI / 1, 0],
-      detailPosition: [31.6 , 7.3, -20.3],
+      detailPosition: [31.6 , 7.3, -20.6],
       detailRotation: [0, Math.PI / 1, 0],
      // Hotspot label positioning
       mobileLabelPosition: [31.4, 7, -20.5],
@@ -84,10 +84,10 @@ export const sequenceChapters = [
 
     },
     videoScreen: {
-      position: [29.7, 7.3, -20.3],
+      position: [29.7, 7.3, -20.6],
       rotation: [-0.1, Math.PI / 1, 0],
       // Mobile-specific positioning
-      mobilePosition: [29.7, 7.5, -20.3],
+      mobilePosition: [29.7, 7.5, -20.6],
       mobileRotation: [-0.1, Math.PI / 1, 0],
       videoId: "https://vimeo.com/912201609",
       title: "Linear Grille Demo",

@@ -86,7 +86,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   });
 
-  const { gl, camera, controls } = useThree();
+  const { gl, camera, controls, scene: threeScene } = useThree();
+
+  // Raycaster for mesh selection
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
 
   // Function to capture current camera state
   const captureCurrentCameraState = () => {
@@ -272,16 +276,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
     } else if (!isNavigating) {
       // comment these to turn off useframe
-      if (targetPosition !== sheet.sequence.position) {
-        const diff = targetPosition - sheet.sequence.position;
-        const speed = 0.02; // Smooth scrolling speed
+      // if (targetPosition !== sheet.sequence.position) {
+      //   const diff = targetPosition - sheet.sequence.position;
+      //   const speed = 0.02; // Smooth scrolling speed
 
-        if (Math.abs(diff) > 0.001) {
-          sheet.sequence.position += diff * speed;
-        } else {
-          sheet.sequence.position = targetPosition;
-        }
-      }
+      //   if (Math.abs(diff) > 0.001) {
+      //     sheet.sequence.position += diff * speed;
+      //   } else {
+      //     sheet.sequence.position = targetPosition;
+      //   }
+      // }
     }
     // When isNavigating but not navigationData.isNavigating, we're in lock mode - do nothing
 
@@ -543,7 +547,51 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       canvas.removeEventListener('touchend', handleTouchEnd);
       canvas.removeEventListener('touchcancel', handleTouchEnd);
     };
+
   }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile, isNavigating, showNavigationGuide, isChatFocused]);
+
+  // Handle mesh click to log mesh name to console
+  useEffect(() => {
+    const handleClick = (event) => {
+      // Only handle click in explore mode
+      if (!isExploreMode) return;
+
+      // Get canvas and calculate mouse position
+      const canvas = gl.domElement;
+      const rect = canvas.getBoundingClientRect();
+      
+      // Create mouse vector and raycaster
+      const mouse = new THREE.Vector2();
+      const raycaster = new THREE.Raycaster();
+      
+      // Calculate mouse position in normalized device coordinates
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Update the picking ray with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+
+      // Calculate objects intersecting the picking ray
+      const intersects = raycaster.intersectObjects(threeScene.children, true);
+
+      if (intersects.length > 0) {
+        // Find the first intersected mesh with a name
+        const intersectedMesh = intersects.find(intersect => intersect.object.name);
+        if (intersectedMesh) {
+          console.log('Clicked mesh name:', intersectedMesh.object.name);
+        }
+      }
+    };
+
+    // Add event listener
+    const canvas = gl.domElement;
+    canvas.addEventListener('click', handleClick);
+
+    // Clean up event listener
+    return () => {
+      canvas.removeEventListener('click', handleClick);
+    };
+  }, [gl.domElement, camera, threeScene, isExploreMode]);
 
   return (
     <>
@@ -642,7 +690,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         }}
       />
 
-      <PerspectiveCamera
+    <PerspectiveCamera
         theatreKey="Camera"
         makeDefault
         fov={75} // Default FOV, will be overridden by FOVManager

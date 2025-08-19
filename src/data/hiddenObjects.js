@@ -1,104 +1,23 @@
 // Objects to hide during sequence 3
 export const hiddenObjects = [
-  "Geom3D__96",
-    "Geom3D__95",
-    "Geom3D__102",
-    "Geom3D__101",
-    "Geom3D_146",
-    "Geom3D_153",
-    "Geom3D_154",
-    "Geom3D_147",
-    "Geom3D_Naamloos_1",
-    "Geom3D_152",
-    "Geom3D_155",
-    "Geom3D_151",
-    "Geom3D_149",
-    "Geom3D_150",
-    "Geom3D__100",
-    "Geom3D__146",
-    "Geom3D__147",
-    "Geom3D_148",
-    "Geom3D_265",
-    "Geom3D_263",
-    "Geom3D_264",
-    "Geom3D__104", //roof
-    "Geom3D__99",
-    "Geom3D_278",
-    "Geom3D_611",
-    "Geom3D_462",
-    "Geom3D_463",
-    "Geom3D__70",
-    "Geom3D_464",
-    "Geom3D_612",
-    "Geom3D_279",
-    "Geom3D_465",
-    "Geom3D__744",
-    "Geom3D_366",
-    "Geom3D_364",
-    "Geom3D_367",
-    "Geom3D_280",
-    "Geom3D__71",
-    "Geom3D__743",
-    "Geom3D__103",
-    "Geom3D__98",
-    "Geom3D__97",
-    "Geom3D_268",
-    "Geom3D_267",
-    // "Geom3D__29", //wall
-    "Geom3D_Naamloos",
-    "Geom3D_467",
-    "Geom3D__744",
-    "Geom3D__523",
-    "Geom3D__745",
-    "Geom3D_358",
-    "Geom3D_468",
-    "Geom3D_466",
-    "Geom3D_469",
-    "Geom3D_367",
-    "Geom3D_362",
-    "Geom3D_361",
-    "Geom3D_471",
-    "Geom3D_470",
-    "Geom3D_363",
-    "Geom3D_365",
-    "Geom3D__524",
-    "Geom3D_366",
-    "Geom3D_364",
-    "Geom3D__525",
-    "Geom3D_280",
-    "Geom3D_457",
-    "Geom3D_456",
-    "Geom3D_459",
-    "Geom3D_353",
-    "Geom3D_355",
-    "Geom3D_460",
-    "Geom3D__522",
-    "Geom3D__521",
-    "Geom3D_348",
-    "Geom3D_458",
-    "Geom3D_350",
-    "Geom3D__520",
-    "Geom3D_277",
-    "Geom3D_357",
-    "Geom3D_356",
-    "Geom3D_354",
-    "Geom3D__742",
-    "Geom3D_461",
-    "Geom3D__743",
-    "Geom3D_352",
-    "Geom3D_351",
-    //Door
-    "Geom3D__266",
-    "Geom3D__500",
-    "Geom3D__498",
-    "Geom3D__499",
-    "Geom3D__694",
-    "Geom3D__695",
-    "Geom3D__696",
-    "Geom3D__697",
-    "Geom3D__701",
-    "Geom3D__698",
-    "Geom3D__700",
-    "Geom3D__699"
+    "3DGeom-9290",//door 
+    "3DGeom-9289",//door
+    "3DGeom-9288",
+    "3DGeom-9286",//door
 
+    "3DGeom-256_2",//doorlock
+    "3DGeom-254_2",//doorlock
+    "3DGeom-253_2",//doorlock
+    "3DGeom-255_2",//doorlock
+
+    "3DGeom-254_3",//doorlock
+    "3DGeom-253_3",//doorlock
+    "3DGeom-255_3",//doorlock
+    "3DGeom-256_3",//doorlock
+
+
+    "3DGeom-9761", //roof
+
+    // "3DGeom-9407", // wall
+    
 ];

@@ -13,30 +13,30 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   const { enhanceMaterial } = useMaterialEnhancer();
   const { scene, error } = useGLTF(MODEL_URL);
 
-// Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
-const applyRealisticShader = (material) => {
-  material.onBeforeCompile = (shader) => {
-    shader.uniforms.uTime = { value: 0 };
-    shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
+// // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
+// const applyRealisticShader = (material) => {
+//   material.onBeforeCompile = (shader) => {
+//     shader.uniforms.uTime = { value: 0 };
+//     shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
 
-    shader.fragmentShader = shader.fragmentShader.replace(
-      `#include <dithering_fragment>`,
-      `
-        // 🔹 Fresnel rim lighting subtle
-        vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
-        gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
+//     shader.fragmentShader = shader.fragmentShader.replace(
+//       `#include <dithering_fragment>`,
+//       `
+//         // 🔹 Fresnel rim lighting subtle
+//         vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
+//         gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
 
-        // 🔹 Subtle AO boost (darken crevices more)
-        gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
+//         // 🔹 Subtle AO boost (darken crevices more)
+//         gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
 
-        #include <dithering_fragment>
-      `
-    );
+//         #include <dithering_fragment>
+//       `
+//     );
 
-    material.userData.shader = shader;
-  };
-  material.needsUpdate = true;
-};
+//     material.userData.shader = shader;
+//   };
+//   material.needsUpdate = true;
+// };
 
 
   // Update shader uniforms for dynamic effects
@@ -80,8 +80,8 @@ const applyRealisticShader = (material) => {
           // Make reflections sharper and realistic
           child.material.envMapIntensity = 1.5;
 
-          // Apply shader enhance
-          applyRealisticShader(child.material);
+          // // Apply shader enhance
+          // applyRealisticShader(child.material);
         }
 
         // Hidden object handling
