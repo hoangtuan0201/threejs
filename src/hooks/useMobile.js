@@ -83,9 +83,10 @@ export const useMobile = () => {
     return desktop;
   };
 
+  // Tăng touch sensitivity trong useMobile hook (dòng 85)
   const getTouchSensitivity = () => {
-    if (isMobile) return 0.008;
-    if (isTablet) return 0.006;
+    if (isMobile) return 0.012; // Tăng từ 0.008
+    if (isTablet) return 0.008; // Tăng từ 0.006
     return 0.005;
   };
 

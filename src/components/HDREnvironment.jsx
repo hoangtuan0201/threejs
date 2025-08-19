@@ -11,8 +11,8 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  */
 export function HDREnvironment({
   hdrUrl = '/textures/empty_play_room_2k.hdr',
-  intensity = 1.0,
-  backgroundIntensity = 0.3,
+  intensity = 1.5, // Tăng từ 1.0 lên 1.5
+  backgroundIntensity = 0.5, // Tăng từ 0.3 lên 0.5
   enableBackground = false,
   enableToneMapping = true
 }) {
@@ -28,7 +28,7 @@ export function HDREnvironment({
   useEffect(() => {
     if (!gl || !scene || !hdrTexture) return;
 
-    // Tone mapping
+    // Tone mapping cải thiện
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
       gl.toneMappingExposure = 0.2;
@@ -55,7 +55,7 @@ export function HDREnvironment({
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
 
     scene.environment = envMap;
-    scene.environmentIntensity = intensity * 2;
+    scene.environmentIntensity = intensity * 2.5; // Tăng từ 2 lên 2.5
 
     if (enableBackground) {
       scene.background = envMap;
@@ -94,14 +94,13 @@ export function EnhancedLighting({
 
   return (
     <>
-  {/* HDR Environment */}
-      {enableHDR && <HDREnvironment intensity={2} enableBackground={false} />}
+      {/* HDR Environment với intensity cao hơn */}
+      {enableHDR && <HDREnvironment intensity={2.5} enableBackground={false} />}
 
-
-      {/* Directional light chính từ trên trần xuống */}
+      {/* Key Light - ánh sáng chính */}
       <directionalLight
-        intensity={6}
-        position={[0, 8, 0]}     // từ trên xuống
+        intensity={6} // Tăng từ 6 lên 8
+        position={[10, 8, 5]} // Góc nghiêng tự nhiên hơn
         castShadow
         shadow-mapSize={2048}
         shadow-camera-top={50}
@@ -110,9 +109,8 @@ export function EnhancedLighting({
         shadow-camera-right={50}
         shadow-camera-near={1}
         shadow-camera-far={300}
-        shadow-bias={-0.001}
+        shadow-bias={-0.0005} // Giảm shadow acne
       />
-
-      </>
+    </>
   );
 }
