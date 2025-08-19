@@ -13,33 +13,33 @@ export function RenderingOptimizer() {
   const mobile = useMobile();
 
   useEffect(() => {
-  if (!gl) return;
+    if (!gl) return;
 
-  // Tone mapping (chuẩn PBR/HDR)
-  gl.toneMapping = THREE.ACESFilmicToneMapping;
-  gl.toneMappingExposure = 1.0; // 1.0 là trung tính, bạn có thể chỉnh 0.8 - 1.2 tùy cảnh
+    // Tone mapping cải thiện cho màu sắc realistic hơn
+    gl.toneMapping = THREE.ACESFilmicToneMapping;
+    gl.toneMappingExposure = 1.0; // 1.0 là trung tính, bạn có thể chỉnh 0.8 - 1.2 tùy cảnh
 
-  // Color space
-  gl.outputColorSpace = THREE.SRGBColorSpace;
+    // Color space
+    gl.outputColorSpace = THREE.SRGBColorSpace;
 
-  // Antialias
-  gl.antialias = true;
+    // Antialias
+    gl.antialias = true;
 
-  // Pixel ratio
-  const pixelRatio = mobile.isMobile
-    ? Math.min(window.devicePixelRatio, 2)
-    : window.devicePixelRatio;
-  gl.setPixelRatio(pixelRatio);
+    // Pixel ratio
+    const pixelRatio = mobile.isMobile
+      ? Math.min(window.devicePixelRatio, 2)
+      : window.devicePixelRatio;
+    gl.setPixelRatio(pixelRatio);
 
-  // Shadows
-  gl.shadowMap.enabled = true;
-  gl.shadowMap.type = THREE.PCFSoftShadowMap;
-  gl.shadowMap.autoUpdate = true;
+    // Shadows
+    gl.shadowMap.enabled = true;
+    gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    gl.shadowMap.autoUpdate = true;
 
-  // Lighting physically correct
-  gl.physicallyCorrectLights = true;
+    // Lighting physically correct
+    gl.physicallyCorrectLights = true;
 
-}, [gl, mobile.isMobile]);
+  }, [gl, mobile.isMobile]);
 
 
   // Auto-update shadows on mobile when needed
@@ -68,26 +68,27 @@ export function useMaterialEnhancer() {
   const enhanceMaterial = (material) => {
     if (!material) return;
 
-    // Configure for HDR environment mapping with realistic intensity
-    material.envMapIntensity = mobile.isMobile ? 1.2 : 1.5; // Increased for more realistic reflections
+    // Tăng environment map intensity cho reflections realistic hơn
+    material.envMapIntensity = mobile.isMobile ? 1.8 : 2.2; // Tăng từ 1.2/1.5 lên 1.8/2.2
 
-    // Optimize metallic/roughness workflow for realistic appearance
     if (material.isMeshStandardMaterial || material.isMeshPhysicalMaterial) {
-      // Enhance PBR workflow for realistic look
-      material.metalness = 0.3; // Slight metalness for more realistic look
-      material.roughness = 0.5; // Slightly smoother for better reflections
+      // Điều chỉnh PBR properties cho realistic look
+      material.metalness = material.metalness || 0.2; // Giảm từ 0.3 xuống 0.2
+      material.roughness = material.roughness || 0.3; // Giảm từ 0.5 xuống 0.3 cho bóng hơn
+      
+      // Thêm clearcoat cho materials cao cấp
+      if (material.isMeshPhysicalMaterial) {
+        material.clearcoat = 0.3;
+        material.clearcoatRoughness = 0.1;
+      }
 
-
-
-      // Mobile optimizations while maintaining quality
+      // Mobile vẫn giữ chất lượng cao
       if (mobile.isMobile) {
-        material.envMapIntensity *= 0.8; // Still reduced but higher than before
+        material.envMapIntensity *= 0.9; // Giảm ít hơn, từ 0.8 lên 0.9
       }
     }
 
-    // Force material update
     material.needsUpdate = true;
-
     return material;
   };
   

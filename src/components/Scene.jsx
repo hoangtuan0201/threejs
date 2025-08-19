@@ -276,16 +276,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
     } else if (!isNavigating) {
       // comment these to turn off useframe
-      // if (targetPosition !== sheet.sequence.position) {
-      //   const diff = targetPosition - sheet.sequence.position;
-      //   const speed = 0.02; // Smooth scrolling speed
+      if (targetPosition !== sheet.sequence.position) {
+        const diff = targetPosition - sheet.sequence.position;
+        const speed = 0.02; // Smooth scrolling speed
 
-      //   if (Math.abs(diff) > 0.001) {
-      //     sheet.sequence.position += diff * speed;
-      //   } else {
-      //     sheet.sequence.position = targetPosition;
-      //   }
-      // }
+        if (Math.abs(diff) > 0.001) {
+          sheet.sequence.position += diff * speed;
+        } else {
+          sheet.sequence.position = targetPosition;
+        }
+      }
     }
     // When isNavigating but not navigationData.isNavigating, we're in lock mode - do nothing
 
@@ -453,14 +453,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
 
       // Reduced touch sensitivity for mobile
-      const touchSensitivity = mobile.isMobile ? 0.004 : 0.004; // Lower sensitivity for mobile
-
-
-
-      // Only process vertical swipes (ignore horizontal) and only if significant movement
-      if (deltaX < 50 && Math.abs(deltaY) > 3) { // Very low threshold for swipe detection
+      const touchSensitivity = mobile.isMobile ? 0.008 : 0.004; // Tăng sensitivity cho mobile
+      
+      // Giảm threshold detection (dòng 462)
+      if (deltaX < 30 && Math.abs(deltaY) > 1) { // Threshold thấp hơn
         hasMovedSignificantly = true;
-
+      
         // Only prevent default when we're actually scrolling
         event.preventDefault();
         event.stopPropagation();
@@ -471,7 +469,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + (deltaY * touchSensitivity);
-          newPosition = Math.max(0, Math.min(6.5, newPosition));
+          newPosition = Math.max(0, Math.min(12.5, newPosition)); // Thống nhất range với wheel events
 
 
 
@@ -501,7 +499,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + momentum;
-          newPosition = Math.max(0, Math.min(6.5, newPosition));
+          newPosition = Math.max(0, Math.min(12.5, newPosition)); // Thống nhất range
 
 
 
