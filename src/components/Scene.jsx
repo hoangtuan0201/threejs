@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from 'three';
+import { WebGLPathTracer } from 'three-gpu-pathtracer';
 
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
@@ -12,7 +13,6 @@ import { HotspotsRenderer } from "./Hotspot";
 import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting } from "./HDREnvironment";
-import { RenderingOptimizer } from "./RenderingOptimizer";
 import { EnhancedBackground } from "./Background";
 
 import { sequenceChapters } from "../data/sequenceChapters";
@@ -37,6 +37,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown in current session
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
   const hasTriggeredGuideRef = useRef(false); // Ref to prevent multiple triggers
+  
+  // Path tracing state
+  const [pathTracingEnabled, setPathTracingEnabled] = useState(false);
+  const pathTracerRef = useRef(null);
+  const [pathTracingProgress, setPathTracingProgress] = useState(0);
+  const [isPathTracingReady, setIsPathTracingReady] = useState(false);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   // Track if we just returned from detail scene to prevent navigation guide
   useEffect(() => {
@@ -87,6 +94,86 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   });
 
   const { gl, camera, controls, scene: threeScene } = useThree();
+  
+  // Initialize path tracer with error handling
+    useEffect(() => {
+      if (!pathTracerRef.current && threeScene && gl && camera && modelLoaded) {
+        try {
+          const pathTracer = new WebGLPathTracer(gl);
+          
+          // Wait for scene to be fully loaded before setting
+          if (threeScene.children.length > 0) {
+            pathTracer.setScene(threeScene, camera);
+            
+            // Configure path tracer settings for quality
+            pathTracer.tiles.set(mobile ? 1 : 2, mobile ? 1 : 2);
+            pathTracer.samples = mobile ? 100 : 200;
+            pathTracer.bounces = mobile ? 5 : 8;
+            pathTracer.filterGlossyFactor = 0.25;
+            
+            // Enable denoising for cleaner results
+            if (pathTracer.enableDenoise !== undefined) {
+              pathTracer.enableDenoise = true;
+              pathTracer.denoiseBlur = 2.5;
+            }
+            
+            // Better material handling
+            if (pathTracer.multipleImportanceSampling !== undefined) {
+              pathTracer.multipleImportanceSampling = true;
+            }
+            if (pathTracer.stableNoise !== undefined) {
+              pathTracer.stableNoise = true;
+            }
+            
+            pathTracerRef.current = pathTracer;
+            setIsPathTracingReady(true);
+            
+            console.log('GPU Path tracer initialized successfully');
+          }
+        } catch (error) {
+          console.warn('Failed to initialize GPU Path Tracer:', error);
+          setIsPathTracingReady(false);
+        }
+      }
+    }, [threeScene, gl, camera, mobile, modelLoaded]);
+  
+  // Path tracing render loop with adaptive quality
+   useFrame((state, delta) => {
+     if (pathTracingEnabled && pathTracerRef.current && isPathTracingReady) {
+       try {
+         const pathTracer = pathTracerRef.current;
+         
+         // Adaptive rendering based on camera movement
+         const cameraMoving = controls?.enabled && 
+           (Math.abs(state.camera.position.distanceTo(state.camera.userData.lastPosition || state.camera.position)) > 0.001);
+         
+         if (cameraMoving) {
+           // Reset when camera moves
+           pathTracer.reset();
+           state.camera.userData.lastPosition = state.camera.position.clone();
+         }
+         
+         // Update path tracer
+         pathTracer.update();
+         
+         // Calculate progress
+         const targetSamples = mobile ? 100 : 200;
+         const currentSamples = pathTracer.samples || 0;
+         const progress = Math.min(currentSamples / targetSamples, 1);
+         setPathTracingProgress(progress);
+         
+         // Auto-pause when converged to save resources
+         if (progress >= 0.95 && !cameraMoving) {
+           // Optionally pause rendering when nearly converged
+           return;
+         }
+       } catch (error) {
+         console.warn('Path tracer render error:', error);
+         setPathTracingEnabled(false);
+         setIsPathTracingReady(false);
+       }
+     }
+   });
 
   // Raycaster for mesh selection
   const raycaster = new THREE.Raycaster();
@@ -601,8 +688,99 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         enableIndustrial={true}
       />
 
-      {/* Rendering optimization for HDR/PBR workflow */}
-      <RenderingOptimizer />
+      {/* Path Tracing Controls */}
+      {isPathTracingReady && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          background: 'rgba(0,0,0,0.8)',
+          color: 'white',
+          padding: '12px',
+          borderRadius: '8px',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '14px',
+          zIndex: 1000,
+          minWidth: '200px'
+        }}>
+          <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+            GPU Path Tracer
+          </div>
+          
+          <div style={{ marginBottom: '10px' }}>
+            <button
+              onClick={() => {
+                setPathTracingEnabled(!pathTracingEnabled);
+                if (pathTracerRef.current) {
+                  pathTracerRef.current.reset();
+                }
+              }}
+              style={{
+                background: pathTracingEnabled ? '#4CAF50' : '#f44336',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                width: '100%'
+              }}
+            >
+              {pathTracingEnabled ? 'Disable Path Tracing' : 'Enable Path Tracing'}
+            </button>
+          </div>
+          
+          {pathTracingEnabled && (
+            <div>
+              <div style={{ marginBottom: '8px' }}>
+                <div style={{ marginBottom: '5px' }}>
+                  Progress: {Math.round(pathTracingProgress * 100)}%
+                </div>
+                <div style={{
+                  width: '100%',
+                  height: '4px',
+                  background: '#333',
+                  borderRadius: '2px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${pathTracingProgress * 100}%`,
+                    height: '100%',
+                    background: '#4CAF50',
+                    transition: 'width 0.3s ease'
+                  }} />
+                </div>
+              </div>
+              
+              <div style={{ marginBottom: '8px' }}>
+                <button
+                  onClick={() => {
+                    if (pathTracerRef.current) {
+                      pathTracerRef.current.reset();
+                      setPathTracingProgress(0);
+                    }
+                  }}
+                  style={{
+                    background: '#2196F3',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    width: '100%',
+                    fontSize: '12px'
+                  }}
+                >
+                  Reset Rendering
+                </button>
+              </div>
+              
+              <div style={{ fontSize: '12px', color: '#ccc' }}>
+                Samples: {pathTracerRef.current?.samples || 0} / {mobile ? 100 : 200}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Enhanced HDR lighting setup for realistic PBR rendering */}
       <EnhancedLighting type="main" enableHDR={true} shadowQuality="medium" />
@@ -634,7 +812,10 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <Suspense fallback={null}>
         <Model
           hiddenObjectsState={localHiddenState}
-          onModelLoaded={onModelLoaded}
+          onModelLoaded={() => {
+            setModelLoaded(true);
+            onModelLoaded?.();
+          }}
         />
         {/* Door animation controller */}
         <DoorAnimation />
