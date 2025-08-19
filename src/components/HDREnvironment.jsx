@@ -31,7 +31,7 @@ export function HDREnvironment({
     // Tone mapping
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = 0.2;
+      gl.toneMappingExposure = 0.17;
       gl.outputEncoding = THREE.sRGBEncoding;
     }
 

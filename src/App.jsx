@@ -5,11 +5,9 @@ import { SheetProvider } from "@theatre/r3f";
 import { getProject } from "@theatre/core";
 import theatreState from "./states/FlyThrough2.json";
 import { SceneManager } from "./components/SceneManager";
+import studio from "@theatre/studio";
+import extension from "@theatre/r3f/dist/extension";
 
-import { Sky, Bvh } from "@react-three/drei";
-import { EffectComposer, N8AO, Outline, TiltShift2, ToneMapping } from "@react-three/postprocessing";
-import * as THREE from "three";
-import { Environment } from "@react-three/drei";
 // UI Components
 import LoadingScreen from "./components/LoadingScreen";
 import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
@@ -25,26 +23,6 @@ import useSceneLock from "./hooks/useSceneLock";
 // Create Theatre.js project
 const project = getProject("Fly Through", { state: theatreState });
 const mainSheet = project.sheet("Scene");
-
-// ----------------- Realistic Effects Component -----------------
-// function Effects() {
-
-
-
-//   return (
-//     <EffectComposer stencilBuffer disableNormalPass autoClear={false} multisampling={4}>
-//       <N8AO halfRes aoSamples={5} aoRadius={0.4} distanceFalloff={0.75} intensity={1} />
-//       <Outline
-//         visibleEdgeColor="white"
-//         hiddenEdgeColor="white"
-//         blur
-//         edgeStrength={10}
-//       />
-//       <TiltShift2 samples={5} blur={0.1} />
-//       <ToneMapping />
-//     </EffectComposer>
-//   );
-// }
 
 
 // ----------------- Main App Component -----------------
@@ -107,6 +85,19 @@ export default function App({ isChatFocused = false }) {
     setShowNavigationGuide(false);
   }, []);
 
+  // Theatre.js Studio disabled for production
+  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+    studio.initialize()
+    studio.ui.hide()
+    studio.extend(extension);
+
+    //  Force show studio UI
+    setTimeout(() => {
+      studio.ui.restore();
+    }, 1000);
+
+    window.__THEATRE_ALREADY_INIT__ = true;
+  }
   return (
     <ThemeProvider>
       {isLoading && !modelLoaded && <LoadingScreen />}

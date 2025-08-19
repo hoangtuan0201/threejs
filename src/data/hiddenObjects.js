@@ -1,6 +1,6 @@
 // Objects to hide during sequence 3
 export const hiddenObjects = [
-  "Geom3D__96",
+    "Geom3D__96",
     "Geom3D__95",
     "Geom3D__102",
     "Geom3D__101",

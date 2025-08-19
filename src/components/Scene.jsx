@@ -36,6 +36,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
   const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown in current session
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
+  const [selectedMeshName, setSelectedMeshName] = useState(null); // For displaying mesh name on click
   const hasTriggeredGuideRef = useRef(false); // Ref to prevent multiple triggers
 
   // Track if we just returned from detail scene to prevent navigation guide
@@ -86,7 +87,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   });
 
-  const { gl, camera, controls } = useThree();
+  const { gl, camera, controls, scene: threeScene } = useThree();
+
+  // Raycaster for mesh selection
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
 
   // Function to capture current camera state
   const captureCurrentCameraState = () => {
@@ -272,16 +277,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       }
     } else if (!isNavigating) {
       // comment these to turn off useframe
-      if (targetPosition !== sheet.sequence.position) {
-        const diff = targetPosition - sheet.sequence.position;
-        const speed = 0.02; // Smooth scrolling speed
+      // if (targetPosition !== sheet.sequence.position) {
+      //   const diff = targetPosition - sheet.sequence.position;
+      //   const speed = 0.02; // Smooth scrolling speed
 
-        if (Math.abs(diff) > 0.001) {
-          sheet.sequence.position += diff * speed;
-        } else {
-          sheet.sequence.position = targetPosition;
-        }
-      }
+      //   if (Math.abs(diff) > 0.001) {
+      //     sheet.sequence.position += diff * speed;
+      //   } else {
+      //     sheet.sequence.position = targetPosition;
+      //   }
+      // }
     }
     // When isNavigating but not navigationData.isNavigating, we're in lock mode - do nothing
 

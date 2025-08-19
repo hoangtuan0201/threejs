@@ -77,10 +77,7 @@ export function useMaterialEnhancer() {
       material.metalness = 0.5; // Slight metalness for more realistic look
       material.roughness = 0.5; // Slightly smoother for better reflections
 
-      // Enhanced color and lighting response
-      if (material.color) {
-        material.color.convertSRGBToLinear(); // Ensure proper color space
-      }
+
 
       // Mobile optimizations while maintaining quality
       if (mobile.isMobile) {

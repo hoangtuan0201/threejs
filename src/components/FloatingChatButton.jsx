@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Box, Fab, Paper, Typography, TextField, IconButton, Stack, CircularProgress } from '@mui/material';
+import { Box, Fab, Paper, Typography, TextField, IconButton, Stack } from '@mui/material';
 import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
 import { useMobile } from '../hooks/useMobile';
 import { useTheme } from '../theme/ThemeContext';
+import LoadingScreen from './LoadingScreen';
 
 const FloatingChatButton = ({ onFocusChange }) => {
   const { theme } = useTheme();
@@ -591,7 +592,9 @@ const FloatingChatButton = ({ onFocusChange }) => {
                       : '0 1px 3px rgba(0, 0, 0, 0.1)',
                   }}
                 >
-                  <CircularProgress size={16} sx={{ color: theme.colors.text.secondary }} />
+                  <Box sx={{ width: 16, height: 16 }}>
+                    <LoadingScreen text="" variant="default" />
+                  </Box>
                   <Typography variant="body2" sx={{ fontSize: '0.85rem', color: theme.colors.text.secondary }}>
                     AI is thinking...
                   </Typography>
@@ -725,7 +728,9 @@ const FloatingChatButton = ({ onFocusChange }) => {
                 }}
               >
                 {isLoading ? (
-                  <CircularProgress size={16} sx={{ color: theme.colors.text.tertiary }} />
+                  <Box sx={{ width: 16, height: 16 }}>
+                    <LoadingScreen text="" variant="default" />
+                  </Box>
                 ) : (
                   <SendIcon fontSize="small" />
                 )}
