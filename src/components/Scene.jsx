@@ -95,47 +95,82 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   const { gl, camera, controls, scene: threeScene } = useThree();
   
-  // Initialize path tracer with error handling
-    useEffect(() => {
-      if (!pathTracerRef.current && threeScene && gl && camera && modelLoaded) {
-        try {
-          const pathTracer = new WebGLPathTracer(gl);
-          
-          // Wait for scene to be fully loaded before setting
-          if (threeScene.children.length > 0) {
-            pathTracer.setScene(threeScene, camera);
-            
-            // Configure path tracer settings for quality
-            pathTracer.tiles.set(mobile ? 1 : 2, mobile ? 1 : 2);
-            pathTracer.samples = mobile ? 100 : 200;
-            pathTracer.bounces = mobile ? 5 : 8;
-            pathTracer.filterGlossyFactor = 0.25;
-            
-            // Enable denoising for cleaner results
-            if (pathTracer.enableDenoise !== undefined) {
-              pathTracer.enableDenoise = true;
-              pathTracer.denoiseBlur = 2.5;
-            }
-            
-            // Better material handling
-            if (pathTracer.multipleImportanceSampling !== undefined) {
-              pathTracer.multipleImportanceSampling = true;
-            }
-            if (pathTracer.stableNoise !== undefined) {
-              pathTracer.stableNoise = true;
-            }
-            
-            pathTracerRef.current = pathTracer;
-            setIsPathTracingReady(true);
-            
-            console.log('GPU Path tracer initialized successfully');
-          }
-        } catch (error) {
-          console.warn('Failed to initialize GPU Path Tracer:', error);
-          setIsPathTracingReady(false);
+  const initializedRef = useRef(false);
+
+  useFrame(() => {
+    if (initializedRef.current || !modelLoaded || !threeScene.environment) return;
+
+    try {
+      const pathTracer = new WebGLPathTracer(gl);
+
+      // Ensure environment rotation defaults to prevent undefined Euler access
+      try {
+        if (pathTracer && pathTracer.environmentRotation === undefined) {
+          pathTracer.environmentRotation = new THREE.Euler(0, 0, 0);
         }
+        if (pathTracer && pathTracer.environmentTransform === undefined) {
+          // Some versions may use environmentTransform as an Euler
+          pathTracer.environmentTransform = new THREE.Euler(0, 0, 0);
+        }
+      } catch (e) {
+        // Silent guard: continue without environment rotation if not supported
       }
-    }, [threeScene, gl, camera, mobile, modelLoaded]);
+
+      // Wait for scene to be fully loaded before setting
+      if (threeScene.children.length > 0) {
+        if (typeof pathTracer.setScene === 'function') {
+          try {
+            pathTracer.setScene(threeScene, camera);
+          } catch (e) {
+            console.warn('PathTracer.setScene failed, retrying with defaults:', e);
+            // Retry with safe defaults: ensure environment rotation exists
+            if (pathTracer && pathTracer.environmentRotation === undefined) {
+              pathTracer.environmentRotation = new THREE.Euler(0, 0, 0);
+            }
+            pathTracer.setScene(threeScene, camera);
+          }
+        }
+
+        // Configure path tracer settings for maximum quality
+        if (pathTracer.tiles && pathTracer.tiles.set) {
+          pathTracer.tiles.set(mobile ? 1 : 3, mobile ? 1 : 3);
+        }
+        // Set samples and bounces with validation
+        if (pathTracer.samples !== undefined) {
+          pathTracer.samples = mobile ? 200 : 500; // Increased for better quality
+        }
+        if (pathTracer.bounces !== undefined) {
+          pathTracer.bounces = mobile ? 8 : 8; // Increased for realistic reflections
+        }
+        if (pathTracer.filterGlossyFactor !== undefined) {
+          pathTracer.filterGlossyFactor = 0.1; // Better glossy materials
+        }
+
+        // Enable denoising for cleaner results
+        if (pathTracer.enableDenoise !== undefined) {
+          pathTracer.enableDenoise = true;
+          pathTracer.denoiseBlur = 2.5;
+        }
+
+        // Better material handling
+        if (pathTracer.multipleImportanceSampling !== undefined) {
+          pathTracer.multipleImportanceSampling = true;
+        }
+        if (pathTracer.stableNoise !== undefined) {
+          pathTracer.stableNoise = true;
+        }
+
+        pathTracerRef.current = pathTracer;
+        setIsPathTracingReady(true);
+
+        console.log('GPU Path tracer initialized successfully');
+        initializedRef.current = true;
+      }
+    } catch (error) {
+      console.warn('Failed to initialize GPU Path Tracer:', error);
+      setIsPathTracingReady(false);
+    }
+  });
   
   // Path tracing render loop with adaptive quality
    useFrame((state, delta) => {
@@ -157,8 +192,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
          pathTracer.update();
          
          // Calculate progress
-         const targetSamples = mobile ? 100 : 200;
-         const currentSamples = pathTracer.samples || 0;
+         const targetSamples = mobile ? 200 : 500;
+         const currentSamples = typeof pathTracer.samples === 'number' ? pathTracer.samples : 0;
          const progress = Math.min(currentSamples / targetSamples, 1);
          setPathTracingProgress(progress);
          
@@ -775,7 +810,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
               </div>
               
               <div style={{ fontSize: '12px', color: '#ccc' }}>
-                Samples: {pathTracerRef.current?.samples || 0} / {mobile ? 100 : 200}
+                Samples: {pathTracerRef.current?.samples || 0} / {mobile ? 200 : 500}
               </div>
             </div>
           )}
