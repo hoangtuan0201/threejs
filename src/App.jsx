@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { useProgress } from "@react-three/drei";
 import { SheetProvider } from "@theatre/r3f";
 import { getProject } from "@theatre/core";
 import theatreState from "./states/FlyThrough2.json";
@@ -40,6 +41,41 @@ export default function App({ isChatFocused = false }) {
   const navigate = useNavigate();
   const mobile = useMobile();
 
+  // Track asset loading progress from drei
+  const { progress: assetProgress } = useProgress();
+  const [displayProgress, setDisplayProgress] = useState(0);
+
+  // Reset progress when component mounts or when navigating
+  useEffect(() => {
+    setDisplayProgress(0);
+    setIsLoading(true);
+    setModelLoaded(false);
+    
+    // Force reset drei progress by clearing its cache
+    if (window.__drei_progress_cache) {
+      window.__drei_progress_cache = null;
+    }
+    
+    return () => {
+      // Clean up on unmount
+      setDisplayProgress(0);
+    };
+  }, []);
+
+  // Update display progress based on asset progress with smooth transition
+  useEffect(() => {
+    if (assetProgress > displayProgress) {
+      // Smooth increment for better UX
+      const increment = Math.min(assetProgress - displayProgress, 10);
+      const timer = setTimeout(() => {
+        setDisplayProgress(prev => Math.min(prev + increment, assetProgress));
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayProgress(assetProgress);
+    }
+  }, [assetProgress, displayProgress]);
+
   const {
     locked: sceneLocked,
     isNavigating: sceneNavigating,
@@ -72,11 +108,19 @@ export default function App({ isChatFocused = false }) {
   const handleGoHome = () => navigate("/");
 
   const handleModelLoaded = () => {
-    setTimeout(() => {
-      setModelLoaded(true);
-      setIsLoading(false);
-    }, 200);
+    setModelLoaded(true);
+    // Only hide loading when both model is loaded AND progress is complete
+    if (displayProgress >= 100) {
+        setIsLoading(false);
+    }
   };
+
+  // Hide loading screen when both conditions are met
+  useEffect(() => {
+    if (modelLoaded && displayProgress >= 100) {
+        setIsLoading(false);
+    }
+  }, [modelLoaded, displayProgress]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -100,7 +144,7 @@ export default function App({ isChatFocused = false }) {
   }
   return (
     <ThemeProvider>
-      {isLoading && !modelLoaded && <LoadingScreen />}
+      {isLoading && <LoadingScreen progress={displayProgress >= 100 ? 1 : displayProgress / 100} />}
 
       {!showControlPanel && !showCompareSystem && (
         <Canvas

@@ -3,6 +3,7 @@ import { Box, Typography, Button, Container, Card, CardContent, IconButton } fro
 import { keyframes } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
+import { useProgress } from "@react-three/drei";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -82,6 +83,40 @@ export default function CompareSystem() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isModelLoading, setIsModelLoading] = useState(false);
+
+  // Track asset loading progress
+  const { progress: assetProgress } = useProgress();
+  const [displayProgress, setDisplayProgress] = useState(0);
+
+  // Reset progress when component mounts
+  useEffect(() => {
+    setDisplayProgress(0);
+    setIsLoading(true);
+    
+    // Force reset drei progress by clearing its cache
+    if (window.__drei_progress_cache) {
+      window.__drei_progress_cache = null;
+    }
+    
+    return () => {
+      // Clean up on unmount
+      setDisplayProgress(0);
+    };
+  }, []);
+
+  // Update display progress based on asset progress with smooth transition
+  useEffect(() => {
+    if (assetProgress > displayProgress) {
+      // Smooth increment for better UX
+      const increment = Math.min(assetProgress - displayProgress, 5);
+      const timer = setTimeout(() => {
+        setDisplayProgress(prev => Math.min(prev + increment, assetProgress));
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayProgress(assetProgress);
+    }
+  }, [assetProgress, displayProgress]);
 
   useEffect(() => {
     // Simulate loading time for 3D models
@@ -244,6 +279,7 @@ export default function CompareSystem() {
       <LoadingScreen
         text="Loading Comparison Models..."
         variant="compare"
+        progress={displayProgress >= 100 ? 1 : displayProgress / 100}
       />
     );
   }
