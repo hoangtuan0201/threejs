@@ -14,6 +14,7 @@ import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
+import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
 
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
@@ -44,6 +45,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [pathTracingProgress, setPathTracingProgress] = useState(0);
   const [isPathTracingReady, setIsPathTracingReady] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
+
+  // Canvas filters for enhanced visuals
+  const canvasFilters = useCanvasFilters();
 
   // Track if we just returned from detail scene to prevent navigation guide
   useEffect(() => {
@@ -97,80 +101,151 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   
   const initializedRef = useRef(false);
 
-  useFrame(() => {
-    if (initializedRef.current || !modelLoaded || !threeScene.environment) return;
+  // Apply canvas filters for enhanced visuals
+  useEffect(() => {
+    if (gl && gl.domElement) {
+      const canvas = gl.domElement;
+      Object.assign(canvas.style, canvasFilters);
+    }
+  }, [gl, canvasFilters]);
+
+  // Initialize GPU path tracer when model and environment are ready
+  useEffect(() => {
+    if (initializedRef.current || !modelLoaded || !threeScene || !threeScene.environment || !gl || !camera) return;
+
+    let mounted = true;
 
     try {
       const pathTracer = new WebGLPathTracer(gl);
 
-      // Ensure environment rotation defaults to prevent undefined Euler access
+      // Ensure outputs/encodings are compatible
       try {
-        if (pathTracer && pathTracer.environmentRotation === undefined) {
-          pathTracer.environmentRotation = new THREE.Euler(0, 0, 0);
-        }
-        if (pathTracer && pathTracer.environmentTransform === undefined) {
-          // Some versions may use environmentTransform as an Euler
-          pathTracer.environmentTransform = new THREE.Euler(0, 0, 0);
-        }
+        if (pathTracer.outputEncoding !== undefined) pathTracer.outputEncoding = THREE.sRGBEncoding;
+        if (pathTracer.outputColorSpace !== undefined) pathTracer.outputColorSpace = THREE.SRGBColorSpace;
       } catch (e) {
-        // Silent guard: continue without environment rotation if not supported
+        // ignore if properties don't exist on this version
       }
 
-      // Wait for scene to be fully loaded before setting
-      if (threeScene.children.length > 0) {
-        if (typeof pathTracer.setScene === 'function') {
-          try {
-            pathTracer.setScene(threeScene, camera);
-          } catch (e) {
-            console.warn('PathTracer.setScene failed, retrying with defaults:', e);
-            // Retry with safe defaults: ensure environment rotation exists
-            if (pathTracer && pathTracer.environmentRotation === undefined) {
-              pathTracer.environmentRotation = new THREE.Euler(0, 0, 0);
-            }
-            pathTracer.setScene(threeScene, camera);
-          }
-        }
+      // Attach scene and camera
+      if (typeof pathTracer.setScene === 'function') {
+        pathTracer.setScene(threeScene, camera);
+      }
 
-        // Configure path tracer settings for maximum quality
+      // Size to match canvas
+      try {
+        const canvas = gl.domElement;
+        if (typeof pathTracer.setSize === 'function') {
+          pathTracer.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      // Configure ultra-high-quality settings for photorealistic rendering (Game 4K quality)
+      try {
+        // Adaptive tile configuration for better performance and quality
         if (pathTracer.tiles && pathTracer.tiles.set) {
-          pathTracer.tiles.set(mobile ? 1 : 3, mobile ? 1 : 3);
+          pathTracer.tiles.set(mobile ? 2 : 4, mobile ? 2 : 4);
         }
-        // Set samples and bounces with validation
+        
+        // Dramatically increased samples for maximum photorealistic quality
         if (pathTracer.samples !== undefined) {
-          pathTracer.samples = mobile ? 200 : 500; // Increased for better quality
+          pathTracer.samples = mobile ? 768 : 3072; // Tăng samples để có chất lượng tối đa
         }
+        
+        // Maximum bounces for ultra-realistic global illumination
         if (pathTracer.bounces !== undefined) {
-          pathTracer.bounces = mobile ? 8 : 8; // Increased for realistic reflections
+          pathTracer.bounces = mobile ? 10 : 16; // Tăng bounces để ánh sáng phản chiếu tối đa
         }
+        
+        // Reduced filter glossy factor for sharper reflections
         if (pathTracer.filterGlossyFactor !== undefined) {
-          pathTracer.filterGlossyFactor = 0.1; // Better glossy materials
+          pathTracer.filterGlossyFactor = 0.04; // Giảm để reflections sắc nét hơn
         }
 
-        // Enable denoising for cleaner results
+        // Advanced denoising for cleaner output
         if (pathTracer.enableDenoise !== undefined) {
           pathTracer.enableDenoise = true;
-          pathTracer.denoiseBlur = 2.5;
+          pathTracer.denoiseBlur = 1.8; // Giảm blur để giữ chi tiết
+          pathTracer.denoiseRadius = 8; // Tăng radius cho denoising tốt hơn
+          pathTracer.denoiseLuminanceWeight = 25;
+          pathTracer.denoiseColorWeight = 25;
         }
 
-        // Better material handling
+        // Enable all quality-enhancing features
         if (pathTracer.multipleImportanceSampling !== undefined) {
           pathTracer.multipleImportanceSampling = true;
         }
         if (pathTracer.stableNoise !== undefined) {
           pathTracer.stableNoise = true;
         }
-
-        pathTracerRef.current = pathTracer;
-        setIsPathTracingReady(true);
-
-        console.log('GPU Path tracer initialized successfully');
-        initializedRef.current = true;
+        
+        // Additional quality settings for photorealism
+        if (pathTracer.environmentIntensity !== undefined) {
+          pathTracer.environmentIntensity = 1.2; // Tăng cường độ environment
+        }
+        if (pathTracer.backgroundBlur !== undefined) {
+          pathTracer.backgroundBlur = 0.0; // Background sắc nét
+        }
+        if (pathTracer.sobolSampling !== undefined) {
+          pathTracer.sobolSampling = true; // Sobol sampling cho chất lượng tốt hơn
+        }
+        if (pathTracer.stratifiedSampling !== undefined) {
+          pathTracer.stratifiedSampling = true; // Stratified sampling giảm noise
+        }
+        
+        // Enable temporal accumulation for better convergence
+        if (pathTracer.enableTemporalAccumulation !== undefined) {
+          pathTracer.enableTemporalAccumulation = true;
+        }
+        
+        // Adaptive sampling for dynamic quality
+        if (pathTracer.enableAdaptiveSampling !== undefined) {
+          pathTracer.enableAdaptiveSampling = true;
+          pathTracer.adaptiveVarianceThreshold = 0.001;
+        }
+      } catch (e) {
+        // ignore individual property issues
       }
+
+      pathTracerRef.current = pathTracer;
+      if (mounted) setIsPathTracingReady(true);
+      initializedRef.current = true;
+      console.log('GPU Path tracer initialized successfully');
+
+      // Handle window resize to keep tracer size synced
+      const handleResize = () => {
+        try {
+          const canvas = gl.domElement;
+          if (pathTracerRef.current && typeof pathTracerRef.current.setSize === 'function') {
+            pathTracerRef.current.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
+          }
+        } catch (e) {
+          // ignore
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        mounted = false;
+        window.removeEventListener('resize', handleResize);
+        try {
+          if (pathTracerRef.current) {
+            if (typeof pathTracerRef.current.dispose === 'function') pathTracerRef.current.dispose();
+          }
+        } catch (e) {
+          // ignore
+        }
+        pathTracerRef.current = null;
+        setIsPathTracingReady(false);
+        initializedRef.current = false;
+      };
     } catch (error) {
       console.warn('Failed to initialize GPU Path Tracer:', error);
       setIsPathTracingReady(false);
     }
-  });
+  }, [modelLoaded, threeScene, gl, camera, mobile.isMobile]);
   
   // Path tracing render loop with adaptive quality
    useFrame((state, delta) => {
@@ -179,28 +254,45 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
          const pathTracer = pathTracerRef.current;
          
          // Adaptive rendering based on camera movement
-         const cameraMoving = controls?.enabled && 
-           (Math.abs(state.camera.position.distanceTo(state.camera.userData.lastPosition || state.camera.position)) > 0.001);
+         const lastPos = state.camera.userData.lastPosition;
+         const cameraMoving = controls?.enabled && (
+           lastPos ? state.camera.position.distanceTo(lastPos) > 0.001 : false
+         );
          
          if (cameraMoving) {
-           // Reset when camera moves
-           pathTracer.reset();
+           // Reset accumulation when camera moves
+           if (typeof pathTracer.reset === 'function') pathTracer.reset();
            state.camera.userData.lastPosition = state.camera.position.clone();
          }
+
+         // Prefer update(), fallback to render()
+         if (typeof pathTracer.update === 'function') {
+           pathTracer.update();
+         } else if (typeof pathTracer.render === 'function') {
+           pathTracer.render();
+         }
          
-         // Update path tracer
-         pathTracer.update();
-         
-         // Calculate progress
-         const targetSamples = mobile ? 200 : 500;
-         const currentSamples = typeof pathTracer.samples === 'number' ? pathTracer.samples : 0;
-         const progress = Math.min(currentSamples / targetSamples, 1);
+         // Calculate progress robustly using sample counters when available
+         const targetSamples = mobile ? 768 : 3072; // Cập nhật target samples cho realism tối đa
+         let currentSamples = 0;
+         if (typeof pathTracer.samples === 'number') {
+           // some builds use samples as target, not progress
+           currentSamples = pathTracer.sampleAccumulator || pathTracer.samplesAccumulated || pathTracer.currentSample || 0;
+         }
+
+         // Fallback: some versions expose sampleCount or sampleCounter
+         currentSamples = currentSamples || pathTracer.sampleCount || pathTracer.sampleCounter || 0;
+
+         // If still zero, try to infer from internal render target size (very rough)
+         if (!currentSamples && typeof pathTracer.samples === 'number') currentSamples = Math.min(pathTracer.samples, targetSamples);
+
+         const progress = targetSamples > 0 ? Math.min(currentSamples / targetSamples, 1) : 0;
          setPathTracingProgress(progress);
-         
-         // Auto-pause when converged to save resources
-         if (progress >= 0.95 && !cameraMoving) {
-           // Optionally pause rendering when nearly converged
-           return;
+
+         // Auto-pause when converged to save resources - higher threshold for quality
+         if (progress >= 0.98 && !cameraMoving) {
+           // Optionally stop continuous accumulation to save GPU
+           // Do not forcibly stop updates here so user can still re-enable if desired
          }
        } catch (error) {
          console.warn('Path tracer render error:', error);
@@ -723,70 +815,105 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         enableIndustrial={true}
       />
 
-      {/* Path Tracing Controls */}
+      {/* Enhanced Path Tracing Controls with Quality Settings */}
       {isPathTracingReady && (
         <div style={{
           position: 'fixed',
           top: 20,
           right: 20,
-          background: 'rgba(0,0,0,0.8)',
+          background: 'rgba(0,0,0,0.9)',
           color: 'white',
-          padding: '12px',
-          borderRadius: '8px',
+          padding: '16px',
+          borderRadius: '12px',
           fontFamily: 'Arial, sans-serif',
           fontSize: '14px',
           zIndex: 1000,
-          minWidth: '200px'
+          minWidth: '260px',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
         }}>
-          <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-            GPU Path Tracer
+          <div style={{ marginBottom: '12px', fontWeight: 'bold', fontSize: '16px', color: '#4CAF50' }}>
+            🎮 GPU Path Tracer (4K Quality)
           </div>
           
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ marginBottom: '12px' }}>
             <button
               onClick={() => {
                 setPathTracingEnabled(!pathTracingEnabled);
                 if (pathTracerRef.current) {
                   pathTracerRef.current.reset();
+                  setPathTracingProgress(0);
                 }
               }}
               style={{
-                background: pathTracingEnabled ? '#4CAF50' : '#f44336',
+                background: pathTracingEnabled ? 
+                  'linear-gradient(45deg, #4CAF50, #45a049)' : 
+                  'linear-gradient(45deg, #f44336, #d32f2f)',
                 color: 'white',
                 border: 'none',
-                padding: '8px 16px',
-                borderRadius: '4px',
+                padding: '10px 18px',
+                borderRadius: '8px',
                 cursor: 'pointer',
-                width: '100%'
+                width: '100%',
+                fontWeight: 'bold',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
               }}
+              onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
+              onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
-              {pathTracingEnabled ? 'Disable Path Tracing' : 'Enable Path Tracing'}
+              {pathTracingEnabled ? '🔥 Disable Path Tracing' : '⚡ Enable Path Tracing'}
             </button>
           </div>
           
           {pathTracingEnabled && (
             <div>
-              <div style={{ marginBottom: '8px' }}>
-                <div style={{ marginBottom: '5px' }}>
-                  Progress: {Math.round(pathTracingProgress * 100)}%
+              <div style={{ marginBottom: '10px' }}>
+                <div style={{ 
+                  marginBottom: '6px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ color: '#81C784' }}>Rendering Progress:</span>
+                  <span style={{ 
+                    color: pathTracingProgress > 0.8 ? '#4CAF50' : '#FFC107',
+                    fontWeight: 'bold'
+                  }}>
+                    {Math.round(pathTracingProgress * 100)}%
+                  </span>
                 </div>
                 <div style={{
                   width: '100%',
-                  height: '4px',
-                  background: '#333',
-                  borderRadius: '2px',
-                  overflow: 'hidden'
+                  height: '8px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  position: 'relative'
                 }}>
                   <div style={{
                     width: `${pathTracingProgress * 100}%`,
                     height: '100%',
-                    background: '#4CAF50',
-                    transition: 'width 0.3s ease'
+                    background: pathTracingProgress > 0.8 ? 
+                      'linear-gradient(90deg, #4CAF50, #81C784)' :
+                      'linear-gradient(90deg, #FFC107, #FFD54F)',
+                    transition: 'width 0.5s ease',
+                    borderRadius: '4px'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
+                    animation: pathTracingProgress < 0.95 ? 'shimmer 2s infinite' : 'none'
                   }} />
                 </div>
               </div>
               
-              <div style={{ marginBottom: '8px' }}>
+              <div style={{ marginBottom: '10px' }}>
                 <button
                   onClick={() => {
                     if (pathTracerRef.current) {
@@ -795,40 +922,74 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
                     }
                   }}
                   style={{
-                    background: '#2196F3',
+                    background: 'linear-gradient(45deg, #2196F3, #1976D2)',
                     color: 'white',
                     border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '4px',
+                    padding: '8px 14px',
+                    borderRadius: '6px',
                     cursor: 'pointer',
                     width: '100%',
-                    fontSize: '12px'
+                    fontSize: '13px',
+                    fontWeight: 'bold',
+                    transition: 'all 0.3s ease'
                   }}
+                  onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                  onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                 >
-                  Reset Rendering
+                  🔄 Reset Rendering
                 </button>
               </div>
               
-              <div style={{ fontSize: '12px', color: '#ccc' }}>
-                Samples: {pathTracerRef.current?.samples || 0} / {mobile ? 200 : 500}
+              <div style={{ 
+                fontSize: '12px', 
+                color: '#B0BEC5',
+                background: 'rgba(255,255,255,0.05)',
+                padding: '8px',
+                borderRadius: '6px',
+                lineHeight: '1.4'
+              }}>
+                <div style={{ marginBottom: '4px' }}>
+                  <strong>Samples:</strong> {pathTracerRef.current?.samples || 0} / {mobile ? 768 : 3072}
+                </div>
+                <div style={{ marginBottom: '4px' }}>
+                  <strong>Quality:</strong> {mobile ? 'Mobile (High)' : 'Desktop (Ultra)'}
+                </div>
+                <div>
+                  <strong>Status:</strong> {
+                    pathTracingProgress < 0.1 ? '🟡 Starting...' :
+                    pathTracingProgress < 0.5 ? '🟠 Rendering...' :
+                    pathTracingProgress < 0.95 ? '🔵 Refining...' :
+                    '🟢 Converged'
+                  }
+                </div>
               </div>
             </div>
           )}
+          
+          <style>
+            {`
+              @keyframes shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+              }
+            `}
+          </style>
         </div>
       )}
 
-      {/* Enhanced HDR lighting setup for realistic PBR rendering */}
-      <EnhancedLighting type="main" enableHDR={true} shadowQuality="medium" />
+      {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
+      <EnhancedLighting type="main" enableHDR={true} shadowQuality="ultra" />
 
-      {/* Ground plane for shadow visibility */}
+      {/* Enhanced ground plane with realistic materials for maximum reflections */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
-        <planeGeometry args={[100, 100]} />
+        <planeGeometry args={[200, 200]} />
         <meshStandardMaterial
-          color="#f0f0f0"
+          color="#e8e8e8"
           transparent
-          opacity={0.1}
-          roughness={0.8}
-          metalness={0.0}
+          opacity={0.08}
+          roughness={0.85}
+          metalness={0.03}
+          envMapIntensity={0.6}
         />
       </mesh>
 
@@ -904,12 +1065,19 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         }}
       />
 
-    <PerspectiveCamera
+      <PerspectiveCamera
         theatreKey="Camera"
         makeDefault
         fov={75} // Default FOV, will be overridden by FOVManager
         position={[33.5381764274176, 5.205671442619433, -22.03415991352903]}
       />
+
+      {/* Post-processing effects for photorealistic quality (Game 4K) - Temporarily disabled */}
+      {/* <EnhancedPostProcessing 
+        enabled={!pathTracingEnabled} // Tắt post-processing khi path tracing đang chạy
+        quality={mobile.isMobile ? "high" : "ultra"}
+        enableCustomEffects={true}
+      /> */}
 
     </>
   );

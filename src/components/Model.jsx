@@ -2,7 +2,7 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { hiddenObjects } from "../data/hiddenObjects";
 import { useMaterialEnhancer } from "./RenderingOptimizer";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
 const MODEL_URL = "./3ddd.glb"; // Adjust path as needed
@@ -12,31 +12,32 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
   const { scene, error } = useGLTF(MODEL_URL);
+  const { scene: globalScene } = useThree();
 
-// // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
-// const applyRealisticShader = (material) => {
-//   material.onBeforeCompile = (shader) => {
-//     shader.uniforms.uTime = { value: 0 };
-//     shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
+  // // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
+  // const applyRealisticShader = (material) => {
+  //   material.onBeforeCompile = (shader) => {
+  //     shader.uniforms.uTime = { value: 0 };
+  //     shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
 
-//     shader.fragmentShader = shader.fragmentShader.replace(
-//       `#include <dithering_fragment>`,
-//       `
-//         // 🔹 Fresnel rim lighting subtle
-//         vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
-//         gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
+  //     shader.fragmentShader = shader.fragmentShader.replace(
+  //       `#include <dithering_fragment>`,
+  //       `
+  //         // 🔹 Fresnel rim lighting subtle
+  //         vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
+  //         gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
 
-//         // 🔹 Subtle AO boost (darken crevices more)
-//         gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
+  //         // 🔹 Subtle AO boost (darken crevices more)
+  //         gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
 
-//         #include <dithering_fragment>
-//       `
-//     );
+  //         #include <dithering_fragment>
+  //       `
+  //     );
 
-//     material.userData.shader = shader;
-//   };
-//   material.needsUpdate = true;
-// };
+  //     material.userData.shader = shader;
+  //   };
+  //   material.needsUpdate = true;
+  // };
 
 
   // Update shader uniforms for dynamic effects
@@ -60,6 +61,96 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
   useEffect(() => {
     if (!scene) return;
 
+    // Helper to create ultra-realistic PBR materials (Game 4K quality)
+    const toPhysicalMaterial = (src) => {
+      if (!src) return null;
+
+      // If it's already a PhysicalMaterial, enhance it for photorealism
+      if (src.isMeshPhysicalMaterial) {
+        // Ultra-high quality clearcoat for glass-like surfaces
+        src.clearcoat = Math.max(src.clearcoat ?? 0, 0.9);
+        src.clearcoatRoughness = Math.min(src.clearcoatRoughness ?? 0.08, 0.05);
+        
+        // Enhanced environment mapping for realistic reflections
+        src.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 2.5);
+        
+        // Optimized metalness and roughness for photorealism
+        src.metalness = Math.min(Math.max(src.metalness ?? 0.3, 0.7), 1.0);
+        src.roughness = Math.max(Math.min(src.roughness ?? 0.2, 0.3), 0.01);
+        
+        // Advanced IOR for realistic refractions
+        src.ior = src.ior ?? 1.5;
+        
+        // Sheen for fabric-like materials
+        if (src.roughness > 0.7) {
+          src.sheen = 0.5;
+          src.sheenRoughness = 0.8;
+          src.sheenColor = new THREE.Color(0.95, 0.95, 0.95);
+        }
+        
+        src.needsUpdate = true;
+        return src;
+      }
+
+      // Create ultra-high quality physical material from standard material
+      const params = {
+        color: src.color ? src.color.clone() : new THREE.Color(0xffffff),
+        map: src.map || null,
+        normalMap: src.normalMap || null,
+        roughnessMap: src.roughnessMap || null,
+        metalnessMap: src.metalnessMap || null,
+        aoMap: src.aoMap || null,
+        emissiveMap: src.emissiveMap || null,
+        envMap: src.envMap || null,
+        emissive: src.emissive ? src.emissive.clone() : new THREE.Color(0x000000),
+        
+        // Photorealistic metalness and roughness values
+        metalness: typeof src.metalness === 'number' ? Math.max(src.metalness, 0.7) : 0.85,
+        roughness: typeof src.roughness === 'number' ? Math.max(src.roughness * 0.4, 0.01) : 0.03,
+        
+        transparent: src.transparent || false,
+        opacity: typeof src.opacity === 'number' ? src.opacity : 1.0,
+        side: src.side ?? THREE.FrontSide,
+        reflectivity: src.reflectivity ?? 1.0,
+        
+        // Ultra-high quality clearcoat for glass-like finish
+        clearcoat: 0.95,
+        clearcoatRoughness: 0.02,
+        
+        // Advanced IOR for realistic refractions
+        ior: 1.5,
+        
+        // Ultra-enhanced environment mapping for maximum realism
+        envMapIntensity: 2.8, // Khôi phục intensity cao cho reflections chân thật
+        
+        // Advanced transmission for glass materials
+        transmission: src.transmission ?? 0,
+        thickness: src.thickness ?? 0.5,
+        
+        // Note: anisotropy is not available in all Three.js versions
+        // anisotropy: 0.1,
+        // anisotropyRotation: 0,
+      };
+
+      const mat = new THREE.MeshPhysicalMaterial(params);
+
+      // Advanced material properties for different surface types
+      if (src.sheen !== undefined) mat.sheen = src.sheen;
+      if (src.sheenRoughness !== undefined) mat.sheenRoughness = src.sheenRoughness;
+      if (src.sheenColor !== undefined) mat.sheenColor = src.sheenColor;
+
+      // Ensure ultra-strong env map intensity for photorealistic reflections
+      mat.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 2.8); // Khôi phục intensity cao
+
+      // Enable double-sided rendering for thin materials
+      if (src.side === THREE.DoubleSide) {
+        mat.side = THREE.DoubleSide;
+      }
+
+      mat.needsUpdate = true;
+      return mat;
+    };
+
     scene.traverse((child) => {
       if (child.isMesh) {
         // Enable soft shadows
@@ -69,29 +160,70 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
 
         // Store original material
         if (!originalMaterials.current.has(child.name) && child.material) {
-          originalMaterials.current.set(child.name, child.material.clone());
+          try {
+            originalMaterials.current.set(child.name, child.material.clone());
+          } catch (e) {
+            // fallback: store reference
+            originalMaterials.current.set(child.name, child.material);
+          }
         }
 
         // Enhance material for realistic PBR
         if (child.material) {
-          // Basic HDR/PBR enhancement
+          // First let the general enhancer tweak values
           enhanceMaterial(child.material);
 
-          // Make reflections sharper and realistic
-          child.material.envMapIntensity = 1.5;
+          // Convert to a MeshPhysicalMaterial for better clearcoat/reflectivity
+          try {
+            const phys = toPhysicalMaterial(child.material);
+            if (phys) child.material = phys;
+          } catch (e) {
+            console.warn('Failed to convert material to physical:', e);
+          }
 
-          // // Apply shader enhance
-          // applyRealisticShader(child.material);
+          // Make reflections ultra-strong and sharp for maximum photorealism
+          child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 3.0); // Khôi phục intensity cao nhất
+          if (child.material.isMeshPhysicalMaterial) {
+            child.material.clearcoat = Math.max(child.material.clearcoat ?? 0, 0.95);
+            child.material.clearcoatRoughness = Math.min(child.material.clearcoatRoughness ?? 0.02, 0.03);
+            
+            // Enhanced metalness for realistic metal surfaces
+            child.material.metalness = Math.min(Math.max(child.material.metalness ?? 0.6, 0.8), 1.0);
+            child.material.roughness = Math.max(child.material.roughness ?? 0.03, 0.01);
+            
+            // Advanced IOR for glass-like materials
+            child.material.ior = child.material.ior ?? 1.5;
+            
+            // Note: Add subtle anisotropy for brushed metal effects if supported
+            // if (child.material.metalness > 0.8 && child.material.anisotropy !== undefined) {
+            //   child.material.anisotropy = 0.1;
+            // }
+          }
+
+          child.material.needsUpdate = true;
         }
 
-        // Hidden object handling
+        // Hidden object handling - for hidden objects make semi transparent, otherwise KEEP the enhanced physical material
         if (hiddenObjects.includes(child.name)) {
+          // clone to avoid mutating shared material
           child.material = child.material.clone();
           child.material.transparent = true;
           child.material.opacity = hiddenObjectsState ? 0.3 : 1.0;
+          child.material.needsUpdate = true;
         } else {
-          const originalMaterial = originalMaterials.current.get(child.name);
-          if (originalMaterial) child.material = originalMaterial.clone();
+          // Keep enhanced physical material to ensure consistent reflections across all objects.
+          // Do not restore the original (non-physical) material here — keep originalMaterials map for explicit restore if needed elsewhere.
+          // Ensure the material uses the global environment for reflections
+          try {
+            if (globalScene?.environment && !child.material.envMap) {
+              child.material.envMap = globalScene.environment;
+              // Ultra-boost intensity for crystal-clear reflections
+              child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 3.2); // Khôi phục intensity cao nhất
+              child.material.needsUpdate = true;
+            }
+          } catch (e) {
+            // ignore env map assignment errors
+          }
         }
       }
     });
