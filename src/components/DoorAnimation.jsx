@@ -3,6 +3,179 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { useCurrentSheet } from "@theatre/r3f";
 import { Group, Vector3, Box3 } from 'three';
 
+/**
+ * Configuration constants for door animations
+ */
+const DOOR_CONFIG = {
+  /** Mesh names for third door group */
+  THIRD_DOOR_MESHES: [
+    "3DGeom-9290_2", "3DGeom-253_7", "3DGeom-256_7", "3DGeom-254_7", "3DGeom-255_7", 
+    "3DGeom-253_6", "3DGeom-255_6", "3DGeom-254_6", "3DGeom-256_6"
+  ],
+  /** Mesh names for fourth door group */
+  FOURTH_DOOR_MESHES: [
+    "3DGeom-9343_2", "3DGeom-9343_3", "3DGeom-9343_1", "3DGeom-9343", "Geom3D_267"
+  ],
+  /** Single door mesh names */
+  SINGLE_DOORS: {
+    DOOR_1: "3DGeom-9388",
+    DOOR_2: "3DGeom-9390",
+    DOOR_7: "3DGeom-9388"
+  }
+};
+
+/**
+ * Animation sequences configuration with timing and rotation parameters
+ */
+const ANIMATION_CONFIG = [
+  {
+    id: "first-door",
+    target: "Door1Group",
+    startTime: 0.3,
+    endTime: 0.6,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "second-door",
+    target: "Door2Group",
+    startTime: 3,
+    endTime: 6,
+    action: { type: "rotate", axis: "y", angle: -Math.PI / 1.4 }
+  },
+  {
+    id: "third-door",
+    target: "ThirdDoorGroup",
+    startTime: 6.2,
+    endTime: 6.7,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "fourth-door",
+    target: "FourthDoorGroup",
+    startTime: 6.8,
+    endTime: 7.3,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "fifth-door",
+    target: "FourthDoorGroup",
+    startTime: 8.2,
+    endTime: 8.7,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "sixth-door",
+    target: "ThirdDoorGroup",
+    startTime: 9,
+    endTime: 9.5,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "seventh-door",
+    target: "Door1Group",
+    startTime: 9.9,
+    endTime: 10.6 ,
+    action: { type: "rotate", axis: "y", angle: -Math.PI / 2 }
+  }
+];
+
+/**
+ * Utility functions for door animation
+ */
+
+/**
+ * Creates a dictionary mapping mesh names to mesh objects from the scene
+ * @param {Object} scene - Three.js scene object
+ * @returns {Object} Dictionary with mesh names as keys and mesh objects as values
+ */
+const createMeshDictionary = (scene) => {
+  const dictionary = {};
+  scene.traverse((obj) => {
+    if (obj.isMesh) {
+      dictionary[obj.name] = obj;
+    }
+  });
+  return dictionary;
+};
+
+/**
+ * Calculates pivot point for rotation based on bounding box and pivot type
+ * @param {Box3} boundingBox - Three.js bounding box
+ * @param {string} pivotType - Type of pivot ('left-center', 'right-top', 'center')
+ * @returns {Vector3} Calculated pivot point
+ */
+const calculatePivotPoint = (boundingBox, pivotType = 'left-center') => {
+  const { min, max } = boundingBox;
+  
+  switch (pivotType) {
+    case 'left-center':
+      return new Vector3(
+        min.x,
+        (min.y + max.y) / 2,
+        (min.z + max.z) / 2
+      );
+
+    case 'left-top':
+      return new Vector3(
+        min.x,
+        max.y,
+        max.z
+      );
+    case 'right-top':
+      return new Vector3(
+        max.x,
+        max.y,
+        max.z
+      );
+    case 'center':
+    default:
+      return new Vector3(
+        (min.x + max.x) / 2,
+        (min.y + max.y) / 2,
+        (min.z + max.z) / 2
+      );
+  }
+};
+
+/**
+ * Attaches a mesh to a group with proper positioning relative to pivot point
+ * @param {Mesh} mesh - Three.js mesh object
+ * @param {Group} group - Three.js group object
+ * @param {Vector3} pivot - Pivot point for positioning
+ * @param {Object} scene - Three.js scene object
+ */
+const attachMeshToGroup = (mesh, group, pivot, scene) => {
+  mesh.updateMatrixWorld(true);
+  const worldPos = new Vector3();
+  mesh.getWorldPosition(worldPos);
+  
+  scene.attach(mesh);
+  group.attach(mesh);
+  
+  const localPos = worldPos.clone().sub(pivot);
+  mesh.position.copy(localPos);
+};
+
+/**
+ * Stores group reference and original rotation values for animation
+ * @param {Group} group - Three.js group object
+ * @param {React.MutableRefObject} meshRefs - Ref object storing mesh/group references
+ * @param {React.MutableRefObject} originalRotations - Ref object storing original rotations
+ */
+const storeGroupReference = (group, meshRefs, originalRotations) => {
+  meshRefs.current.set(group.name, group);
+  originalRotations.current.set(group.name, {
+    x: group.rotation.x,
+    y: group.rotation.y,
+    z: group.rotation.z
+  });
+};
+
+/**
+ * Door Animation Component
+ * Handles the animation of multiple doors in a 3D scene using Theatre.js
+ * @returns {null} This component doesn't render anything visible
+ */
 export function DoorAnimation() {
   const { scene } = useThree();
   const sheet = useCurrentSheet();
@@ -10,198 +183,138 @@ export function DoorAnimation() {
   const originalRotations = useRef(new Map());
   const meshDictionary = useRef({});
 
-  const thirdDoorMeshNames = [
-    "Geom3D__268", "Geom3D__710", "Geom3D__712", "Geom3D__713", "Geom3D__711", 
-    "Geom3D__714", "Geom3D__715", "Geom3D__716", "Geom3D__717"
-  ];
-  const fourthDoorMeshNames = [
-    "Geom3D_269", "Geom3D_270", "Geom3D_271", "Geom3D_272", "Geom3D_267"
-  ];
+  const animationSequences = useMemo(() => ANIMATION_CONFIG, []);
 
-  const animationSequences = useMemo(() => [
-    {
-      id: "first-door",
-      target: "Geom3D__285",
-      startTime: 0.25,
-      endTime: 0.6,
-      action: {
-        type: "rotate",
-        axis: "z",
-        angle: Math.PI / 2
+  /**
+   * Creates a group from multiple meshes with specified pivot point
+   * @param {string[]} meshNames - Array of mesh names to group
+   * @param {string} groupName - Name for the created group
+   * @param {string} pivotType - Type of pivot point calculation
+   * @returns {Group|null} Created Three.js group or null if no meshes found
+   */
+  const createMultiMeshGroup = (meshNames, groupName, pivotType = 'right-top') => {
+    const meshes = meshNames
+      .map(name => meshDictionary.current[name])
+      .filter(Boolean);
+
+    if (meshes.length === 0) return null;
+
+    const boundingBox = new Box3();
+    meshes.forEach(mesh => {
+      mesh.updateWorldMatrix(true, false);
+      boundingBox.expandByObject(mesh);
+    });
+
+    const pivot = calculatePivotPoint(boundingBox, pivotType);
+    const group = new Group();
+    group.name = groupName;
+    group.position.copy(pivot);
+
+    meshes.forEach(mesh => {
+      attachMeshToGroup(mesh, group, pivot, scene);
+    });
+
+    scene.add(group);
+    return group;
+  };
+
+  /**
+   * Creates a group from a single mesh with specified pivot point
+   * @param {string} meshName - Name of the mesh to group
+   * @param {string} groupName - Name for the created group
+   * @param {string} pivotType - Type of pivot point calculation
+   * @returns {Group|null} Created Three.js group or null if mesh not found
+   */
+  const createSingleMeshGroup = (meshName, groupName, pivotType = 'left-center') => {
+    const mesh = meshDictionary.current[meshName];
+    if (!mesh) return null;
+
+    const boundingBox = new Box3();
+    mesh.updateWorldMatrix(true, false);
+    boundingBox.expandByObject(mesh);
+
+    const pivot = calculatePivotPoint(boundingBox, pivotType);
+    const group = new Group();
+    group.name = groupName;
+    group.position.copy(pivot);
+
+    attachMeshToGroup(mesh, group, pivot, scene);
+    scene.add(group);
+    return group;
+  };
+
+  /**
+   * Sets up all door groups and mesh references for animation
+   */
+  const setupDoorGroups = () => {
+    // Tạo dictionary mesh
+    meshDictionary.current = createMeshDictionary(scene);
+
+    // Tạo các door groups
+    const doorGroups = [
+      {
+        group: createMultiMeshGroup(DOOR_CONFIG.THIRD_DOOR_MESHES, "ThirdDoorGroup"),
+        name: "ThirdDoorGroup"
+      },
+      {
+          group: createMultiMeshGroup(DOOR_CONFIG.FOURTH_DOOR_MESHES, "FourthDoorGroup", "left-top"),
+          name: "FourthDoorGroup"
+        },
+      {
+        group: createSingleMeshGroup(DOOR_CONFIG.SINGLE_DOORS.DOOR_1, "Door1Group"),
+        name: "Door1Group"
+      },
+      {
+        group: createSingleMeshGroup(DOOR_CONFIG.SINGLE_DOORS.DOOR_2, "Door2Group"),
+        name: "Door2Group"
       }
-    },
-    {
-      id: "second-door",
-      target: "Geom3D__69",
-      startTime: 3,
-      endTime: 5,
-      action: {
-        type: "rotate",
-        axis: "z",
-        angle: -Math.PI / 1.1
+    ];
+
+    // Store references cho các groups
+    doorGroups.forEach(({ group, name }) => {
+      if (group) {
+        storeGroupReference(group, meshRefs, originalRotations);
       }
-    },
-    {
-      id: "third-door",
-      target: "ThirdDoorGroup",
-      startTime: 6.2,
-      endTime: 6.7,
-      action: {
-        type: "rotate",
-        axis: "y",
-        angle: Math.PI / 2
+    });
+
+    // Xử lý các mesh đơn lẻ còn lại
+    animationSequences.forEach(seq => {
+      const isGroupTarget = doorGroups.some(({ name }) => seq.target === name);
+      const isSingleDoorTarget = Object.values(DOOR_CONFIG.SINGLE_DOORS).includes(seq.target);
+      
+      if (!isGroupTarget && !isSingleDoorTarget) {
+        const mesh = meshDictionary.current[seq.target];
+        if (mesh) {
+          meshRefs.current.set(seq.target, mesh);
+          originalRotations.current.set(seq.target, {
+            x: mesh.rotation.x,
+            y: mesh.rotation.y,
+            z: mesh.rotation.z
+          });
+        }
       }
-    },
-    {
-      id: "fourth-door",
-      target: "FourthDoorGroup",
-      startTime: 6.8,
-      endTime: 7.3,
-      action: {
-        type: "rotate",
-        axis: "y",
-        angle: -Math.PI / 2
+    });
+  };
+
+  /**
+   * Cleans up groups and reattaches meshes to scene
+   */
+  const cleanupGroups = () => {
+    meshRefs.current.forEach((groupOrMesh) => {
+      if (groupOrMesh instanceof Group) {
+        const children = [...groupOrMesh.children];
+        children.forEach(mesh => scene.attach(mesh));
+        scene.remove(groupOrMesh);
       }
-    },
-    {
-      id: "fifth-door",
-      target: "FourthDoorGroup",
-      startTime: 8.2,
-      endTime: 8.7,
-      action: {
-        type: "rotate",
-        axis: "y",
-        angle: Math.PI / 2
-      }
-    },
-    {
-      id: "sixth-door",
-      target: "ThirdDoorGroup",
-      startTime: 9,
-      endTime: 9.5,
-      action: {
-        type: "rotate",
-        axis: "y",
-        angle: Math.PI / 2
-      }
-    },
-    {
-      id: "seventh-door",
-      target: "Geom3D__285",
-      startTime: 9.9,
-      endTime: 10.4,
-      action: {
-        type: "rotate",
-        axis: "z",
-        angle: -Math.PI / 2
-      }
-    }
-  ], []);
+    });
+    meshRefs.current.clear();
+    originalRotations.current.clear();
+  };
 
   useEffect(() => {
-    // Tạo dictionary mesh
-    scene.traverse((obj) => {
-      if (obj.isMesh) {
-        meshDictionary.current[obj.name] = obj;
-      }
-    });
-
-    const findMesh = (name) => {
-      return meshDictionary.current[name];
-    };
-
-    // Hàm tạo group với pivot logic giữ nguyên như cũ
-    const createDoorGroup = (meshNames, groupName) => {
-      const meshes = meshNames
-        .map(name => findMesh(name))
-        .filter(Boolean);
-
-      if (meshes.length === 0) return null;
-
-      const boundingBox = new Box3();
-      meshes.forEach(mesh => {
-        mesh.updateWorldMatrix(true, false);
-        boundingBox.expandByObject(mesh);
-      });
-
-      // Giữ nguyên pivot logic như code gốc
-      const pivotX = boundingBox.max.x; // Cạnh trái
-      const pivotY = boundingBox.max.y; // Giữa theo Y
-      const pivotZ = boundingBox.max.z; // Giữa theo Z
-      
-      const pivot = new Vector3(pivotX, pivotY, pivotZ);
-
-      const group = new Group();
-      group.name = groupName;
-      group.position.copy(pivot);
-
-      meshes.forEach(mesh => {
-        mesh.updateMatrixWorld(true);
-        const worldPos = new Vector3();
-        mesh.getWorldPosition(worldPos);
-        
-        scene.attach(mesh);
-        group.attach(mesh);
-        
-        const localPos = worldPos.clone().sub(pivot);
-        mesh.position.copy(localPos);
-      });
-
-      scene.add(group);
-      return group;
-    };
-
-    // Tạo Third Door Group
-    const thirdDoorGroup = createDoorGroup(thirdDoorMeshNames, "ThirdDoorGroup");
-    if (thirdDoorGroup) {
-      meshRefs.current.set("ThirdDoorGroup", thirdDoorGroup);
-      originalRotations.current.set("ThirdDoorGroup", {
-        x: thirdDoorGroup.rotation.x,
-        y: thirdDoorGroup.rotation.y,
-        z: thirdDoorGroup.rotation.z
-      });
-    }
-
-    // Tạo Fourth Door Group
-    const fourthDoorGroup = createDoorGroup(fourthDoorMeshNames, "FourthDoorGroup");
-    if (fourthDoorGroup) {
-      meshRefs.current.set("FourthDoorGroup", fourthDoorGroup);
-      originalRotations.current.set("FourthDoorGroup", {
-        x: fourthDoorGroup.rotation.x,
-        y: fourthDoorGroup.rotation.y,
-        z: fourthDoorGroup.rotation.z
-      });
-    }
-
-    // Gán các mesh lẻ
-    animationSequences.forEach(seq => {
-      if (seq.target === "ThirdDoorGroup" || seq.target === "FourthDoorGroup") return;
-      
-      const mesh = findMesh(seq.target);
-      if (mesh) {
-        meshRefs.current.set(seq.target, mesh);
-        originalRotations.current.set(seq.target, {
-          x: mesh.rotation.x,
-          y: mesh.rotation.y,
-          z: mesh.rotation.z
-        });
-      }
-    });
-
-    return () => {
-      meshRefs.current.forEach((groupOrMesh, key) => {
-        if (groupOrMesh instanceof Group) {
-          const children = [...groupOrMesh.children];
-          children.forEach(mesh => {
-            scene.attach(mesh);
-          });
-          scene.remove(groupOrMesh);
-        }
-      });
-      meshRefs.current.clear();
-      originalRotations.current.clear();
-    };
-  }, [scene]);
+    setupDoorGroups();
+    return cleanupGroups;
+  }, [scene, animationSequences]);
 
   useFrame(() => {
     if (!sheet?.sequence) return;
