@@ -218,8 +218,6 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
               backdropFilter: 'blur(4px)',
               zIndex: 9999, // High z-index to ensure clickability above navigation guide
               position: 'relative',
-              zIndex: 9999, // High z-index to ensure clickability
-              position: 'relative',
             }}
             onClick={(e) => {
               e.stopPropagation();
