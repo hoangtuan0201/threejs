@@ -1,53 +1,127 @@
 # AirSmart 3D Interactive System Documentation
 
-## Overview
+## Tổng Quan
 
-AirSmart is an interactive 3D web application that showcases smart air conditioning systems using cutting-edge web technologies. The project combines React Three Fiber for 3D rendering, Theatre.js for cinematic animations, and Material-UI for a polished user interface.
+AirSmart là ứng dụng web 3D tương tác giới thiệu hệ thống điều hòa thông minh sử dụng công nghệ web tiên tiến. Dự án kết hợp React Three Fiber cho rendering 3D, Theatre.js cho animation điện ảnh, và Material-UI cho giao diện người dùng chuyên nghiệp.
 
-## 🚀 Features
+## 🚀 Tính Năng Chính
 
-- **3D Interactive Model**: Fully interactive 3D house model with air conditioning components
-- **Cinematic Camera Animation**: Smooth camera movements using Theatre.js animation sequences
-- **Interactive Hotspots**: Clickable information points with detailed component specifications
-- **Video Integration**: Embedded YouTube videos for product demonstrations
-- **Responsive Design**: Optimized for mobile, tablet, and desktop with touch controls
-- **Multi-Input Navigation**: Mouse scroll, touch gestures, and keyboard controls
-- **Dynamic Material System**: Objects become transparent during specific sequences
-- **Loading Screen**: Professional loading experience with AirSmart branding
-- **Progressive Enhancement**: Graceful degradation across device capabilities
+### 🎮 Trải Nghiệm 3D Tương Tác
+- **Mô Hình 3D Tương Tác**: Mô hình nhà 3D hoàn chỉnh với các thành phần điều hòa
+- **Animation Camera Điện Ảnh**: Chuyển động camera mượt mà sử dụng Theatre.js
+- **Hotspots Tương Tác**: Các điểm thông tin có thể click với thông số kỹ thuật chi tiết
+- **Tích Hợp Video**: Video YouTube nhúng cho demo sản phẩm
+- **Thiết Kế Responsive**: Tối ưu cho mobile, tablet và desktop
+- **Điều Hướng Đa Dạng**: Mouse scroll, touch gestures và keyboard controls
+- **Hệ Thống Material Động**: Objects trở nên trong suốt trong các sequence cụ thể
+- **Màn Hình Loading**: Trải nghiệm loading chuyên nghiệp với branding AirSmart
 
-## 📁 Project Structure
+### 📱 UI/UX Hiện Đại
+- **Dark/Light Themes**: Chuyển đổi theme tự động theo preferences người dùng
+- **File Management System**: Tích hợp cloud storage Wasabi S3
+- **AI Chat Assistant**: Chatbot tích hợp cho tư vấn sản phẩm
+- **System Comparison**: So sánh side-by-side các model AirSmart khác nhau
+- **X-Ray Mode**: Chế độ xem xuyên qua cấu trúc tòa nhà
+- **Arrow Key Navigation**: Điều hướng nhanh bằng phím mũi tên
+- **Navigation Guide**: Hướng dẫn tương tác cho người dùng mới
+
+## 📁 Cấu Trúc Dự Án
 
 ```
 src/
-├── components/
-│   ├── App.jsx              # Main application component with responsive Canvas
-│   ├── Homepage.jsx         # Responsive landing page with hero section
-│   ├── LoadingScreen.jsx    # Professional loading screen with AirSmart branding
-│   ├── Scene.jsx            # Main 3D scene with multi-input navigation
-│   ├── Model.jsx            # 3D model loader and material management
-│   └── VideoScreen.jsx      # YouTube video integration component
-├── data/
-│   ├── sequenceChapters.js  # Animation sequences and hotspot data
-│   └── hiddenObjects.js     # Objects to hide during specific sequences
-└── states/
-    └── FlyThrough.json      # Theatre.js animation state
+├── 🎬 components/           # React components tái sử dụng
+│   ├── App.jsx             # Component ứng dụng chính với responsive Canvas
+│   ├── Scene.jsx           # Scene 3D chính với multi-input navigation
+│   ├── SceneManager.jsx    # Quản lý chuyển đổi giữa các scene
+│   ├── Model.jsx           # Loader mô hình 3D và quản lý material
+│   ├── Hotspot.jsx         # Interactive 3D hotspots
+│   ├── HotspotDetail.jsx   # Chi tiết hotspot với thông tin kỹ thuật
+│   ├── HotspotDetailScene.jsx # Scene riêng cho hotspot detail
+│   ├── VideoScreen.jsx     # Tích hợp YouTube video
+│   ├── LoadingScreen.jsx   # Màn hình loading chuyên nghiệp
+│   ├── FileManagerPopup.jsx # File browser và viewer
+│   ├── FileViewerDialog.jsx # Dialog xem file chi tiết
+│   ├── FloatingChatButton.jsx # AI chat interface
+│   ├── ChapterNavigation.jsx # Điều hướng chapter
+│   ├── NavigationGuide.jsx  # Hướng dẫn điều hướng
+│   ├── MobileHomeButton.jsx # Nút home cho mobile
+│   ├── DoorAnimation.jsx   # Hệ thống animation cửa
+│   ├── ToggleHiddenObjects.jsx # Toggle hiển thị objects
+│   ├── HDREnvironment.jsx  # Lighting và HDR environment
+│   ├── Background.jsx      # Background và skybox
+│   ├── PostProcessing.jsx  # Effects và post-processing
+│   ├── RenderingOptimizer.jsx # Tối ưu rendering performance
+│   ├── ScrollSensitivityControl.jsx # Điều khiển độ nhạy scroll
+│   ├── MoreFeaturesDialog.jsx # Dialog tính năng mở rộng
+│   └── XRayMode/          # Components cho X-Ray mode
+├── 📄 pages/               # Page-level components
+│   ├── Homepage.jsx        # Landing page với hero section
+│   ├── CompareSystem.jsx   # Trang so sánh sản phẩm
+│   └── X-ray.jsx          # Trang X-Ray mode
+├── 🔧 hooks/              # Custom React hooks
+│   ├── useMobile.js       # Hook detect mobile device
+│   ├── useSceneLock.js    # Hook quản lý scene navigation lock
+│   └── useHDRConfig.js    # Hook cấu hình HDR
+├── 🌐 services/           # External services
+│   ├── filesService.js    # Service xử lý file types
+│   ├── wasabiService.js   # Wasabi S3 cloud storage
+│   └── zendeskService.js  # Zendesk ticket integration
+├── 📊 data/               # Static data
+│   ├── sequenceChapters.js # Animation sequences và hotspot data
+│   └── hiddenObjects.js   # Objects ẩn trong sequences cụ thể
+├── 🎭 states/             # Theatre.js animation states
+│   ├── FlyThrough.json    # Main animation state
+│   └── FlyThrough2.json   # Updated animation state
+├── 🎨 theme/              # Theme system
+│   ├── ThemeContext.jsx   # Theme context provider
+│   ├── ColorModeSelect.jsx # Color mode selector
+│   └── theme.js           # Theme definitions
+├── 🛣️ router/             # Routing
+│   └── AppRouter.jsx      # Main router configuration
+└── 🔧 utils/              # Utility functions
+    ├── theatreHelper.js   # Theatre.js utilities
+    └── wasabiHelper.js    # Wasabi S3 utilities
 ```
 
 ## 🛠 Technology Stack
 
 ### Core Technologies
-- **React 18**: Modern React with hooks and concurrent features
-- **React Three Fiber**: React renderer for Three.js
-- **Theatre.js**: Professional animation library for 3D scenes
-- **Three.js**: 3D graphics library
-- **Material-UI (MUI)**: React component library for UI elements
+- **React 18**: Modern React với hooks và concurrent features
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool và dev server
+- **React Router DOM**: Client-side routing
+- **Yarn**: Package manager (theo project rules)
 
-### 3D & Animation
-- **@react-three/fiber**: React Three Fiber core
-- **@react-three/drei**: Useful helpers for R3F
-- **@theatre/core**: Theatre.js core animation engine  
-- **@theatre/studio**: Theatre.js visual editor
+### 3D Graphics & Animation
+- **Three.js**: 3D graphics library
+- **React Three Fiber**: React renderer cho Three.js
+- **@react-three/drei**: Useful helpers cho R3F
+- **@react-three/postprocessing**: Post-processing effects
+- **Theatre.js**: Professional animation library
+  - **@theatre/core**: Core animation engine
+  - **@theatre/r3f**: React Three Fiber integration
+  - **@theatre/studio**: Visual editor
+- **JEasings**: Camera animation easing
+- **three-gpu-pathtracer**: Advanced rendering
+
+### UI Framework
+- **Material-UI (MUI)**: React component library
+  - **@mui/material**: Core components
+  - **@mui/icons-material**: Icon library
+- **@emotion/react & @emotion/styled**: CSS-in-JS styling
+
+### Cloud Services & Storage
+- **AWS SDK**: S3 integration
+  - **@aws-sdk/client-s3**: S3 client
+  - **@aws-sdk/s3-request-presigner**: Presigned URLs
+- **Wasabi S3**: Cloud storage cho files
+- **Zendesk API**: Customer support integration
+
+### Development Tools
+- **Leva**: Debug controls
+- **r3f-perf**: Performance monitoring
+- **crypto-js**: Encryption utilities
+- **vite-plugin-glsl**: GLSL shader support
 - **@theatre/r3f**: Theatre.js React Three Fiber integration
 
 ## 🎯 Core Components

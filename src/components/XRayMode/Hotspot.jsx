@@ -30,8 +30,8 @@ function Hotspot({ position, rotation, label, onClick, isActive }) {
           {/* Hotspot circle */}
           <div
             style={{
-              width: '20px',
-              height: '20px',
+              width: '40px',
+              height: '40px',
               borderRadius: '50%',
               background: isActive ? '#ff6b6b' : hovered ? '#4fc3f7' : '#ffffff',
               border: '2px solid #ffffff',
@@ -79,27 +79,7 @@ function Hotspot({ position, rotation, label, onClick, isActive }) {
           )}
           
           {/* Label */}
-          <div
-            style={{
-              background: hovered ? 'rgba(79, 195, 247, 0.95)' : 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
-              padding: '8px 12px',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '500',
-              whiteSpace: 'nowrap',
-              marginTop: '15px',
-              transition: 'all 0.3s ease',
-              border: hovered ? '1px solid #4fc3f7' : '1px solid transparent',
-              boxShadow: hovered 
-                ? '0 4px 20px rgba(79, 195, 247, 0.3)' 
-                : '0 2px 10px rgba(0, 0, 0, 0.3)',
-              transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            {label}
-          </div>
+          
         </div>
         
         {/* CSS Animations */}

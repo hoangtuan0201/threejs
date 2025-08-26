@@ -15,7 +15,7 @@ export const sequenceChapters = [
       mobileDetailPosition: [27.78, 3.8 , -21.5],
       mobileDetailRotation: [0, Math.PI / 2, 0],
       // Hotspot label positioning
-      labelPosition: [27.78, 4.8, -21.7],
+      labelPosition: [27.78, 4.6, -21.7],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
       mobileLabelPosition: [27.78, 4.8, -21.7],

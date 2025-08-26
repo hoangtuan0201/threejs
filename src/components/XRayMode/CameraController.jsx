@@ -1,70 +1,100 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import JEASINGS from 'jeasings';
+import JEasings from './JEasings';
 
-// HVAC Component positions
+// HVAC Component positions với camera position và rotation cho mỗi hotspot
 const HVAC_POSITIONS = {
-  FCU: { position: [21.8, 5, -15], rotation: [0, 0, 0], label: 'Fan Coil Unit' },
-  CDU: { position: [23.2, 5.3, -20], rotation: [0, 0, 0], label: 'Condensing Unit' },
-  Thermostat: { position: [30.1, 5, -22], rotation: [0, 0, 0], label: 'Thermostat' },
-  Grilles: { position: [30.6, 7, -23], rotation: [-3, 0, -3.14], label: 'Air Grilles' },
-  Ducts: { position: [13, 5, -34], rotation: [0, 0, 0], label: 'Ductwork' }
+  FCU: { 
+    position: [21.8, 5, -15], 
+    cameraPosition: [21.8, 5, -14],
+  },  
+  CDU: { 
+    position: [22, 5.3, -21], 
+    cameraPosition: [23.2, 5.5, -21],
+  },
+  Thermostat: { 
+    position: [30.1, 5.8, -22], 
+    cameraPosition: [30, 5.5, -24],
+  },
+ 
+  Ducts: { 
+    position: [13, 4.99, -34], 
+    cameraPosition: [12, 4.99, -34],
+  }
 };
 
 function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitControlsRef, activeComponent }) {
   const { camera } = useThree();
   const [isAnimating, setIsAnimating] = useState(false);
-  const startPosition = useRef(new THREE.Vector3());
-  const startTarget = useRef(new THREE.Vector3());
-  const startTime = useRef(0);
-  const duration = 2000; // 2 seconds
+  const animationRef = useRef(null);
+  const rotationAnimationRef = useRef(null);
+  const targetAnimationRef = useRef(null);
 
   useEffect(() => {
     if (targetPosition && camera && orbitControlsRef.current) {
-      startPosition.current.copy(camera.position);
-      startTarget.current.copy(orbitControlsRef.current.target);
-      startTime.current = Date.now();
       setIsAnimating(true);
+      
+      // Stop any existing animations
+      if (animationRef.current && animationRef.current.stop) {
+        animationRef.current.stop();
+      }
+      if (rotationAnimationRef.current && rotationAnimationRef.current.stop) {
+        rotationAnimationRef.current.stop();
+      }
+      if (targetAnimationRef.current && targetAnimationRef.current.stop) {
+        targetAnimationRef.current.stop();
+      }
+      
+      // Animate camera position
+      animationRef.current = new JEASINGS.JEasing(camera.position)
+        .to({
+          x: targetPosition.x,
+          y: targetPosition.y,
+          z: targetPosition.z
+        }, 3000)
+        .easing(JEASINGS.Cubic.Out)
+        .start();
+      
+      // Animate camera rotation if activeComponent has cameraRotation
+      if (activeComponent && HVAC_POSITIONS[activeComponent] && HVAC_POSITIONS[activeComponent].cameraRotation) {
+        const targetRotation = HVAC_POSITIONS[activeComponent].cameraRotation;
+        rotationAnimationRef.current = new JEASINGS.JEasing(camera.rotation)
+          .to({
+            x: targetRotation[0],
+            y: targetRotation[1],
+            z: targetRotation[2]
+          }, 2500)
+          .easing(JEASINGS.Cubic.Out)
+          .start();
+      }
+      
+      // Animate OrbitControls target
+      let newTarget;
+      if (activeComponent && HVAC_POSITIONS[activeComponent]) {
+        const hotspotPos = HVAC_POSITIONS[activeComponent].position;
+        newTarget = { x: hotspotPos[0], y: hotspotPos[1], z: hotspotPos[2] };
+      } else {
+        newTarget = { x: 27.23, y: 0.00, z: -25.55 };
+      }
+      
+      targetAnimationRef.current = new JEASINGS.JEasing(orbitControlsRef.current.target)
+        .to(newTarget, 2500)
+        .easing(JEASINGS.Cubic.Out)
+        .start()
+        .onComplete(() => {
+          setIsAnimating(false);
+          if (onComplete) onComplete();
+        });
     }
-  }, [targetPosition, camera, orbitControlsRef]);
+  }, [targetPosition, camera, orbitControlsRef, activeComponent]);
 
   useFrame(() => {
     if (camera) {
-      if (isAnimating && targetPosition && orbitControlsRef.current) {
-        const elapsed = Date.now() - startTime.current;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Smooth easing
-        const eased = 1 - Math.pow(1 - progress, 3);
-        
-        // Animate camera position
-        camera.position.lerpVectors(startPosition.current, targetPosition, eased);
-        
-        // Update OrbitControls target based on active component
-        let newTarget;
-        if (activeComponent && HVAC_POSITIONS[activeComponent]) {
-          // Set target to the hotspot position for focused view
-          const hotspotPos = HVAC_POSITIONS[activeComponent].position;
-          newTarget = new THREE.Vector3(hotspotPos[0], hotspotPos[1], hotspotPos[2]);
-          
-          // Set zoom to 1 when focusing on hotspot
-          if (progress >= 1) {
-            const direction = new THREE.Vector3().subVectors(camera.position, newTarget).normalize();
-            const zoomDistance = 1;
-            camera.position.copy(newTarget).add(direction.multiplyScalar(zoomDistance));
-          }
-        } else {
-          // Default target for overview
-          newTarget = new THREE.Vector3(27.23, 0.00, -25.55);
-        }
-        
-        orbitControlsRef.current.target.lerpVectors(startTarget.current, newTarget, eased);
+      // Update OrbitControls
+      if (orbitControlsRef.current) {
         orbitControlsRef.current.update();
-        
-        if (progress >= 1) {
-          setIsAnimating(false);
-          if (onComplete) onComplete();
-        }
       }
       
       // Update camera position and rotation in debug panel
@@ -77,7 +107,7 @@ function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitCon
     }
   });
 
-  return null;
+  return <JEasings />;
 }
 
 export default CameraController;

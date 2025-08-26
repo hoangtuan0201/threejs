@@ -7,6 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../theme/ThemeContext';
 import * as THREE from 'three';
 import { Hotspot, CameraController, BuildingModel, HVAC_POSITIONS } from '../components/XRayMode';
+import { HotspotsRenderer } from '../components/Hotspot';
+import { HotspotDetail } from '../components/HotspotDetail';
+import { VideoScreen } from '../components/VideoScreen';
+import { sequenceChapters } from '../data/sequenceChapters';
 
 
 
@@ -21,24 +25,50 @@ export default function XRayMode() {
   const [isXRayMode, setIsXRayMode] = useState(false);
   const [activeComponent, setActiveComponent] = useState(null);
   const [cameraTarget, setCameraTarget] = useState(null);
-  const [showHotspots, setShowHotspots] = useState(true);
+  // const [showHotspots, setShowHotspots] = useState(true); // DISABLED
+  const [currentRoom, setCurrentRoom] = useState(0);
+  
+  // HVAC component positions for camera movement
+  const hvacComponents = Object.keys(HVAC_POSITIONS);
+  const [currentHVACIndex, setCurrentHVACIndex] = useState(0);
   const [currentCameraPos, setCurrentCameraPos] = useState({ x: 42.08, y: 8.38, z: -25.98 });
   const [currentCameraRot, setCurrentCameraRot] = useState({ x: 0, y: 0, z: 0 });
+  const [selectedHotspot, setSelectedHotspot] = useState(null);
+  const [showVideoScreen, setShowVideoScreen] = useState(null);
   const orbitControlsRef = useRef();
 
   const handleHotspotClick = (componentKey) => {
-    const component = HVAC_POSITIONS[componentKey];
-    setActiveComponent(componentKey);
-    setIsXRayMode(true);
-    
-    // Calculate camera position with zoom distance of 1 from hotspot
-    const hotspotPos = component.position;
-    const targetPos = new THREE.Vector3(
-      hotspotPos[0] + 1,
-      hotspotPos[1] + 1,
-      hotspotPos[2] + 1
-    );
-    setCameraTarget(targetPos);
+    // Handle HVAC hotspots
+    if (HVAC_POSITIONS[componentKey]) {
+      const component = HVAC_POSITIONS[componentKey];
+      setActiveComponent(componentKey);
+      // Tự động bật X-Ray mode với 50% transparency khi click hotspot HVAC
+      setIsXRayMode(true);
+      
+      // Sử dụng cameraPosition từ HVAC_POSITIONS
+      const cameraPos = component.cameraPosition;
+      const targetPos = new THREE.Vector3(
+        cameraPos[0],
+        cameraPos[1],
+        cameraPos[2]
+      );
+      setCameraTarget(targetPos);
+    } else {
+      // Handle sequence chapter hotspots
+      const chapter = sequenceChapters.find(ch => ch.id === componentKey);
+      
+      if (chapter && chapter.hotspot) {
+        // Tự động bật X-Ray mode với 50% transparency khi click hotspot từ sequenceChapters
+        setIsXRayMode(true);
+        setSelectedHotspot(chapter);
+        setShowVideoScreen(chapter);
+      }
+    }
+  };
+
+  const handleCloseHotspotDetail = () => {
+    setSelectedHotspot(null);
+    setShowVideoScreen(null);
   };
 
   const handleExitXRay = () => {
@@ -80,11 +110,22 @@ export default function XRayMode() {
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="outlined"
-            onClick={() => setShowHotspots(!showHotspots)}
-            startIcon={showHotspots ? <VisibilityOff /> : <Visibility />}
+            onClick={() => {
+              const nextIndex = (currentHVACIndex + 1) % hvacComponents.length;
+              setCurrentHVACIndex(nextIndex);
+              const componentKey = hvacComponents[nextIndex];
+              const component = HVAC_POSITIONS[componentKey];
+              const targetPos = new THREE.Vector3(
+                component.cameraPosition[0],
+                component.cameraPosition[1],
+                component.cameraPosition[2]
+              );
+              setCameraTarget(targetPos);
+              setActiveComponent(componentKey);
+            }}
             sx={{ color: theme.colors.text.primary }}
           >
-            {showHotspots ? 'Hide' : 'Show'} Hotspots
+            Next Component ({hvacComponents[currentHVACIndex]})
           </Button>
           
           {isXRayMode && (
@@ -114,7 +155,7 @@ export default function XRayMode() {
       </Box>
 
       {/* Component Info Panel */}
-      {activeComponent && (
+      {/* {activeComponent && (
         <Box sx={{
           position: 'absolute',
           bottom: 20,
@@ -139,7 +180,7 @@ export default function XRayMode() {
             Viewing {activeComponent} component in X-Ray mode. The building structure is now transparent to show internal HVAC systems.
           </Typography>
         </Box>
-      )}
+      )} */}
 
       {/* Instructions */}
       {!isXRayMode && (
@@ -182,7 +223,7 @@ export default function XRayMode() {
         </Box>
       )}
 
-      {/* Debug Info */}
+      {/* Debug Info
       <Box sx={{
         position: 'absolute',
         top: 20,
@@ -235,7 +276,7 @@ export default function XRayMode() {
             </Typography>
           </>
         )}
-      </Box>
+      </Box> */}
 
       {/* 3D Canvas */}
       <Canvas
@@ -279,8 +320,8 @@ export default function XRayMode() {
           highlightedComponent={activeComponent}
         />
         
-        {/* Hotspots */}
-        {showHotspots && Object.entries(HVAC_POSITIONS).map(([key, data]) => {
+        {/* HVAC Hotspots - always visible */}
+        {Object.entries(HVAC_POSITIONS).map(([key, data]) => {
           // Ẩn hotspot hiện tại khi đã click vào nó (khi activeComponent === key)
           const shouldShowHotspot = !isXRayMode || activeComponent !== key;
           
@@ -295,6 +336,36 @@ export default function XRayMode() {
             />
           ) : null;
         })}
+        
+        {/* Sequence Chapter Hotspots - always visible */}
+        <HotspotsRenderer
+          sequenceChapters={sequenceChapters}
+          onHotspotClick={handleHotspotClick}
+          selectedHotspot={selectedHotspot}
+          currentPosition={1.0} // Default position for X-ray mode
+        />
+        
+        {/* Hotspot Detail Popup */}
+        {selectedHotspot && (
+          <HotspotDetail
+            selectedHotspot={selectedHotspot}
+            onClose={handleCloseHotspotDetail}
+          />
+        )}
+        
+        {/* Video Screen */}
+        {showVideoScreen && showVideoScreen.videoScreen && (
+          <VideoScreen
+            position={showVideoScreen.videoScreen.position}
+            rotation={showVideoScreen.videoScreen.rotation}
+            videoId={showVideoScreen.videoScreen.videoId}
+            title={showVideoScreen.videoScreen.title}
+            size={showVideoScreen.videoScreen.size}
+            mobilePosition={showVideoScreen.videoScreen.mobilePosition}
+            mobileRotation={showVideoScreen.videoScreen.mobileRotation}
+            mobileSize={showVideoScreen.videoScreen.mobileSize}
+          />
+        )}
       </Canvas>
     </Box>
   );
