@@ -67,16 +67,16 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
 
       // If it's already a PhysicalMaterial, enhance it for photorealism
       if (src.isMeshPhysicalMaterial) {
-        // Ultra-high quality clearcoat for glass-like surfaces
-        src.clearcoat = Math.max(src.clearcoat ?? 0, 0.9);
-        src.clearcoatRoughness = Math.min(src.clearcoatRoughness ?? 0.08, 0.05);
+        // Moderate clearcoat for natural surfaces
+        src.clearcoat = Math.max(src.clearcoat ?? 0, 0.5);
+        src.clearcoatRoughness = Math.min(src.clearcoatRoughness ?? 0.08, 0.1);
         
-        // Enhanced environment mapping for realistic reflections
-        src.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 2.5);
+        // Balanced environment mapping for natural reflections
+        src.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 1.5);
         
-        // Optimized metalness and roughness for photorealism
-        src.metalness = Math.min(Math.max(src.metalness ?? 0.3, 0.7), 1.0);
-        src.roughness = Math.max(Math.min(src.roughness ?? 0.2, 0.3), 0.01);
+        // Balanced metalness and roughness for natural look
+        src.metalness = Math.min(Math.max(src.metalness ?? 0.3, 0.4), 0.7);
+        src.roughness = Math.max(Math.min(src.roughness ?? 0.2, 0.4), 0.05);
         
         // Advanced IOR for realistic refractions
         src.ior = src.ior ?? 1.5;
@@ -113,15 +113,15 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
         side: src.side ?? THREE.FrontSide,
         reflectivity: src.reflectivity ?? 1.0,
         
-        // Ultra-high quality clearcoat for glass-like finish
-        clearcoat: 0.95,
-        clearcoatRoughness: 0.02,
+        // Moderate clearcoat for natural finish
+        clearcoat: 0.4,
+        clearcoatRoughness: 0.1,
         
-        // Advanced IOR for realistic refractions
-        ior: 1.5,
+        // Natural IOR for realistic refractions
+        ior: 1.3,
         
-        // Ultra-enhanced environment mapping for maximum realism
-        envMapIntensity: 2.8, // Khôi phục intensity cao cho reflections chân thật
+        // Balanced environment mapping for natural realism
+        envMapIntensity: 1.2, // Giảm intensity để tránh chói lóa
         
         // Advanced transmission for glass materials
         transmission: src.transmission ?? 0,
@@ -139,8 +139,8 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
       if (src.sheenRoughness !== undefined) mat.sheenRoughness = src.sheenRoughness;
       if (src.sheenColor !== undefined) mat.sheenColor = src.sheenColor;
 
-      // Ensure ultra-strong env map intensity for photorealistic reflections
-      mat.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 2.8); // Khôi phục intensity cao
+      // Ensure balanced env map intensity for natural reflections
+      mat.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 1.2); // Giảm intensity để tránh chói lóa
 
       // Enable double-sided rendering for thin materials
       if (src.side === THREE.DoubleSide) {
@@ -181,15 +181,15 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
             console.warn('Failed to convert material to physical:', e);
           }
 
-          // Make reflections ultra-strong and sharp for maximum photorealism
-          child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 3.0); // Khôi phục intensity cao nhất
+          // Make reflections balanced and natural for comfortable viewing
+          child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0); // Giảm intensity để tránh chói lóa
           if (child.material.isMeshPhysicalMaterial) {
-            child.material.clearcoat = Math.max(child.material.clearcoat ?? 0, 0.95);
-            child.material.clearcoatRoughness = Math.min(child.material.clearcoatRoughness ?? 0.02, 0.03);
+            child.material.clearcoat = Math.max(child.material.clearcoat ?? 0, 0.3);
+            child.material.clearcoatRoughness = Math.min(child.material.clearcoatRoughness ?? 0.02, 0.15);
             
-            // Enhanced metalness for realistic metal surfaces
-            child.material.metalness = Math.min(Math.max(child.material.metalness ?? 0.6, 0.8), 1.0);
-            child.material.roughness = Math.max(child.material.roughness ?? 0.03, 0.01);
+            // Balanced metalness for natural metal surfaces
+            child.material.metalness = Math.min(Math.max(child.material.metalness ?? 0.3, 0.3), 0.5);
+            child.material.roughness = Math.max(child.material.roughness ?? 0.03, 0.1);
             
             // Advanced IOR for glass-like materials
             child.material.ior = child.material.ior ?? 1.5;
@@ -217,8 +217,8 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
           try {
             if (globalScene?.environment && !child.material.envMap) {
               child.material.envMap = globalScene.environment;
-              // Ultra-boost intensity for crystal-clear reflections
-              child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 3.2); // Khôi phục intensity cao nhất
+              // Balanced intensity for natural reflections
+              child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0); // Giảm intensity để tránh chói lóa
               child.material.needsUpdate = true;
             }
           } catch (e) {

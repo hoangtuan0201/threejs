@@ -1,54 +1,86 @@
-import React, { useRef, useEffect } from 'react';
-import { useGLTF } from '@react-three/drei';
-import * as THREE from 'three';
+import React, { useRef, useEffect, useMemo } from 'react';
+  import { useGLTF } from '@react-three/drei';
+  import * as THREE from 'three';
 
-function BuildingModel({ isXRayMode, highlightedComponent }) {
-  const { scene } = useGLTF('/3ddd.glb');
-  const modelRef = useRef();
-  
-  useEffect(() => {
-    if (modelRef.current && scene) {
-      modelRef.current.traverse((child) => {
+  function BuildingModel({ isXRayMode, highlightedComponent }) {
+    const { scene } = useGLTF('/3ddd.glb');
+    const modelRef = useRef();
+    const materialsRef = useRef(new Map()); // Lưu cả original và xray materials
+    
+    // Clone scene một lần duy nhất và tạo materials
+    const clonedScene = useMemo(() => {
+      if (!scene) return null;
+      const cloned = scene.clone();
+      
+      // Tạo cả original và xray materials một lần duy nhất
+      cloned.traverse((child) => {
         if (child.isMesh && child.material) {
-          // Store original material if not already stored
-          if (!child.userData.originalMaterial) {
-            child.userData.originalMaterial = child.material.clone();
-          }
-          
-          if (isXRayMode) {
-            // Apply transparency to building
-            const newMaterial = child.userData.originalMaterial.clone();
-            newMaterial.transparent = true;
-            newMaterial.opacity = 0.5;
-            newMaterial.alphaTest = 0; // Đảm bảo alpha test không can thiệp
-            newMaterial.depthWrite = false; // Tắt depth write để transparency hoạt động đúng
-            newMaterial.side = THREE.DoubleSide; // Hiển thị cả hai mặt
-            newMaterial.needsUpdate = true; // Buộc cập nhật material
-            child.material = newMaterial;
+          const materialId = child.uuid;
+          if (!materialsRef.current.has(materialId)) {
+            const originalMaterial = child.material.clone();
             
-            // Highlight specific component
-            if (highlightedComponent && child.name && child.name.toLowerCase().includes(highlightedComponent.toLowerCase())) {
-              child.material.emissive = new THREE.Color(0x00ff00);
-              child.material.emissiveIntensity = 0.5;
-              child.material.opacity = 1.0; // Component được highlight sẽ không trong suốt
-            }
-          } else {
-            // Restore original material
-            const originalMaterial = child.userData.originalMaterial.clone();
-            originalMaterial.needsUpdate = true;
-            child.material = originalMaterial;
+            // Tạo xray material với transparency settings chuẩn
+            const xrayMaterial = originalMaterial.clone();
+            xrayMaterial.transparent = true;
+            xrayMaterial.opacity = 0.5;
+            xrayMaterial.alphaTest = 0;
+            xrayMaterial.depthWrite = false; // Quan trọng: tắt depth write cho transparency
+              xrayMaterial.side = THREE.DoubleSide;
+            xrayMaterial.needsUpdate = true;
+            
+            // Lưu cả 2 loại material
+            materialsRef.current.set(materialId, {
+              original: originalMaterial,
+              xray: xrayMaterial
+            });
           }
         }
       });
-    }
-  }, [isXRayMode, highlightedComponent, scene]);
+      
+      return cloned;
+    }, [scene]);
+    
+    useEffect(() => {
+      if (modelRef.current && clonedScene) {
+        modelRef.current.traverse((child) => {
+          if (child.isMesh && child.material) {
+            const materialId = child.uuid;
+            const materials = materialsRef.current.get(materialId);
+            
+            if (!materials) return;
+            
+            if (isXRayMode) {
+              // Clone material để tránh mutating shared material (giống Model.jsx)
+              child.material = materials.xray.clone();
+              child.material.transparent = true;
+              child.material.opacity = 0.5;
+              child.material.depthWrite = true;
+              child.material.needsUpdate = true;
+              
+              // Highlight specific component
+              if (highlightedComponent && child.name && child.name.toLowerCase().includes(highlightedComponent.toLowerCase())) {
+                child.material.emissive = new THREE.Color(0x00ff00);
+                child.material.emissiveIntensity = 0.5;
+                child.material.opacity = 1.0;
+                child.material.depthWrite = true;
+                child.material.transparent = false; // Highlighted không trong suốt
+              }
+            } else {
+              // Clone original material để tránh mutating shared material
+              child.material = materials.original.clone();
+              child.material.needsUpdate = true;
+            }
+          }
+        });
+      }
+    }, [isXRayMode, highlightedComponent, clonedScene]);
 
-  if (!scene) return null;
-  
-  return <primitive ref={modelRef} object={scene.clone()} />;
-}
+    if (!clonedScene) return null;
+    
+    return <primitive ref={modelRef} object={clonedScene} />;
+  }
 
-// Preload the model
-useGLTF.preload('/3ddd.glb');
+  // Preload the model
+  useGLTF.preload('/3ddd.glb');
 
-export default BuildingModel;
+  export default BuildingModel;
