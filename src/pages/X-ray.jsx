@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useProgress } from '@react-three/drei';
-import { Box, Button, Typography, IconButton } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
+import MobileHomeButton from '../components/MobileHomeButton';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../theme/ThemeContext';
 import * as THREE from 'three';
+import gsap from 'gsap';
 import { Hotspot, CameraController, BuildingModel, HVAC_POSITIONS } from '../components/XRayMode';
 import { HotspotsRenderer } from '../components/Hotspot';
 import { HotspotDetail } from '../components/HotspotDetail';
@@ -63,6 +64,8 @@ export default function XRayMode() {
   const limit = THREE.MathUtils.degToRad(15); // 15 độ
 
 
+
+
   // Reset progress when component mounts
   useEffect(() => {
     setDisplayProgress(0);
@@ -86,21 +89,24 @@ export default function XRayMode() {
       const increment = Math.min(assetProgress - displayProgress, 5);
       const timer = setTimeout(() => {
         setDisplayProgress(prev => Math.min(prev + increment, assetProgress));
-      }, 50);
+      }, 100);
       return () => clearTimeout(timer);
     } else {
       setDisplayProgress(assetProgress);
     }
   }, [assetProgress, displayProgress]);
 
+  // Hide loading screen when both model progress and display progress are complete
   useEffect(() => {
-    // Simulate loading time for 3D models
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
+    // Only hide loading when progress reaches 100%
+    if (displayProgress >= 100) {
+      // Add small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [displayProgress]);
 
   const handleHotspotClick = (componentKey) => {
     // Handle HVAC hotspots
@@ -206,6 +212,9 @@ export default function XRayMode() {
             <Button
               variant="outlined"
               onClick={() => {
+                // Reset state trước khi chuyển sang component khác
+                handleResetState();
+                
                 const nextIndex = (currentHVACIndex + 1) % hvacComponents.length;
                 setCurrentHVACIndex(nextIndex);
                 const componentKey = hvacComponents[nextIndex];
@@ -215,6 +224,7 @@ export default function XRayMode() {
                   component.cameraPosition[1],
                   component.cameraPosition[2]
                 );
+                
                 setCameraTarget(targetPos);
                 setActiveComponent(componentKey);
               }}
@@ -239,16 +249,10 @@ export default function XRayMode() {
           )}
           
           
-          <IconButton
-            onClick={handleExit}
-            sx={{ 
-              color: theme.colors.text.primary,
-              bgcolor: theme.colors.background.secondary,
-              '&:hover': { bgcolor: theme.colors.background.tertiary }
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
+          <MobileHomeButton
+            onGoHome={handleExit}
+            isVisible={true}
+          />
         </Box>
       </Box>
 
@@ -334,23 +338,25 @@ export default function XRayMode() {
         <TransparentSortingSetup />
         
         {/* Industrial Background */}
-        <Background 
-          imageUrl="/industrial.jpg"
-          opacity={1.0}
-          enableBackground={true}
-        />
+        <Suspense fallback={null}>
+          <Background 
+            imageUrl="/industrial.jpg"
+            opacity={1.0}
+            enableBackground={true}
+          />
+        </Suspense>
         
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
-        <OrbitControls 
+        <OrbitControls
           ref={orbitControlsRef}
           enablePan={false}
-          enableZoom={true}
           enableRotate={true}
+          enableZoom={activeComponent ? false : true}
           minDistance={1}
           maxDistance={20}
           target={[28.7, 6.2, -26.1]}
-        
+          makeDefault
           // Giới hạn góc xoay dọc (polar) - chỉ một chút
           minPolarAngle={Math.PI / 2 - limit}    // 60° (ngẩng lên một chút)
           maxPolarAngle={Math.PI / 2 + limit} // 120° (cúi xuống một chút)
@@ -373,14 +379,16 @@ export default function XRayMode() {
           activeComponent={activeComponent}
         />
         
-        <BuildingModel 
-          highlightedComponent={activeComponent}
-          activeSequence={activeSequence}
-          onSequenceTransitionComplete={(action, mesh) => {
-            // Callback khi transition hoàn thành
-            // console.log(`Sequence transition ${action} completed for mesh:`, mesh.name);
-          }}
-        />
+        <Suspense fallback={null}>
+          <BuildingModel 
+            highlightedComponent={activeComponent}
+            activeSequence={activeSequence}
+            onSequenceTransitionComplete={(action, mesh) => {
+              // Callback khi transition hoàn thành
+              // console.log(`Sequence transition ${action} completed for mesh:`, mesh.name);
+            }}
+          />
+        </Suspense>
         
         {/* Thảm cỏ lót sàn */}
         <GrassFloor 

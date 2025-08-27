@@ -18,7 +18,6 @@ function Hotspot({ position, rotation, label, onClick, isActive, onResetState })
   return (
     <group position={position} rotation={rotation}>
       <Html
-        distanceFactor={10}
         center
         style={{
           pointerEvents: 'auto',
@@ -41,8 +40,8 @@ function Hotspot({ position, rotation, label, onClick, isActive, onResetState })
           {/* Hotspot circle */}
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '20px',
+              height: '20px',
               borderRadius: '50%',
               background: isActive ? '#ff6b6b' : hovered ? '#4fc3f7' : '#ffffff',
               border: '2px solid #ffffff',

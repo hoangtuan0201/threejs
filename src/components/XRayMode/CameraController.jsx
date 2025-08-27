@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import JEASINGS from 'jeasings';
-import JEasings from './JEasings';
+import gsap from 'gsap';
 
 // HVAC Component positions với camera position và rotation cho mỗi hotspot
 const HVAC_POSITIONS = {
@@ -20,54 +19,52 @@ const HVAC_POSITIONS = {
   },
  
   Ducts: { 
-    position: [13, 4.99, -34], 
-    cameraPosition: [12, 4.99, -34],
+    position: [14, 5.3, -34], 
+    cameraPosition: [13, 5.3, -34],
   }
 };
 
 function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitControlsRef, activeComponent }) {
   const { camera } = useThree();
   const [isAnimating, setIsAnimating] = useState(false);
-  const animationRef = useRef(null);
-  const rotationAnimationRef = useRef(null);
-  const targetAnimationRef = useRef(null);
+  const timelineRef = useRef(null);
 
   useEffect(() => {
     if (targetPosition && camera && orbitControlsRef.current) {
       setIsAnimating(true);
       
-      // Stop any existing animations
-      if (animationRef.current && animationRef.current.stop) {
-        animationRef.current.stop();
-      }
-      if (rotationAnimationRef.current && rotationAnimationRef.current.stop) {
-        rotationAnimationRef.current.stop();
-      }
-      if (targetAnimationRef.current && targetAnimationRef.current.stop) {
-        targetAnimationRef.current.stop();
+      // Kill any existing animations
+      if (timelineRef.current) {
+        timelineRef.current.kill();
       }
       
+      // Create GSAP timeline
+      timelineRef.current = gsap.timeline({
+        onComplete: () => {
+          setIsAnimating(false);
+          if (onComplete) onComplete();
+        }
+      });
+      
       // Animate camera position
-      animationRef.current = new JEASINGS.JEasing(camera.position)
-        .to({
-          x: targetPosition.x,
-          y: targetPosition.y,
-          z: targetPosition.z
-        }, 3000)
-        .easing(JEASINGS.Cubic.Out)
-        .start();
+      timelineRef.current.to(camera.position, {
+        x: targetPosition.x,
+        y: targetPosition.y,
+        z: targetPosition.z,
+        duration: 2,
+        ease: "power2.out"
+      }, 0);
       
       // Animate camera rotation if activeComponent has cameraRotation
       if (activeComponent && HVAC_POSITIONS[activeComponent] && HVAC_POSITIONS[activeComponent].cameraRotation) {
         const targetRotation = HVAC_POSITIONS[activeComponent].cameraRotation;
-        rotationAnimationRef.current = new JEASINGS.JEasing(camera.rotation)
-          .to({
-            x: targetRotation[0],
-            y: targetRotation[1],
-            z: targetRotation[2]
-          }, 2500)
-          .easing(JEASINGS.Cubic.Out)
-          .start();
+        timelineRef.current.to(camera.rotation, {
+          x: targetRotation[0],
+          y: targetRotation[1],
+          z: targetRotation[2],
+          duration: 2,
+          ease: "power2.out"
+        }, 0);
       }
       
       // Animate OrbitControls target
@@ -79,14 +76,13 @@ function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitCon
         newTarget = { x: 28.7, y: 6.2, z: -26.1 };
       }
       
-      targetAnimationRef.current = new JEASINGS.JEasing(orbitControlsRef.current.target)
-        .to(newTarget, 2500)
-        .easing(JEASINGS.Cubic.Out)
-        .start()
-        .onComplete(() => {
-          setIsAnimating(false);
-          if (onComplete) onComplete();
-        });
+      timelineRef.current.to(orbitControlsRef.current.target, {
+        x: newTarget.x,
+        y: newTarget.y,
+        z: newTarget.z,
+        duration: 2,
+        ease: "power2.out"
+      }, 0);
     }
   }, [targetPosition, camera, orbitControlsRef, activeComponent]);
 
@@ -107,7 +103,7 @@ function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitCon
     }
   });
 
-  return <JEasings />;
+  return null;
 }
 
 export default CameraController;
