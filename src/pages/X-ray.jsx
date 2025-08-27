@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useProgress } from '@react-three/drei';
 import { Box, Button, Typography, IconButton } from '@mui/material';
-import { Close as CloseIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../theme/ThemeContext';
 import * as THREE from 'three';
@@ -40,7 +40,6 @@ function TransparentSortingSetup() {
 export default function XRayMode() {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [isXRayMode, setIsXRayMode] = useState(false);
   const [activeComponent, setActiveComponent] = useState(null);
   const [cameraTarget, setCameraTarget] = useState(null);
   // const [showHotspots, setShowHotspots] = useState(true); // DISABLED
@@ -55,11 +54,14 @@ export default function XRayMode() {
   const hvacComponents = Object.keys(HVAC_POSITIONS);
   const [currentHVACIndex, setCurrentHVACIndex] = useState(0);
   // Sử dụng useRef thay vì state để tránh re-render liên tục
-  const currentCameraPosRef = useRef({ x: 42.08, y: 8.38, z: -25.98 });
+  const currentCameraPosRef = useRef({ x: 42.08, y: 20, z: -24.98 });
   const currentCameraRotRef = useRef({ x: 0, y: 0, z: 0 });
   const [selectedHotspot, setSelectedHotspot] = useState(null);
   const [showVideoScreen, setShowVideoScreen] = useState(null);
+  const [activeSequence, setActiveSequence] = useState(null); // Sequence đang active
   const orbitControlsRef = useRef();
+  const limit = THREE.MathUtils.degToRad(15); // 15 độ
+
 
   // Reset progress when component mounts
   useEffect(() => {
@@ -95,7 +97,7 @@ export default function XRayMode() {
     // Simulate loading time for 3D models
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -115,10 +117,11 @@ export default function XRayMode() {
       );
       setCameraTarget(targetPos);
     } else {
-      // Handle sequence chapter hotspots
+      // Handle sequence chapter hotspots - sử dụng hệ thống ẩn mesh thay vì X-ray
       const chapter = sequenceChapters.find(ch => ch.id === componentKey);
       
       if (chapter && chapter.hotspot) {
+        setActiveSequence(componentKey); // Kích hoạt ẩn mesh cho sequence này
         setSelectedHotspot(chapter);
         setShowVideoScreen(chapter);
       }
@@ -128,21 +131,37 @@ export default function XRayMode() {
   const handleCloseHotspotDetail = () => {
     setSelectedHotspot(null);
     setShowVideoScreen(null);
+    setActiveSequence(null); // Tắt ẩn mesh khi đóng hotspot detail
   };
 
-  const handleToggleXRay = () => {
-    setIsXRayMode(!isXRayMode);
+
+
+  const handleExit = () => {
+    // Tự động tắt hotspot khi rời khỏi
+    setSelectedHotspot(null);
+    setShowVideoScreen(null);
+    setActiveSequence(null);
+    setActiveComponent(null);
+    navigate('/');
   };
 
   const handleExitXRay = () => {
-    setIsXRayMode(false);
+    // Tự động tắt hotspot khi exit X-ray mode
+    setSelectedHotspot(null);
+    setShowVideoScreen(null);
+    setActiveSequence(null);
     setActiveComponent(null);
     // Reset camera to initial position smoothly
-    setCameraTarget(new THREE.Vector3(43, 8, -25.98));
+    setCameraTarget(new THREE.Vector3(42.08, 20, -24.98));
   };
 
-  const handleExit = () => {
-    navigate('/');
+  const handleResetState = () => {
+    // Reset state khi chuyển sang khu vực khác
+    console.log('X-ray: handleResetState called');
+    setSelectedHotspot(null);
+    setShowVideoScreen(null);
+    setActiveSequence(null);
+    setActiveComponent(null);
   };
 
   // Show loading screen while loading
@@ -205,26 +224,12 @@ export default function XRayMode() {
             </Button>
           )}
           
-          {/* Nút Toggle X-Ray */}
-          <Button
-            variant={isXRayMode ? "contained" : "outlined"}
-            onClick={handleToggleXRay}
-            startIcon={isXRayMode ? <VisibilityOff /> : <Visibility />}
-            sx={{ 
-              color: isXRayMode ? theme.colors.text.inverse : theme.colors.text.primary,
-              background: isXRayMode ? theme.gradients.accent : 'transparent',
-              borderColor: theme.colors.text.primary
-            }}
-          >
-            {isXRayMode ? 'Disable X-Ray' : 'Enable X-Ray'}
-          </Button>
-          
           {/* Nút Exit X-Ray chỉ hiện khi có activeComponent */}
           {activeComponent && (
             <Button
               variant="contained"
               onClick={handleExitXRay}
-              sx={{ 
+              sx={{
                 background: theme.gradients.accent,
                 color: theme.colors.text.inverse
               }}
@@ -232,6 +237,7 @@ export default function XRayMode() {
               Exit X-Ray
             </Button>
           )}
+          
           
           <IconButton
             onClick={handleExit}
@@ -310,71 +316,17 @@ export default function XRayMode() {
           <Typography variant="body2" sx={{ 
             color: theme.colors.text.secondary
           }}>
-            • X-Ray mode reveals internal systems
+            • Sequence chapters reveal internal systems
           </Typography>
         </Box>
       )}
 
-      {/* Debug Info
-      <Box sx={{
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        zIndex: 1000,
-        background: theme.colors.background.overlay,
-        backdropFilter: 'blur(10px)',
-        borderRadius: 1,
-        p: 2,
-        minWidth: 200,
-        border: `1px solid ${theme.colors.border.light}`
-      }}>
-        <Typography variant="h6" sx={{ 
-          color: theme.colors.text.primary,
-          mb: 1,
-          fontSize: '14px'
-        }}>
-          Debug Info
-        </Typography>
-        <Typography variant="body2" sx={{ 
-          color: theme.colors.text.secondary,
-          fontSize: '12px',
-          fontFamily: 'monospace'
-        }}>
-          Position: [{currentCameraPos.x.toFixed(2)}, {currentCameraPos.y.toFixed(2)}, {currentCameraPos.z.toFixed(2)}]
-        </Typography>
-        <Typography variant="body2" sx={{ 
-          color: theme.colors.text.secondary,
-          fontSize: '12px',
-          fontFamily: 'monospace'
-        }}>
-          Rotation: [{currentCameraRot.x.toFixed(2)}, {currentCameraRot.y.toFixed(2)}, {currentCameraRot.z.toFixed(2)}]
-        </Typography>
-        {activeComponent && (
-          <>
-            <Typography variant="body2" sx={{ 
-              color: theme.colors.text.secondary,
-              fontSize: '12px',
-              fontFamily: 'monospace',
-              mt: 1
-            }}>
-              Position: [{HVAC_POSITIONS[activeComponent].position.join(', ')}]
-            </Typography>
-            <Typography variant="body2" sx={{ 
-              color: theme.colors.text.secondary,
-              fontSize: '12px',
-              fontFamily: 'monospace'
-            }}>
-              Rotation: [{HVAC_POSITIONS[activeComponent].rotation.join(', ')}]
-            </Typography>
-          </>
-        )}
-      </Box> */}
 
       {/* 3D Canvas */}
       <Canvas
         style={{ width: '100%', height: '100%' }}
         camera={{
-          position: [42.08, 8.38, -25.98],
+          position: [42.08, 20, -24.98],
           fov: 75
         }}
       >
@@ -390,7 +342,6 @@ export default function XRayMode() {
         
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
-        
         <OrbitControls 
           ref={orbitControlsRef}
           enablePan={false}
@@ -398,7 +349,11 @@ export default function XRayMode() {
           enableRotate={true}
           minDistance={1}
           maxDistance={20}
-          target={[27.23, 0.00, -25.55]}
+          target={[28.7, 6.2, -26.1]}
+        
+          // Giới hạn góc xoay dọc (polar) - chỉ một chút
+          minPolarAngle={Math.PI / 2 - limit}    // 60° (ngẩng lên một chút)
+          maxPolarAngle={Math.PI / 2 + limit} // 120° (cúi xuống một chút)
           mouseButtons={{
             LEFT: 0, // Rotate with left mouse button
             MIDDLE: 1, // Zoom with middle mouse button
@@ -419,8 +374,12 @@ export default function XRayMode() {
         />
         
         <BuildingModel 
-          isXRayMode={isXRayMode}
           highlightedComponent={activeComponent}
+          activeSequence={activeSequence}
+          onSequenceTransitionComplete={(action, mesh) => {
+            // Callback khi transition hoàn thành
+            // console.log(`Sequence transition ${action} completed for mesh:`, mesh.name);
+          }}
         />
         
         {/* Thảm cỏ lót sàn */}
@@ -442,6 +401,7 @@ export default function XRayMode() {
               label={data.label}
               isActive={activeComponent === key}
               onClick={() => handleHotspotClick(key)}
+              onResetState={handleResetState}
             />
           );
         })}

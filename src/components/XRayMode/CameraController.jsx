@@ -15,8 +15,8 @@ const HVAC_POSITIONS = {
     cameraPosition: [23.2, 5.5, -21],
   },
   Thermostat: { 
-    position: [30.1, 5.8, -22], 
-    cameraPosition: [30, 5.5, -24],
+    position: [30.1, 7, -22], 
+    cameraPosition: [30, 6.7, -24],
   },
  
   Ducts: { 
@@ -76,7 +76,7 @@ function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitCon
         const hotspotPos = HVAC_POSITIONS[activeComponent].position;
         newTarget = { x: hotspotPos[0], y: hotspotPos[1], z: hotspotPos[2] };
       } else {
-        newTarget = { x: 27.23, y: 0.00, z: -25.55 };
+        newTarget = { x: 28.7, y: 6.2, z: -26.1 };
       }
       
       targetAnimationRef.current = new JEASINGS.JEasing(orbitControlsRef.current.target)

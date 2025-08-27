@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import { Html } from '@react-three/drei';
 
-function Hotspot({ position, rotation, label, onClick, isActive }) {
+function Hotspot({ position, rotation, label, onClick, isActive, onResetState }) {
   const [hovered, setHovered] = useState(false);
+
+  const handleClick = () => {
+    // Reset state khi chuyển sang khu vực khác
+    if (onResetState) {
+      onResetState();
+    }
+    // Gọi onClick callback
+    if (onClick) {
+      onClick();
+    }
+  };
 
   return (
     <group position={position} rotation={rotation}>
@@ -15,7 +26,7 @@ function Hotspot({ position, rotation, label, onClick, isActive }) {
         }}
       >
         <div
-          onClick={onClick}
+          onClick={handleClick}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{
