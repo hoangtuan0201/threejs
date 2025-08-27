@@ -33,10 +33,6 @@ function TransparentSortingSetup() {
 
 
 
-
-
-
-
 // Main X-Ray Mode Component
 export default function XRayMode() {
   const navigate = useNavigate();
@@ -285,7 +281,7 @@ export default function XRayMode() {
       )} */}
 
       {/* Instructions - only show when no hotspot is selected */}
-      {!activeComponent && (
+      {/* {!activeComponent && (
         <Box sx={{
           position: 'absolute',
           top: '50%',
@@ -323,7 +319,7 @@ export default function XRayMode() {
             • Sequence chapters reveal internal systems
           </Typography>
         </Box>
-      )}
+      )} */}
 
 
       {/* 3D Canvas */}
@@ -390,12 +386,11 @@ export default function XRayMode() {
           />
         </Suspense>
         
-        {/* Thảm cỏ lót sàn */}
+        {/* Thảm đá lót sàn */}
         <GrassFloor 
           size={[100, 100]} 
           position={[0, -0.77, 0]} 
         />
-        
         {/* HVAC Hotspots - hide when selected */}
         {Object.entries(HVAC_POSITIONS).map(([key, data]) => {
           // Hide hotspot when it's the active component

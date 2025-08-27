@@ -8,19 +8,23 @@ const HVAC_POSITIONS = {
   FCU: { 
     position: [21.8, 5, -15], 
     cameraPosition: [21.8, 5, -14],
+    label: "Living Room"
   },  
   CDU: { 
     position: [22, 5.3, -21], 
     cameraPosition: [23.2, 5.5, -21],
+    label: "Dining Room"
   },
   Thermostat: { 
     position: [30.1, 7, -22], 
     cameraPosition: [30, 6.7, -24],
+    label: "Bedroom"
   },
  
   Ducts: { 
     position: [14, 5.3, -34], 
     cameraPosition: [13, 5.3, -34],
+    label: "Kitchen"
   }
 };
 
