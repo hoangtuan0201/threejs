@@ -26,13 +26,14 @@ export default function MeshClickHandler({ enabled = true }) {
 
       if (intersects.length > 0) {
         const clickedMesh = intersects[0].object;
-        
+        const intersectionPoint = intersects[0].point;
         // Log thông tin mesh được click
         console.log('Mesh clicked:', {
           name: clickedMesh.name,
           material: clickedMesh.material?.name || 'No material name',
           geometry: clickedMesh.geometry?.type || 'No geometry type',
-          parent: clickedMesh.parent?.name || 'No parent'
+          parent: clickedMesh.parent?.name || 'No parent',
+          intersectionPoint: intersectionPoint.clone() // vị trí điểm click
         });
 
         // Highlight effect tạm thời

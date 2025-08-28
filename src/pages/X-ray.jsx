@@ -11,7 +11,7 @@ import { Hotspot, CameraController, BuildingModel, HVAC_POSITIONS } from '../com
 import { HotspotsRenderer } from '../components/Hotspot';
 import { HotspotDetail } from '../components/HotspotDetail';
 import { VideoScreen } from '../components/VideoScreen';
-import { sequenceChapters } from '../data/sequenceChapters';
+import { sequenceChaptersXray } from '../data/sequenceChaptersXray';
 import { Background } from '../components/Background';
 import GrassFloor from '../components/GrassFloor';
 import LoadingScreen from '../components/LoadingScreen';
@@ -120,7 +120,7 @@ export default function XRayMode() {
       setCameraTarget(targetPos);
     } else {
       // Handle sequence chapter hotspots - sử dụng hệ thống ẩn mesh thay vì X-ray
-      const chapter = sequenceChapters.find(ch => ch.id === componentKey);
+      const chapter = sequenceChaptersXray.find(ch => ch.id === componentKey);
       
       if (chapter && chapter.hotspot) {
         setActiveSequence(componentKey); // Kích hoạt ẩn mesh cho sequence này
@@ -411,7 +411,7 @@ export default function XRayMode() {
         
         {/* Sequence Chapter Hotspots - always visible */}
         <HotspotsRenderer
-          sequenceChapters={sequenceChapters}
+          sequenceChapters={sequenceChaptersXray}
           onHotspotClick={handleHotspotClick}
           selectedHotspot={selectedHotspot}
           currentPosition={1.0} // Default position for X-ray mode

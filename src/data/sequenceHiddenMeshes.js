@@ -21,7 +21,7 @@ export const sequenceHiddenMeshes = {
     hiddenMaterials: [
       "Timber joist"
     ],
-    transitionDuration: 800, // ms
+    transitionDuration: 400, // ms
     fadeOpacity: 0.1
   },
   
@@ -102,10 +102,43 @@ export const sequenceHiddenMeshes = {
       "Timber joist"
       
     ],
-    transitionDuration: 800,
+    transitionDuration: 400,
     fadeOpacity: 0.1
   },
-  
+  //living room 2 linear grille
+  "linear-grille-2":{
+      hiddenMeshes: [
+        '3DGeom-9761',
+        '3DGeom-9614',
+        '3DGeom-9616',
+        '3DGeom-9615',
+        '3DGeom-9617',
+        '3DGeom-9618',
+        '3DGeom-9619',
+        '3DGeom-9620',
+      ],
+      hiddenMaterials: [
+        "Timber joist"
+      ],
+
+  },
+  //kitchen linear grille
+
+  "linear-grille-3":{
+      hiddenMeshes: [
+        '3DGeom-9761',
+        '3DGeom-9654',
+        '3DGeom-9653',
+        '3DGeom-9645',
+        '3DGeom-9647',
+        '3DGeom-9646',
+        '3DGeom-9652'
+      ],
+      hiddenMaterials: [
+        "Timber joist"
+      ],
+
+  },
   // Air Purification System - Ẩn tường và sàn để hiển thị hệ thống lọc khí
   "Air Purification": {
     hiddenMeshes: [
@@ -126,10 +159,9 @@ export const sequenceHiddenMeshes = {
       "3DGeom-9774",
     ],
     hiddenMaterials: [
-      "Brown Furniture",
      
     ],
-    transitionDuration: 800,
+    transitionDuration: 400,
     fadeOpacity: 0.1
   },
   
@@ -141,14 +173,14 @@ export const sequenceHiddenMeshes = {
     hiddenMaterials: [
     
     ],
-    transitionDuration: 800,
+    transitionDuration: 400,
     fadeOpacity: 0.1
   }
 };
 
 // Cấu hình chung cho hiệu ứng ẩn/hiện
 export const hiddenMeshConfig = {
-  defaultTransitionDuration: 800,
+  defaultTransitionDuration: 400,
   defaultFadeOpacity: 0.1,
   easingFunction: 'easeInOutCubic',
   
