@@ -292,7 +292,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
                 width: 20px;
                 height: 20px;
                 border-radius: 50px;
-                border: 1px solid rgba(255,255,255,0.3);
+                border: 1px solid rgba(255, 255, 255, 0.87);
                 z-index: 10;
                 background-color: rgba(0, 0, 0, 0.9);
                 pointer-events: all;

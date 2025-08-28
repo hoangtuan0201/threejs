@@ -31,15 +31,12 @@ function TransparentSortingSetup() {
   return null;
 }
 
-
-
 // Main X-Ray Mode Component
 export default function XRayMode() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const [activeComponent, setActiveComponent] = useState(null);
   const [cameraTarget, setCameraTarget] = useState(null);
-  // const [showHotspots, setShowHotspots] = useState(true); // DISABLED
   const [currentRoom, setCurrentRoom] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -58,9 +55,6 @@ export default function XRayMode() {
   const [activeSequence, setActiveSequence] = useState(null); // Sequence đang active
   const orbitControlsRef = useRef();
   const limit = THREE.MathUtils.degToRad(15); // 15 độ
-
-
-
 
   // Reset progress when component mounts
   useEffect(() => {
@@ -81,7 +75,7 @@ export default function XRayMode() {
   // Update display progress based on asset progress with smooth transition
   useEffect(() => {
     if (assetProgress > displayProgress) {
-      // Smooth increment for better UX
+      // Tăng tốc độ cập nhật progress để responsive hơn
       const increment = Math.min(assetProgress - displayProgress, 5);
       const timer = setTimeout(() => {
         setDisplayProgress(prev => Math.min(prev + increment, assetProgress));
@@ -96,11 +90,8 @@ export default function XRayMode() {
   useEffect(() => {
     // Only hide loading when progress reaches 100%
     if (displayProgress >= 100) {
-      // Add small delay to ensure smooth transition
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
+      // Hiển thị model ngay lập tức sau khi loading xong
+      setIsLoading(false);
     }
   }, [displayProgress]);
 
@@ -135,8 +126,6 @@ export default function XRayMode() {
     setShowVideoScreen(null);
     setActiveSequence(null); // Tắt ẩn mesh khi đóng hotspot detail
   };
-
-
 
   const handleExit = () => {
     // Tự động tắt hotspot khi rời khỏi
@@ -199,7 +188,6 @@ export default function XRayMode() {
           color: theme.colors.text.primary,
           fontWeight: 'bold'
         }}>
-          X-Ray Mode
         </Typography>
         
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -226,7 +214,7 @@ export default function XRayMode() {
               }}
               sx={{ color: theme.colors.text.primary }}
             >
-              Next Component ({hvacComponents[currentHVACIndex]})
+              Next Component ({hvacComponents[(currentHVACIndex + 1) % hvacComponents.length]})
             </Button>
           )}
           
@@ -244,83 +232,12 @@ export default function XRayMode() {
             </Button>
           )}
           
-          
           <MobileHomeButton
             onGoHome={handleExit}
             isVisible={true}
           />
         </Box>
       </Box>
-
-      {/* Component Info Panel */}
-      {/* {activeComponent && (
-        <Box sx={{
-          position: 'absolute',
-          bottom: 20,
-          left: 20,
-          right: 20,
-          zIndex: 1000,
-          background: theme.colors.background.overlay,
-          backdropFilter: 'blur(10px)',
-          borderRadius: 2,
-          p: 3,
-          border: `1px solid ${theme.colors.border.light}`
-        }}>
-          <Typography variant="h6" sx={{ 
-            color: theme.colors.text.primary,
-            mb: 1
-          }}>
-            {HVAC_POSITIONS[activeComponent].label}
-          </Typography>
-          <Typography variant="body2" sx={{ 
-            color: theme.colors.text.secondary
-          }}>
-            Viewing {activeComponent} component in X-Ray mode. The building structure is now transparent to show internal HVAC systems.
-          </Typography>
-        </Box>
-      )} */}
-
-      {/* Instructions - only show when no hotspot is selected */}
-      {/* {!activeComponent && (
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: 20,
-          transform: 'translateY(-50%)',
-          zIndex: 1000,
-          background: theme.colors.background.overlay,
-          backdropFilter: 'blur(10px)',
-          borderRadius: 2,
-          p: 3,
-          maxWidth: 300,
-          border: `1px solid ${theme.colors.border.light}`
-        }}>
-          <Typography variant="h6" sx={{ 
-            color: theme.colors.text.primary,
-            mb: 2
-          }}>
-            Instructions
-          </Typography>
-          <Typography variant="body2" sx={{ 
-            color: theme.colors.text.secondary,
-            mb: 1
-          }}>
-            • Click on white hotspots to explore HVAC components
-          </Typography>
-          <Typography variant="body2" sx={{ 
-            color: theme.colors.text.secondary,
-            mb: 1
-          }}>
-            • Use mouse to orbit, zoom, and pan around the model
-          </Typography>
-          <Typography variant="body2" sx={{ 
-            color: theme.colors.text.secondary
-          }}>
-            • Sequence chapters reveal internal systems
-          </Typography>
-        </Box>
-      )} */}
-
 
       {/* 3D Canvas */}
       <Canvas
@@ -357,9 +274,9 @@ export default function XRayMode() {
           minPolarAngle={Math.PI / 2 - limit}    // 60° (ngẩng lên một chút)
           maxPolarAngle={Math.PI / 2 + limit} // 120° (cúi xuống một chút)
           mouseButtons={{
-            LEFT: 0, // Rotate with left mouse button
-            MIDDLE: 1, // Zoom with middle mouse button
-            RIGHT: null // Disable right mouse button
+            LEFT: THREE.MOUSE.ROTATE,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.PAN
           }}
         />
         
