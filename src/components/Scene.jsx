@@ -21,10 +21,6 @@ import { useMobile } from "../hooks/useMobile";
 
 
 
-
-
-
-
 export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();

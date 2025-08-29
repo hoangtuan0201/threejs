@@ -12,7 +12,10 @@ import { HotspotsRenderer } from '../components/Hotspot';
 import { HotspotDetail } from '../components/HotspotDetail';
 import { VideoScreen } from '../components/VideoScreen';
 import { sequenceChaptersXray } from '../data/sequenceChaptersXray';
-import { Background } from '../components/Background';
+import { Background, EnhancedBackground } from '../components/Background';
+import { EnhancedLighting, HDREnvironment } from '../components/HDREnvironment';
+import { EnhancedPostProcessing, useCanvasFilters } from '../components/PostProcessing';
+import { RenderingOptimizer } from '../components/RenderingOptimizer';
 import GrassFloor from '../components/GrassFloor';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -55,8 +58,11 @@ export default function XRayMode() {
   const [activeSequence, setActiveSequence] = useState(null); // Sequence đang active
   const orbitControlsRef = useRef();
   const limit = THREE.MathUtils.degToRad(15); // 15 độ
-
-  // Reset progress when component mounts
+   
+   // Canvas filters will be applied directly to Canvas style
+   const canvasFilters = useCanvasFilters();
+   
+   // Reset progress when component mounts
   useEffect(() => {
     setDisplayProgress(0);
     setIsLoading(true);
@@ -241,29 +247,64 @@ export default function XRayMode() {
 
       {/* 3D Canvas */}
       <Canvas
-        style={{ width: '100%', height: '100%' }}
+        style={{
+          width: '100%', 
+          height: '100%',
+          ...canvasFilters
+        }}
         camera={{
           position: [42.08, 20, -24.98],
           fov: 75
         }}
+        shadows
+        dpr={[1, 2]}
+        gl={{
+          preserveDrawingBuffer: true,
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: true
+        }}
       >
-        {/* Setup custom transparent sorting để khắc phục lỗi transparency */}
-        <TransparentSortingSetup />
-        
-        {/* Industrial Background */}
-        <Suspense fallback={null}>
-          <Background 
+        {/* Rendering optimization and setup */}
+        <RenderingOptimizer />
+        <TransparentSortingSetup />       {/* Enhanced Background - sử dụng EnhancedBackground như trong Explore 3D */}
+        <Background 
             imageUrl="/industrial.jpg"
             opacity={1.0}
             enableBackground={true}
           />
-        </Suspense>
+
+        {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
+        <HDREnvironment 
+          hdrUrl="/textures/empty_play_room_2k.hdr"
+          intensity={2.8}
+          backgroundIntensity={0.9}
+          enableBackground={false}
+          enableToneMapping={true}
+        />
         
-        <ambientLight intensity={0.6} />
+        {/* Enhanced lighting system for maximum quality */}
+        <EnhancedLighting type="main" enableHDR={false} shadowQuality="medium" />
+        
+        {/* Enhanced ground plane with realistic materials for maximum reflections */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
+          <planeGeometry args={[200, 200]} />
+          <meshStandardMaterial
+            color="#e8e8e8"
+            transparent
+            opacity={0.08}
+            roughness={0.85}
+            metalness={0.03}
+            envMapIntensity={0.6}
+          />
+        </mesh>
+        
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <OrbitControls
           ref={orbitControlsRef}
-          enablePan={true}
+          enablePan={false}
           enableRotate={true}
           enableZoom={activeComponent ? false : true}
           minDistance={1}
@@ -306,7 +347,7 @@ export default function XRayMode() {
         {/* Thảm đá lót sàn */}
         <GrassFloor 
           size={[100, 100]} 
-          position={[0, -0.77, 0]} 
+          position={[29, -0.77, -25]} 
         />
         {/* HVAC Hotspots - hide when selected */}
         {Object.entries(HVAC_POSITIONS).map(([key, data]) => {

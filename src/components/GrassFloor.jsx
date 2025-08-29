@@ -1,31 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { TextureLoader, RepeatWrapping } from 'three';
 
-const GrassFloor = ({ size = [50, 50], position = [0, -0.77, 0] }) => {
-  // Sử dụng texture cỏ thật từ file grass-texture.avif
-  const grassTexture = useLoader(TextureLoader, '/grass-texture.avif');
-  
-  React.useEffect(() => {
+const GrassFloorContent = ({ size, position }) => {
+  const grassTexture = useLoader(TextureLoader, '/grass-texture.jpg'); // Đổi sang jpg
+
+  useEffect(() => {
     if (grassTexture) {
       grassTexture.wrapS = RepeatWrapping;
       grassTexture.wrapT = RepeatWrapping;
-      grassTexture.repeat.set(15, 15); // Tăng repeat để texture nhỏ hơn và chi tiết hơn
-      grassTexture.anisotropy = 16; // Cải thiện chất lượng texture ở góc nhìn xa
+      grassTexture.repeat.set(10, 10);
+      grassTexture.needsUpdate = true; // Đảm bảo texture được update
+      
+      console.log('Grass texture loaded successfully:', grassTexture);
     }
-    
   }, [grassTexture]);
 
   return (
     <mesh position={position} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={size} />
       <meshLambertMaterial 
-        map={grassTexture || null}
-        color={grassTexture ? '#ffffff' : '#4a7c59'} // Fallback màu xanh cỏ nếu texture lỗi
+        map={grassTexture}
         transparent={false}
-        side={2} // DoubleSide để hiển thị cả 2 mặt
+        side={2}
       />
     </mesh>
+  );
+};
+
+const GrassFloor = ({ size = [50, 50], position = [53, -0.77, -45] }) => {
+  return (
+    <Suspense fallback={
+      // Fallback mesh với màu xanh lá trong khi load texture
+      <mesh position={position} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={size} />
+        <meshLambertMaterial color="#4a9c2d" />
+      </mesh>
+    }>
+      <GrassFloorContent size={size} position={position} />
+    </Suspense>
   );
 };
 

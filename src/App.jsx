@@ -129,19 +129,19 @@ export default function App({ isChatFocused = false }) {
     setShowNavigationGuide(false);
   }, []);
 
-  // Theatre.js Studio disabled for production
-  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-    studio.initialize()
-    studio.ui.hide()
-    studio.extend(extension);
+  // // Theatre.js Studio disabled for production
+  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+  //   studio.initialize()
+  //   studio.ui.hide()
+  //   studio.extend(extension);
 
-    //  Force show studio UI
-    setTimeout(() => {
-      studio.ui.restore();
-    }, 1000);
+  //   //  Force show studio UI
+  //   setTimeout(() => {
+  //     studio.ui.restore();
+  //   }, 1000);
 
-    window.__THEATRE_ALREADY_INIT__ = true;
-  }
+  //   window.__THEATRE_ALREADY_INIT__ = true;
+  // }
   return (
     <ThemeProvider>
       {isLoading && <LoadingScreen progress={displayProgress >= 100 ? 1 : displayProgress / 100} />}

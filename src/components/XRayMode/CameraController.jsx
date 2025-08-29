@@ -17,7 +17,7 @@ const HVAC_POSITIONS = {
   },
   Thermostat: { 
     position: [30.1, 7, -22], 
-    cameraPosition: [30, 6.7, -24],
+    cameraPosition: [30, 6.7, -23.5],
     label: "Living Room"
   },
   Ducts: { 
