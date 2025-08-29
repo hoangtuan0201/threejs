@@ -84,6 +84,7 @@ export const sequenceChaptersXray = [
       mobileSize: { width: 340, height: 200 }
     }
   },
+  //living room 2
   {
     id: "linear-grille-2",
     position: 4.5,
@@ -114,6 +115,7 @@ export const sequenceChaptersXray = [
       mobileSize: { width: 340, height: 200 }
     }
   },
+  //kitchen room
   {
     id: "linear-grille-3",
     position: 6.0,
@@ -182,8 +184,8 @@ export const sequenceChaptersXray = [
     id: "Outdoor",
     position: 11.8,
     hotspot: {
-      // position: [22.58, 4.45, -18],
-      // rotation: [0, Math.PI / 1, 0],
+      position: [22.58, 0, -18],
+      rotation: [0, Math.PI / 1, 0],
       labelPosition: [22.5, 4.85, -18],
       detailPosition: [22.7, 4.9, -18],
       detailRotation: [0, 0, 0],
@@ -210,5 +212,107 @@ export const sequenceChaptersXray = [
       mobileSize: { width: 340, height: 200 }
     }
   },
+  // study room
+  {
+    id: "linear-grille-4",
+    position: 8.5,
+    hotspot: {
+      position: [22.58, 0, -18],
+      rotation: [0, Math.PI / 1, 0],
+      detailPosition: [20.7, 5.5, -21.54],
+      detailRotation: [0, Math.PI / 2, 0],
+      // Hotspot label positioning
+      mobileLabelPosition: [20.7, 5.5, -21.54],
+      // Hotspot label positioning
+      labelPosition: [20.7, 5.8, -21.54],
+      // Mobile-specific positioning
+      mobileDetailPosition: [20.7, 5.5, -21.54],
+      mobileDetailRotation: [0, Math.PI / 2, 0],
+      title: "Linear Grille",
+      description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
+      link: "https://vimeo.com/912201609"
+    },
+    videoScreen: {
+      position: [20.7, 5.5, -19.8],
+      rotation: [0, Math.PI / 2, 0],
+      // Mobile-specific positioning
+      mobilePosition: [20.7, 5.5, -19.8],
+      mobileRotation: [0, Math.PI / 2, 0],
+      videoId: "https://vimeo.com/912201609",
+      title: "Linear Grille Demo",
+      size: { width: 320, height: 180 },
+      // Mobile-specific size
+      mobileSize: { width: 340, height: 200 }
+    }
+  },
+  {
+    id: "thermostat-2",
+    position: 9.5,
+    hotspot: {
+      position: [20.7, -2, -20],
+      rotation: [0, Math.PI / 2, 0],
+      detailPosition: [16.67, 5.5, -23.5],
+      detailRotation: [0, -1.6, 0],
+      // Mobile-specific positioning
+      mobileDetailPosition: [16.67, 5.2, -23.5],
+      mobileDetailRotation: [0, -1.6, 0],
+      // Hotspot label positioning
+      labelPosition: [16.67, 5.8, -23.5],
+      labelRotation: [0, 0, 0],
+      // Mobile-specific label positioning
+      mobileLabelPosition: [16.67, 5.8, -23.5],
+      mobileLabelRotation: [0, 0, 0],
+      title: "Smart Thermostat",
+      description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
+      link: "https://vimeo.com/912200130"
+    },
+    
+    videoScreen: {
+      position: [16.67, 5.5, -22.5],
+      rotation: [0, -1.6, 0],
+      // Mobile-specific positioning
+      mobilePosition: [16.67, 5.5, -22.5],
+      mobileRotation: [0, -1.6, 0],
+      videoId: "https://vimeo.com/912200130",
+      title: "Smart Thermostat Demo",
+      size: { width: 320, height: 180 },
+      // Mobile-specific size
+      mobileSize: { width: 340, height: 200 }
+    }
+  },
+  {
+    id: "base-floor",
+    position: 10.5,
+    hotspot: {
+      position: [22.7, -2, -24],
+      rotation: [0, 0, 0],
+      detailPosition: [23.2, 2, -24],
+      detailRotation: [0, 0, 0],
+      // Mobile-specific positioning
+      mobileDetailPosition: [23.2, 2, -24],
+      mobileDetailRotation: [0, 0, 0],
+      // Hotspot label positioning
+      labelPosition: [22.7, 2, -24],
+      labelRotation: [0, 0, 0],
+      // Mobile-specific label positioning
+      mobileLabelPosition: [22.7, 2, -24],
+      mobileLabelRotation: [0, 0, 0],
+      title: "Base Floor System",
+      description: "The base floor system houses the main HVAC infrastructure including ductwork, air handlers, and distribution components that deliver conditioned air throughout the building.",
+      link: "https://vimeo.com/912208263"
+    },
+    videoScreen: {
+      position: [21.5, 2, -24],
+      rotation: [0, 0, 0],
+      // Mobile-specific positioning
+      mobilePosition: [21.5, 2, -24],
+      mobileRotation: [0, 0, 0],
+      videoId: "https://vimeo.com/912208263",
+      title: "Base Floor System Demo",
+      size: { width: 320, height: 180 },
+      // Mobile-specific size
+      mobileSize: { width: 340, height: 200 }
+    }
+  }
 
 ];

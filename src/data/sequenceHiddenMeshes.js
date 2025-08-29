@@ -175,6 +175,47 @@ export const sequenceHiddenMeshes = {
     ],
     transitionDuration: 400,
     fadeOpacity: 0.1
+  },
+  
+  // Linear Grille 4 study room
+  "linear-grille-4": {
+    hiddenMeshes: [
+      "3DGeom-9761",
+      '3DGeom-9436',
+      
+    ],
+    hiddenMaterials: [
+      "Timber joist"
+    ],
+    transitionDuration: 400,
+    fadeOpacity: 0.1
+  },
+  
+  // Smart Thermostat 2 - bed room
+  "thermostat-2": {
+    hiddenMeshes: [
+      "3DGeom-9761",
+      '3DGeom-9407'
+    ],
+    hiddenMaterials: [
+      "Timber joist"
+    ],
+    transitionDuration: 400,
+    fadeOpacity: 0.1
+  },
+  
+  // Base Floor System - Ẩn sàn để hiển thị hệ thống dưới sàn
+  "base-floor": {
+    hiddenMeshes: [
+      '3DGeom-78',
+      '3DGeom-426',
+      '3DGeom-425',
+      '3DGeom-76'
+    ],
+    hiddenMaterials: [
+    ],
+    transitionDuration: 400,
+    fadeOpacity: 0.1
   }
 };
 

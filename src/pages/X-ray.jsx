@@ -263,7 +263,7 @@ export default function XRayMode() {
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <OrbitControls
           ref={orbitControlsRef}
-          enablePan={false}
+          enablePan={true}
           enableRotate={true}
           enableZoom={activeComponent ? false : true}
           minDistance={1}

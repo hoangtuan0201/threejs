@@ -32,7 +32,7 @@ const HVAC_POSITIONS = {
   },
   MediaRoom: {
     position: [21.47, 1.2, -21.56], 
-    cameraPosition: [22.47, 1.2, -21.56],
+    cameraPosition: [21, 1.2, -21],
     label: "Media Room"
   },
   LivingRoom2: {
