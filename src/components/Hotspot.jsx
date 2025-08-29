@@ -294,18 +294,31 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
                 border-radius: 50px;
                 border: 1px solid rgba(255, 255, 255, 0.87);
                 z-index: 10;
-                background-color: rgba(0, 0, 0, 0.9);
+                background-color: #1976d2;
                 pointer-events: all;
                 transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-statusCircle::before {
+                content: '?';
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
               }
               
               .hotspotHTML .hotspot-annotation:hover:before {
                 width: 100%;
-                box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 8px 16px rgba(0,0,0,0.4);
+                box-shadow: 0 8px 24px rgba(25,118,210,0.4), 0 8px 16px rgba(25,118,210,0.4);
                 pointer-events: none;
                 -webkit-backdrop-filter: blur(6px);
                 backdrop-filter: blur(6px);
-                background: rgba(0, 0, 0, 0.95);
+                background: rgba(25, 118, 210, 0.95);
                 border-radius: ${mobile.isMobile ? '8px' : '6px'};
               }
               
@@ -315,9 +328,9 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
               }
               
               .hotspotHTML .hotspot-annotation:hover .hotspot-statusCircle {
-                background-color: rgba(0, 0, 0, 0.95);
+                background-color: #1565c0;
                 transform: scale(1.05);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+                box-shadow: 0 4px 12px rgba(25,118,210,0.6);
               }
               
               @keyframes hotspot-text-wipe {

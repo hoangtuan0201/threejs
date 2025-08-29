@@ -42,6 +42,7 @@ export default function XRayMode() {
   const [cameraTarget, setCameraTarget] = useState(null);
   const [currentRoom, setCurrentRoom] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [modelLoaded, setModelLoaded] = useState(false);
   
   // Track asset loading progress
   const { progress: assetProgress } = useProgress();
@@ -66,6 +67,7 @@ export default function XRayMode() {
   useEffect(() => {
     setDisplayProgress(0);
     setIsLoading(true);
+    setModelLoaded(false);
     
     // Force reset drei progress by clearing its cache
     if (window.__drei_progress_cache) {
@@ -82,7 +84,7 @@ export default function XRayMode() {
   useEffect(() => {
     if (assetProgress > displayProgress) {
       // Tăng tốc độ cập nhật progress để responsive hơn
-      const increment = Math.min(assetProgress - displayProgress, 5);
+      const increment = Math.min(assetProgress - displayProgress, 10);
       const timer = setTimeout(() => {
         setDisplayProgress(prev => Math.min(prev + increment, assetProgress));
       }, 100);
@@ -92,14 +94,12 @@ export default function XRayMode() {
     }
   }, [assetProgress, displayProgress]);
 
-  // Hide loading screen when both model progress and display progress are complete
+  // Chỉ ẩn loading khi cả model đã sẵn sàng và progress đạt 100%
   useEffect(() => {
-    // Only hide loading when progress reaches 100%
-    if (displayProgress >= 100) {
-      // Hiển thị model ngay lập tức sau khi loading xong
+    if (modelLoaded && displayProgress >= 100) {
       setIsLoading(false);
     }
-  }, [displayProgress]);
+  }, [modelLoaded, displayProgress]);
 
   const handleHotspotClick = (componentKey) => {
     // Handle HVAC hotspots
@@ -161,17 +161,6 @@ export default function XRayMode() {
     setActiveComponent(null);
   };
 
-  // Show loading screen while loading
-  if (isLoading) {
-    return (
-      <LoadingScreen
-        text="Loading X-Ray Mode..."
-        variant="xray"
-        progress={displayProgress >= 100 ? 1 : displayProgress / 100}
-      />
-    );
-  }
-
   return (
     <Box sx={{ 
       width: '100vw', 
@@ -179,6 +168,15 @@ export default function XRayMode() {
       position: 'relative',
       background: theme.colors.background.primary
     }}>
+      {/* Loading overlay giống Explore 3D */}
+      {isLoading && (
+        <LoadingScreen
+          text="Loading X-Ray Mode..."
+          variant="xray"
+          progress={displayProgress >= 100 ? 1 : displayProgress / 100}
+        />
+      )}
+
       {/* Header Controls */}
       <Box sx={{
         position: 'absolute',
@@ -250,6 +248,8 @@ export default function XRayMode() {
         style={{
           width: '100%', 
           height: '100%',
+          opacity: modelLoaded ? 1 : 0,
+          transition: 'opacity 0.3s ease',
           ...canvasFilters
         }}
         camera={{
@@ -341,6 +341,7 @@ export default function XRayMode() {
               // Callback khi transition hoàn thành
               // console.log(`Sequence transition ${action} completed for mesh:`, mesh.name);
             }}
+            onModelLoaded={() => setModelLoaded(true)}
           />
         </Suspense>
         

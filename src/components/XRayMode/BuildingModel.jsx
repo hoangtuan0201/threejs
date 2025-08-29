@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect } from 'react';
+import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -6,12 +6,13 @@ import { useMaterialEnhancer } from '../RenderingOptimizer';
 import SequenceMeshController from './SequenceMeshController';
 import MeshClickHandler from './MeshClickHandler';
 
-function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlightedComponent }) {
+function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlightedComponent, onModelLoaded }) {
   const { scene } = useGLTF('/3ddd.glb');
   const modelRef = useRef();
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
   const { scene: globalScene } = useThree();
+  const [modelReady, setModelReady] = useState(false);
   
   // Clone scene một lần duy nhất
   const clonedScene = useMemo(() => {
@@ -19,7 +20,11 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
     return scene.clone();
   }, [scene]);
 
-
+  // Gọi onModelLoaded khi clonedScene sẵn sàng (sau khi áp dụng material)
+  useEffect(() => {
+    if (!clonedScene || modelReady) return;
+    // Việc gọi onModelLoaded sẽ được thực hiện ở cuối effect áp dụng material bên dưới
+  }, [clonedScene, modelReady]);
 
   // Apply enhanced materials like in Explore 3D mode
   useEffect(() => {
@@ -178,7 +183,13 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
         }
       }
     });
-  }, [clonedScene, enhanceMaterial, globalScene]);
+
+    // Đánh dấu model đã sẵn sàng sau khi hoàn tất áp dụng material và env map
+    if (!modelReady) {
+      setModelReady(true);
+      onModelLoaded?.();
+    }
+  }, [clonedScene, enhanceMaterial, globalScene, modelReady, onModelLoaded]);
 
   if (!clonedScene) return null;
   
