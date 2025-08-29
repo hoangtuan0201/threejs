@@ -190,7 +190,7 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
         activeSequence={activeSequence}
         onTransitionComplete={onSequenceTransitionComplete}
       />
-      <MeshClickHandler scene={clonedScene} />
+      {/* <MeshClickHandler scene={clonedScene} /> */}
     </group>
   );
 }
