@@ -8,6 +8,7 @@ import { useTheme } from '../theme/ThemeContext';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { Hotspot, CameraController, BuildingModel, HVAC_POSITIONS } from '../components/XRayMode';
+import { TreeGroup } from '../components/XRayMode/Tree';
 import { HotspotsRenderer } from '../components/Hotspot';
 import { HotspotDetail } from '../components/HotspotDetail';
 import { VideoScreen } from '../components/VideoScreen';
@@ -301,7 +302,6 @@ export default function XRayMode() {
           />
         </mesh>
         
-        <directionalLight position={[10, 10, 5]} intensity={1} />
         <OrbitControls
           ref={orbitControlsRef}
           enablePan={false}
@@ -350,6 +350,11 @@ export default function XRayMode() {
           size={[100, 100]} 
           position={[29, -0.77, -25]} 
         />
+        
+        {/* Trees around the house */}
+        <Suspense fallback={null}>
+          <TreeGroup />
+        </Suspense>
         {/* HVAC Hotspots - hide when selected */}
         {Object.entries(HVAC_POSITIONS).map(([key, data]) => {
           // Hide hotspot when it's the active component

@@ -125,6 +125,7 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
         // Enable soft shadows
         child.castShadow = true;
         child.receiveShadow = true;
+        child.material.shadowSide = THREE.FrontSide;
         child.geometry?.computeBoundingSphere();
 
         // Store original material
