@@ -124,7 +124,7 @@ export default function App({ isChatFocused = false }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    localStorage.removeItem("hasVisitedDetailScene");
+
     sessionStorage.removeItem("navigationGuideShown");
     setShowNavigationGuide(false);
   }, []);

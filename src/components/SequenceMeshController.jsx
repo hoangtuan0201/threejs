@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { sequenceHiddenMeshes, hiddenMeshConfig } from '../../data/sequenceHiddenMeshes';
+import { sequenceHiddenMeshes, hiddenMeshConfig } from '../data/sequenceHiddenMeshes';
 
 function SequenceMeshController({ activeSequence, onTransitionComplete }) {
   const { scene } = useThree();
@@ -182,7 +182,6 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
   useEffect(() => {
     if (!scene) return;
 
-
     // Nếu không có activeSequence, hiện tất cả mesh đang ẩn
     if (!activeSequence) {
       showAllHiddenMeshes();
@@ -230,7 +229,7 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
       }
     }, 100);
 
-  }, [activeSequence, scene]);
+  }, [activeSequence, scene, showAllHiddenMeshes, findMeshByName, findMeshByMaterial]);
 
   // Cleanup khi component unmount
   useEffect(() => {
@@ -244,7 +243,7 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
       // Restore all materials
       showAllHiddenMeshes();
     };
-  }, []);
+  }, [showAllHiddenMeshes]);
 
   return null; // Component này không render gì
 }

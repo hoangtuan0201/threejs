@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -52,62 +52,80 @@ function CameraController({ targetPosition, onComplete, onCameraUpdate, orbitCon
   const [isAnimating, setIsAnimating] = useState(false);
   const timelineRef = useRef(null);
 
-  useEffect(() => {
-    if (targetPosition && camera && orbitControlsRef.current) {
-      setIsAnimating(true);
-      
-      // Kill any existing animations
-      if (timelineRef.current) {
-        timelineRef.current.kill();
+  // Memoize animation function để tránh tạo lại
+  const animateCamera = useCallback((target) => {
+    if (!target || !camera || !orbitControlsRef.current) return;
+
+    setIsAnimating(true);
+    
+    // Kill any existing animations
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+    }
+    
+    // Create GSAP timeline
+    timelineRef.current = gsap.timeline({
+      onComplete: () => {
+        setIsAnimating(false);
+        if (onComplete) onComplete();
       }
-      
-      // Create GSAP timeline
-      timelineRef.current = gsap.timeline({
-        onComplete: () => {
-          setIsAnimating(false);
-          if (onComplete) onComplete();
-        }
-      });
-      
-      // Animate camera position
-      timelineRef.current.to(camera.position, {
-        x: targetPosition.x,
-        y: targetPosition.y,
-        z: targetPosition.z,
-        duration: 2,
-        ease: "power2.out"
-      }, 0);
-      
-      // Animate camera rotation if activeComponent has cameraRotation
-      if (activeComponent && HVAC_POSITIONS[activeComponent] && HVAC_POSITIONS[activeComponent].cameraRotation) {
-        const targetRotation = HVAC_POSITIONS[activeComponent].cameraRotation;
-        timelineRef.current.to(camera.rotation, {
-          x: targetRotation[0],
-          y: targetRotation[1],
-          z: targetRotation[2],
-          duration: 2,
-          ease: "power2.out"
-        }, 0);
+    });
+    
+    // Animate camera position
+    timelineRef.current.to(camera.position, {
+      x: target.x,
+      y: target.y,
+      z: target.z,
+      duration: 2,
+      ease: "power2.out",
+      onUpdate: () => {
+        camera.updateProjectionMatrix();
       }
-      
-      // Animate OrbitControls target
-      let newTarget;
-      if (activeComponent && HVAC_POSITIONS[activeComponent]) {
-        const hotspotPos = HVAC_POSITIONS[activeComponent].position;
-        newTarget = { x: hotspotPos[0], y: hotspotPos[1], z: hotspotPos[2] };
-      } else {
-        newTarget = { x: 28.7, y: 6.2, z: -26.1 };
-      }
-      
-      timelineRef.current.to(orbitControlsRef.current.target, {
-        x: newTarget.x,
-        y: newTarget.y,
-        z: newTarget.z,
+    }, 0);
+    
+    // Animate camera rotation if activeComponent has cameraRotation
+    if (activeComponent && HVAC_POSITIONS[activeComponent] && HVAC_POSITIONS[activeComponent].cameraRotation) {
+      const targetRotation = HVAC_POSITIONS[activeComponent].cameraRotation;
+      timelineRef.current.to(camera.rotation, {
+        x: targetRotation[0],
+        y: targetRotation[1],
+        z: targetRotation[2],
         duration: 2,
         ease: "power2.out"
       }, 0);
     }
-  }, [targetPosition, camera, orbitControlsRef, activeComponent]);
+    
+    // Animate OrbitControls target
+    let newTarget;
+    if (activeComponent && HVAC_POSITIONS[activeComponent]) {
+      const hotspotPos = HVAC_POSITIONS[activeComponent].position;
+      newTarget = { x: hotspotPos[0], y: hotspotPos[1], z: hotspotPos[2] };
+    } else {
+      newTarget = { x: 28.7, y: 6.2, z: -26.1 };
+    }
+    
+    timelineRef.current.to(orbitControlsRef.current.target, {
+      x: newTarget.x,
+      y: newTarget.y,
+      z: newTarget.z,
+      duration: 2,
+      ease: "power2.out"
+    }, 0);
+
+    return timelineRef.current;
+  }, [camera, orbitControlsRef, onComplete, activeComponent]);
+
+  useEffect(() => {
+    if (!targetPosition) return;
+    
+    const timeline = animateCamera(targetPosition);
+    
+    return () => {
+      if (timeline) {
+        timeline.kill();
+      }
+    };
+  }, [targetPosition, animateCamera]);
 
   useFrame(() => {
     if (camera) {

@@ -10,7 +10,6 @@ import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
-import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
@@ -29,7 +28,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
   const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
-  const [localHiddenState, setLocalHiddenState] = useState(false); // Local state for 3D toggle
+  const [activeSequence, setActiveSequence] = useState(null); // For hiding mesh when hotspot is clicked
+
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
   const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown in current session
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
@@ -70,10 +70,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Mobile detection and responsive utilities
   const mobile = useMobile();
 
-  // Handle toggle hidden objects
-  const handleToggleHidden = (isHidden) => {
-    setLocalHiddenState(isHidden);
-  };
+
 
 
 
@@ -994,16 +991,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Hotspot Lighting - spotlights shining down on each hotspot */}
       <HotspotLighting sequenceChapters={sequenceChapters} />
 
-      {/* 3D Toggle Hidden Objects Button */}
-      <ToggleHiddenObjects
-        onToggleHidden={handleToggleHidden}
-        isVisible={isExploreMode}
-      />
+
 
 
       <Suspense fallback={null}>
         <Model
-          hiddenObjectsState={localHiddenState}
+          activeSequence={activeSequence}
           onModelLoaded={() => {
             setModelLoaded(true);
             onModelLoaded?.();
@@ -1033,6 +1026,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
               onHotspotDetailRequest(chapter, currentState);
             } else {
               setSelectedHotspot(chapter);
+              setActiveSequence(chapterId); // Activate mesh hiding for this sequence
               // Show video screen when hotspot is clicked
               if (chapter.videoScreen) {
                 setShowVideoScreen(chapter);
@@ -1062,6 +1056,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         onClose={() => {
           setSelectedHotspot(null);
           setShowVideoScreen(null); // Also hide video screen
+          setActiveSequence(null); // Turn off mesh hiding when closing hotspot detail
         }}
       />
 

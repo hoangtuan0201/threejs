@@ -39,8 +39,8 @@ const ANIMATION_CONFIG = [
     id: "second-door",
     target: "Door2Group",
     startTime: 3,
-    endTime: 6,
-    action: { type: "rotate", axis: "y", angle: -Math.PI / 1.4 }
+    endTime: 5,
+    action: { type: "rotate", axis: "y", angle: -Math.PI / 1 }
   },
   {
     id: "third-door",

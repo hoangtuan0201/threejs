@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { useState } from "react";
+import { useTheme } from "../theme/ThemeContext";
 
 const spin = keyframes`
   0% {
@@ -24,6 +25,7 @@ const fadeIn = keyframes`
 
 export default function LoadingScreen({ text = "Loading 3D Experience...", variant = "default", progress = null }) {
   const [logoHidden, setLogoHidden] = useState(false);
+  const { theme, isDark } = useTheme();
   return (
     <Box
       sx={{
@@ -34,7 +36,7 @@ export default function LoadingScreen({ text = "Loading 3D Experience...", varia
         height: "100vh",
         background: variant === "compare"
           ? "linear-gradient(oklch(0.2 0.0122 237.44) 0px, oklch(0.36 0.0088 219.71) 100%)"
-          : "linear-gradient(135deg, #1a2332 0%, #0f1419 100%)",
+          : theme.gradients.primary,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -68,10 +70,10 @@ export default function LoadingScreen({ text = "Loading 3D Experience...", varia
           sx={{
             width: { xs: 32, sm: 40 },
             height: { xs: 32, sm: 40 },
-            border: "3px solid rgba(255, 255, 255, 0.1)",
+            border: `3px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
             borderTop: variant === "compare"
               ? "3px solid rgba(59, 130, 246, 0.8)"
-              : "3px solid rgba(100, 150, 255, 0.8)",
+              : `3px solid ${isDark ? 'rgba(100, 150, 255, 0.8)' : 'rgba(26, 35, 50, 0.8)'}`,
             borderRadius: "50%",
             animation: `${spin} 1s linear infinite`,
             mb: { xs: 2, sm: 3 },
@@ -108,7 +110,7 @@ export default function LoadingScreen({ text = "Loading 3D Experience...", varia
                   cy="40"
                   r="36"
                   fill="none"
-                  stroke="rgba(255,255,255,0.1)"
+                  stroke={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}
                   strokeWidth="4"
                 />
                 
@@ -118,7 +120,7 @@ export default function LoadingScreen({ text = "Loading 3D Experience...", varia
                   cy="40"
                   r="36"
                   fill="none"
-                  stroke={variant === "compare" ? "rgba(59,130,246,0.9)" : "rgba(100,150,255,0.9)"}
+                  stroke={variant === "compare" ? "rgba(59,130,246,0.9)" : (isDark ? "rgba(100,150,255,0.9)" : "rgba(26,35,50,0.9)")}
                   strokeWidth="4"
                   strokeLinecap="round"
                   strokeDasharray={circumference}
@@ -138,7 +140,7 @@ export default function LoadingScreen({ text = "Loading 3D Experience...", varia
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "rgba(255,255,255,0.85)",
+              color: theme.colors.text.primary,
               fontSize: 18,
               fontWeight: 700,
             }}
@@ -152,7 +154,7 @@ export default function LoadingScreen({ text = "Loading 3D Experience...", varia
       <Typography
         variant="body2"
         sx={{
-          color: "rgba(255, 255, 255, 0.6)",
+          color: theme.colors.text.secondary,
           fontSize: { xs: "0.8rem", sm: "0.9rem" },
           fontWeight: 400,
           letterSpacing: "1px",

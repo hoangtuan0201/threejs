@@ -1,91 +1,7 @@
 import { Html } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
+import { useThree } from "@react-three/fiber";
 import { useMobile } from "../hooks/useMobile";
 import * as THREE from "three";
-
-// Animated Chevron Down Icon Component with Scroll Hint
-function ChevronDownIcon() {
-  const groupRef = useRef();
-  const chevron1LeftRef = useRef();
-  const chevron1RightRef = useRef();
-  const chevron2LeftRef = useRef();
-  const chevron2RightRef = useRef();
-  const chevron3LeftRef = useRef();
-  const chevron3RightRef = useRef();
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-
-    if (groupRef.current) {
-      // Main floating animation
-      groupRef.current.position.y = Math.sin(time * 1.5) * 0.03;
-    }
-
-    // Cascading scroll-down animation for chevron 1
-    const wave1 = Math.sin(time * 3) * 0.5 + 0.5; // 0 to 1
-    if (chevron1LeftRef.current && chevron1RightRef.current) {
-      chevron1LeftRef.current.material.opacity = wave1;
-      chevron1RightRef.current.material.opacity = wave1;
-    }
-
-    // Cascading scroll-down animation for chevron 2
-    const wave2 = Math.sin(time * 3 - 0.5) * 0.5 + 0.5; // Delayed
-    if (chevron2LeftRef.current && chevron2RightRef.current) {
-      chevron2LeftRef.current.material.opacity = wave2;
-      chevron2RightRef.current.material.opacity = wave2;
-    }
-
-    // Cascading scroll-down animation for chevron 3
-    const wave3 = Math.sin(time * 3 - 1) * 0.5 + 0.5; // More delayed
-    if (chevron3LeftRef.current && chevron3RightRef.current) {
-      chevron3LeftRef.current.material.opacity = wave3;
-      chevron3RightRef.current.material.opacity = wave3;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {/* First chevron (main) */}
-      <group position={[0, 0.05, 0]}>
-        <mesh position={[-0.025, 0.025, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <boxGeometry args={[0.08, 0.012, 0.012]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.3} />
-        </mesh>
-        <mesh position={[0.025, 0.02, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <boxGeometry args={[0.08, 0.012, 0.012]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.3} />
-        </mesh>
-      </group>
-
-      {/* Second chevron (animated) */}
-      <group position={[0, -0.03, 0]}>
-        <mesh ref={chevron1LeftRef} position={[-0.025, 0.025, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <boxGeometry args={[0.07, 0.01, 0.01]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.2} transparent />
-        </mesh>
-        <mesh ref={chevron1RightRef} position={[0.025, 0.025, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <boxGeometry args={[0.07, 0.01, 0.01]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.2} transparent />
-        </mesh>
-      </group>
-
-      {/* Third chevron (animated) */}
-      <group position={[0, -0.08, 0]}>
-        <mesh ref={chevron2LeftRef} position={[-0.02, 0.02, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <boxGeometry args={[0.06, 0.008, 0.008]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.15} transparent />
-        </mesh>
-        <mesh ref={chevron2RightRef} position={[0.02, 0.02, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <boxGeometry args={[0.06, 0.008, 0.008]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.15} transparent />
-        </mesh>
-      </group>
-
-      
-    </group>
-  );
-}
 
 export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosition }) {
   const mobile = useMobile();
@@ -186,8 +102,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
         document.body.style.cursor = 'default';
       }}
     >
-        {/* 3D Chevron Down Icon with Animation */}
-        <ChevronDownIcon />
+
       </group>
 
       {/* HTML label - separate from rotated group to maintain correct position */}

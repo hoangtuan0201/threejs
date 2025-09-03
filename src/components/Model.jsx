@@ -1,13 +1,14 @@
 import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
-import { hiddenObjects } from "../data/hiddenObjects";
+
 import { useMaterialEnhancer } from "./RenderingOptimizer";
 import { useFrame, useThree } from "@react-three/fiber";
+import SequenceMeshController from "./SequenceMeshController";
 import * as THREE from "three";
 import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
 const MODEL_URL = "./3ddd.glb"; // Adjust path as needed
 const SIGNED_MODEL_URL = convertToSignedUrl(MODEL_URL);
-export function Model({ hiddenObjectsState, onModelLoaded }) {
+export function Model({ activeSequence, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
@@ -94,6 +95,7 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
 
       // Create ultra-high quality physical material from standard material
       const params = {
+        name: src.name || '', // PRESERVE MATERIAL NAME
         color: src.color ? src.color.clone() : new THREE.Color(0xffffff),
         map: src.map || null,
         normalMap: src.normalMap || null,
@@ -133,6 +135,9 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
       };
 
       const mat = new THREE.MeshPhysicalMaterial(params);
+      
+      // ENSURE NAME IS PRESERVED
+      mat.name = src.name || '';
 
       // Advanced material properties for different surface types
       if (src.sheen !== undefined) mat.sheen = src.sheen;
@@ -161,7 +166,10 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
         // Store original material
         if (!originalMaterials.current.has(child.name) && child.material) {
           try {
-            originalMaterials.current.set(child.name, child.material.clone());
+            const clonedMaterial = child.material.clone();
+            // PRESERVE MATERIAL NAME WHEN CLONING
+            clonedMaterial.name = child.material.name;
+            originalMaterials.current.set(child.name, clonedMaterial);
           } catch (e) {
             // fallback: store reference
             originalMaterials.current.set(child.name, child.material);
@@ -203,35 +211,32 @@ export function Model({ hiddenObjectsState, onModelLoaded }) {
           child.material.needsUpdate = true;
         }
 
-        // Hidden object handling - for hidden objects make semi transparent, otherwise KEEP the enhanced physical material
-        if (hiddenObjects.includes(child.name)) {
-          // clone to avoid mutating shared material
-          child.material = child.material.clone();
-          child.material.transparent = true;
-          child.material.opacity = hiddenObjectsState ? 0.3 : 1.0;
-          child.material.needsUpdate = true;
-        } else {
-          // Keep enhanced physical material to ensure consistent reflections across all objects.
-          // Do not restore the original (non-physical) material here — keep originalMaterials map for explicit restore if needed elsewhere.
-          // Ensure the material uses the global environment for reflections
-          try {
-            if (globalScene?.environment && !child.material.envMap) {
-              child.material.envMap = globalScene.environment;
-              // Balanced intensity for natural reflections
-              child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0); // Giảm intensity để tránh chói lóa
-              child.material.needsUpdate = true;
-            }
-          } catch (e) {
-            // ignore env map assignment errors
+        // Ensure the material uses the global environment for reflections
+        try {
+          if (globalScene?.environment && !child.material.envMap) {
+            child.material.envMap = globalScene.environment;
+            // Balanced intensity for natural reflections
+            child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0); // Giảm intensity để tránh chói lóa
+            child.material.needsUpdate = true;
           }
+        } catch (e) {
+          // ignore env map assignment errors
         }
       }
     });
-  }, [scene, hiddenObjectsState]);
+  }, [scene]);
 
   if (!scene || error) return null;
 
-  return <primitive object={scene} />;
+  return (
+    <group>
+      <primitive object={scene} />
+      <SequenceMeshController 
+        scene={scene}
+        activeSequence={activeSequence}
+      />
+    </group>
+  );
 }
 
 useGLTF.preload(MODEL_URL);
