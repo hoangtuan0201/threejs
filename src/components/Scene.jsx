@@ -15,6 +15,8 @@ import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
 import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
+import GrassFloor from "./GrassFloor";
+import Tree, { TreeGroup } from "./XRayMode/Tree";
 
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
@@ -1061,6 +1063,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         />
         {/* Door animation controller */}
         <DoorAnimation />
+        
+        {/* Grass Floor - sàn cỏ xung quanh nhà */}
+        <GrassFloor size={[100, 100]} position={[29, -0.77, -25]} />
+        
+        {/* Tree Group - nhóm cây xung quanh nhà */}
+        <TreeGroup />
       </Suspense>
     
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}

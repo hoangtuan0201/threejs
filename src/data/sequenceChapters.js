@@ -93,7 +93,7 @@ export const sequenceChapters = [
     hotspot: {
       detailPosition: [23.2, 5.3, -31.9],
       detailRotation: [0, 0, 0],
-      targetPosition: [22, 4.8, -29.5],
+      targetPosition: [23.1, 5, -31.115],
       // Hotspot label positioning
       mobileLabelPosition: [23, 5.3, -31.9],
       // Hotspot label positioning
@@ -231,17 +231,19 @@ export const sequenceChapters = [
       mobileSize: { width: 340, height: 200 }
     }
   },
+  //bedroom
+
   {
     id: "thermostat-2",
     position: 9.5,
     hotspot: {
       position: [20.7, -2, -20],
       rotation: [0, Math.PI / 2, 0],
-      detailPosition: [16.67, 5.5, -23.5],
+      detailPosition: [16.67, 5.5, -22.8],
       detailRotation: [0, -1.6, 0],
-      targetPosition: [14.5, 5.3, -24],
+      targetPosition: [16.1, 5.1, -23.3],
       // Mobile-specific positioning
-      mobileDetailPosition: [16.67, 5.2, -23.5],
+      mobileDetailPosition: [16.67, 5.2, -22.8],
       mobileDetailRotation: [0, -1.6, 0],
       // Hotspot label positioning
       labelPosition: [16.67, 5.8, -23.5],
@@ -255,10 +257,10 @@ export const sequenceChapters = [
     },
     
     videoScreen: {
-      position: [16.67, 5.5, -22.5],
+      position: [16.67, 5.5, -24.5],
       rotation: [0, -1.6, 0],
       // Mobile-specific positioning
-      mobilePosition: [16.67, 5.5, -22.5],
+      mobilePosition: [16.67, 5.5, -24.5],
       mobileRotation: [0, -1.6, 0],
       videoId: "https://vimeo.com/912200130",
       title: "Smart Thermostat Demo",

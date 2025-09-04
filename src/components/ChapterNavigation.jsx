@@ -6,7 +6,9 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   const chapters = [
     { position: 1.5, label: "Smart Thermostat" },
     { position: 2.5, label: "Linear Grille" },
+    { position: 4.5, label: "study room" },
     { position: 4.5, label: "New Scene" },
+
     { position: 7.5, label: "Air Purification" },
     { position: 11.8, label: "Outdoor Unit" }
   ];

@@ -1,26 +1,10 @@
 // Danh sách các mesh sẽ được ẩn cho từng sequence chapter hotspot
 
 export const sequenceHiddenMeshes = {
-  // Smart Thermostat - Ẩn tường xung quanh để hiển thị thermostat
+  // Smart Thermostat - Không ẩn gì vì không có gì trong tường
   "Geom3D_393": {
-    hiddenMeshes: [
-      "3DGeom-9407",
-      "3DGeom-9761",
-      //DROP LIGHT
-      "3DGeom-9897",
-      "3DGeom-9898",
-      '3DGeom-9883_3',
-      '3DGeom-9883_1',
-      '3DGeom-9883_4',
-      '3DGeom-9899',
-      '3DGeom-9883_5',
-      '3DGeom-9883',
-      '3DGeom-9883_2',
-      '3DGeom-9889'
-    ],
-    hiddenMaterials: [
-      "Timber joist"
-    ],
+    hiddenMeshes: [],
+    hiddenMaterials: [],
     transitionDuration: 400, // ms
     fadeOpacity: 0.1
   },
@@ -193,15 +177,10 @@ export const sequenceHiddenMeshes = {
     fadeOpacity: 0.1
   },
   
-  // Smart Thermostat 2 - bed room
+  // Smart Thermostat 2 - bed room - Không ẩn gì vì không có gì trong tường
   "thermostat-2": {
-    hiddenMeshes: [
-      "3DGeom-9761",
-      '3DGeom-9407'
-    ],
-    hiddenMaterials: [
-      "Timber joist"
-    ],
+    hiddenMeshes: [],
+    hiddenMaterials: [],
     transitionDuration: 400,
     fadeOpacity: 0.1
   },
