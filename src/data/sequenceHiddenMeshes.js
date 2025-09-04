@@ -154,10 +154,8 @@ export const sequenceHiddenMeshes = {
   // Outdoor Unit - Ẩn tường ngoài để hiển thị unit ngoài trời
   "Outdoor": {
     hiddenMeshes: [
-      "3DGeom-76",
     ],
     hiddenMaterials: [
-    
     ],
     transitionDuration: 400,
     fadeOpacity: 0.1

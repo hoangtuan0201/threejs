@@ -277,7 +277,7 @@ export const sequenceChapters = [
       rotation: [0, 0, 0],
       detailPosition: [23.2, 2, -24],
       detailRotation: [0, 0, 0],
-      targetPosition: [21, 1.2, -21],
+      targetPosition: [21.82  , 1.83, -22.9],
       // Mobile-specific positioning
       mobileDetailPosition: [23.2, 2, -24],
       mobileDetailRotation: [0, 0, 0],

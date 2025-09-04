@@ -314,5 +314,5 @@ export const sequenceChaptersXray = [
       mobileSize: { width: 340, height: 200 }
     }
   }
-
+  
 ];

@@ -1165,3 +1165,4 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     </>
   );
 }
+
