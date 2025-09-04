@@ -54,6 +54,7 @@ export function SceneManager({
   isChatFocused,
   onCurrentSheetChange, // New prop to expose current sheet
   onCurrentSceneChange, // New prop to expose current scene
+  onResetView, // New prop to receive reset view function
   project // Receive project from App.jsx
 }) {
   // Create main sheet from the passed project
@@ -90,6 +91,7 @@ export function SceneManager({
         onShowNavigationGuide={onShowNavigationGuide}
         showNavigationGuide={showNavigationGuide}
         isChatFocused={isChatFocused}
+        onResetView={onResetView}
       />
     </SheetProvider>
   );

@@ -11,6 +11,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 1.8, 0],
       detailPosition: [27.78, 4, -22.7],
       detailRotation: [0, Math.PI / 2, 0],
+      targetPosition: [28.2, 5, -22.67],
       // Mobile-specific positioning
       mobileDetailPosition: [27.78, 3.8 , -21.5],
       mobileDetailRotation: [0, Math.PI / 2, 0],
@@ -47,6 +48,7 @@ export const sequenceChapters = [
       // rotation: [0.1, Math.PI / 1, 0],
       detailPosition: [31.6 , 8.3, -20.6],
       detailRotation: [0, Math.PI / 1, 0],
+      targetPosition: [30.621, 7.933, -22.326],
      // Hotspot label positioning
       mobileLabelPosition: [31.4, 8, -20.5],
       // Hotspot label positioning
@@ -91,6 +93,7 @@ export const sequenceChapters = [
     hotspot: {
       detailPosition: [23.2, 5.3, -31.9],
       detailRotation: [0, 0, 0],
+      targetPosition: [22, 4.8, -29.5],
       // Hotspot label positioning
       mobileLabelPosition: [23, 5.3, -31.9],
       // Hotspot label positioning
@@ -122,6 +125,7 @@ export const sequenceChapters = [
     hotspot: {
       detailPosition: [15.5, 5.3, -26.75],
       detailRotation: [0, Math.PI / 1, 0],
+      targetPosition: [14.5, 5.3, -24],
       // Hotspot label positioning
       mobileLabelPosition: [15.5, 5.3, -26.75],
       // Hotspot label positioning
@@ -155,6 +159,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 2, 0],
       detailPosition: [14.8, 4.2, -34],
       detailRotation: [0, -1.6, 0],
+      targetPosition: [14, 5, -34],
       // Mobile-specific positioning
       mobileDetailPosition: [14.8, 4.2, -34.3],
       mobileDetailRotation: [0, -1.6, 0],
@@ -201,6 +206,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 1, 0],
       detailPosition: [20.7, 5.5, -21.54],
       detailRotation: [0, Math.PI / 2, 0],
+      targetPosition: [22.2, 5.4, -20.7],
       // Hotspot label positioning
       mobileLabelPosition: [20.7, 5.5, -21.54],
       // Hotspot label positioning
@@ -233,6 +239,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 2, 0],
       detailPosition: [16.67, 5.5, -23.5],
       detailRotation: [0, -1.6, 0],
+      targetPosition: [14.5, 5.3, -24],
       // Mobile-specific positioning
       mobileDetailPosition: [16.67, 5.2, -23.5],
       mobileDetailRotation: [0, -1.6, 0],
@@ -268,6 +275,7 @@ export const sequenceChapters = [
       rotation: [0, 0, 0],
       detailPosition: [23.2, 2, -24],
       detailRotation: [0, 0, 0],
+      targetPosition: [21, 1.2, -21],
       // Mobile-specific positioning
       mobileDetailPosition: [23.2, 2, -24],
       mobileDetailRotation: [0, 0, 0],
@@ -303,6 +311,7 @@ export const sequenceChapters = [
       labelPosition: [22.5, 4.85, -18],
       detailPosition: [22.7, 4.9, -18],
       detailRotation: [0, 0, 0],
+      targetPosition: [21.903, 4.6, -16.823],
       // mobile label
       mobileLabelPosition: [21.8  , 5, -18],
 

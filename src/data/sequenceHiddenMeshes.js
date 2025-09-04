@@ -144,6 +144,7 @@ export const sequenceHiddenMeshes = {
     hiddenMeshes: [
       "3DGeom-9290",//door 
       "3DGeom-9289",//door
+      '3DGeom-9287',
       "3DGeom-9288",
       "3DGeom-9286",//door
       "3DGeom-256_2",//doorlock
@@ -157,6 +158,7 @@ export const sequenceHiddenMeshes = {
       "3DGeom-9761", //roof
       "3DGeom-9407", //wall
       "3DGeom-9774",
+
     ],
     hiddenMaterials: [
      

@@ -128,11 +128,7 @@ export default function XRayMode() {
     }
   };
 
-  const handleCloseHotspotDetail = () => {
-    setSelectedHotspot(null);
-    setShowVideoScreen(null);
-    setActiveSequence(null); // Tắt ẩn mesh khi đóng hotspot detail
-  };
+
 
   const handleExit = () => {
     // Tự động tắt hotspot khi rời khỏi
@@ -381,11 +377,16 @@ export default function XRayMode() {
           currentPosition={1.0} // Default position for X-ray mode
         />
         
+
+        
         {/* Hotspot Detail Popup */}
         {selectedHotspot && (
           <HotspotDetail
             selectedHotspot={selectedHotspot}
-            onClose={handleCloseHotspotDetail}
+            onClose={() => {
+              setSelectedHotspot(null);
+              setShowVideoScreen(null);
+            }}
           />
         )}
         

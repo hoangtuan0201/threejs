@@ -37,6 +37,7 @@ export default function App({ isChatFocused = false }) {
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
   const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
   const [showNavigationGuide, setShowNavigationGuide] = useState(false);
+  const [resetViewFunction, setResetViewFunction] = useState(null);
 
   const navigate = useNavigate();
   const mobile = useMobile();
@@ -105,7 +106,13 @@ export default function App({ isChatFocused = false }) {
     setModelLoaded(false);
   };
 
-  const handleGoHome = () => navigate("/");
+  const handleGoHome = () => {
+    // Reset view before navigating home to prevent errors
+    if (resetViewFunction) {
+      resetViewFunction();
+    }
+    navigate("/");
+  };
 
   const handleModelLoaded = () => {
     setModelLoaded(true);
@@ -130,18 +137,18 @@ export default function App({ isChatFocused = false }) {
   }, []);
 
   // // Theatre.js Studio disabled for production
-  // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
-  //   studio.initialize()
-  //   studio.ui.hide()
-  //   studio.extend(extension);
+  if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
+    studio.initialize()
+    studio.ui.hide()
+    studio.extend(extension);
 
-  //   //  Force show studio UI
-  //   setTimeout(() => {
-  //     studio.ui.restore();
-  //   }, 1000);
+    //  Force show studio UI
+    setTimeout(() => {
+      studio.ui.restore();
+    }, 1000);
 
-  //   window.__THEATRE_ALREADY_INIT__ = true;
-  // }
+    window.__THEATRE_ALREADY_INIT__ = true;
+  }
   return (
     <ThemeProvider>
       {isLoading && <LoadingScreen progress={displayProgress >= 100 ? 1 : displayProgress / 100} />}
@@ -217,6 +224,7 @@ export default function App({ isChatFocused = false }) {
               onHideNavigationGuide={useCallback(() => setShowNavigationGuide(false), [])}
               showNavigationGuide={showNavigationGuide}
               isChatFocused={isChatFocused}
+              onResetView={setResetViewFunction}
               navigationData={{
                 isNavigating: sceneNavigating,
                 targetPosition: sceneTargetPosition,
@@ -253,6 +261,50 @@ export default function App({ isChatFocused = false }) {
         onGoHome={handleGoHome}
         isVisible={!showControlPanel && !showCompareSystem && !showNavigationGuide}
       />
+
+      {/* Reset View Button */}
+      {!showControlPanel && !showCompareSystem && modelLoaded && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          left: 20,
+          zIndex: 1000
+        }}>
+          <button
+            onClick={() => {
+              if (resetViewFunction) {
+                resetViewFunction();
+              }
+            }}
+            style={{
+              background: 'linear-gradient(45deg, #FF9800, #F57C00)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+            }}
+          >
+            🏠 Reset View
+          </button>
+        </div>
+      )}
 
       <NavigationGuide
         isVisible={showNavigationGuide}
