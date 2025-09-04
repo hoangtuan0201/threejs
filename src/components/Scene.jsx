@@ -540,16 +540,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     } else if (!isNavigating && !selectedHotspot) {
       // comment these to turn off useframe
       // Only allow smooth scrolling when no hotspot is selected
-      // if (targetPosition !== sheet.sequence.position) {
-      //   const diff = targetPosition - sheet.sequence.position;
-      //   const speed = 0.02; // Smooth scrolling speed
+      if (targetPosition !== sheet.sequence.position) {
+        const diff = targetPosition - sheet.sequence.position;
+        const speed = 0.02; // Smooth scrolling speed
 
-      //   if (Math.abs(diff) > 0.001) {
-      //     sheet.sequence.position += diff * speed;
-      //   } else {
-      //     sheet.sequence.position = targetPosition;
-      //   }
-      // }
+        if (Math.abs(diff) > 0.001) {
+          sheet.sequence.position += diff * speed;
+        } else {
+          sheet.sequence.position = targetPosition;
+        }
+      }
     }
     // When isNavigating but not navigationData.isNavigating, we're in lock mode - do nothing
 
