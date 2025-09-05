@@ -37,20 +37,20 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   
   // Enhanced reset view function - reset everything
   const resetView = () => {
-    // Reset orbit controls
-    if (orbitControlsRef.current) {
-      orbitControlsRef.current.reset();
-    }
+    // // Reset orbit controls
+    // if (orbitControlsRef.current) {
+    //   orbitControlsRef.current.reset();
+    // }
     
-    // Reset camera to initial position
-    if (camera) {
-      camera.position.set(33.5381764274176, 5.205671442619433, -22.03415991352903);
-      camera.lookAt(0, 0, 0);
-    }
+    // // Reset camera to initial position
+    // if (camera) {
+    //   camera.position.set(33.5381764274176, 5.205671442619433, -22.03415991352903);
+    //   camera.lookAt(0, 0, 0);
+    // }
     
     // Reset sequence position to beginning
     if (sheet && sheet.sequence) {
-      sheet.sequence.position = 0;
+      sheet.sequence.position = 0.1;
     }
     
     // Reset all states completely
@@ -492,6 +492,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       camera.updateProjectionMatrix();
     }
   }, [camera, mobile.isMobile, mobile.isTablet]);
+
+  // Update cursor style when orbit control is enabled/disabled
+  useEffect(() => {
+    if (gl && gl.domElement) {
+      gl.domElement.style.cursor = orbitControlEnabled ? 'grab' : 'default';
+    }
+  }, [orbitControlEnabled, gl]);
 
   // Handle resize events (basic)
   useEffect(() => {
@@ -1169,7 +1176,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         enableDamping={true}
         
         target={selectedHotspot?.hotspot?.targetPosition || [0, 0, 0]}
-        makeDefault
+        makeDefault={orbitControlEnabled}
         // Giới hạn góc xoay dọc (polar) - chỉ một chút
         minPolarAngle={Math.PI / 2 - THREE.MathUtils.degToRad(15)}    // 75° (ngẩng lên một chút)
         maxPolarAngle={Math.PI / 2 + THREE.MathUtils.degToRad(15)} // 105° (cúi xuống một chút)
@@ -1177,6 +1184,22 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           LEFT: THREE.MOUSE.ROTATE,
           MIDDLE: THREE.MOUSE.DOLLY,
           RIGHT: THREE.MOUSE.PAN
+        }}
+        // Touch controls for mobile zoom
+        touches={{
+          ONE: THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.DOLLY_PAN
+        }}
+        // Cursor styles for better UX
+        onStart={() => {
+          if (gl && gl.domElement) {
+            gl.domElement.style.cursor = 'grabbing';
+          }
+        }}
+        onEnd={() => {
+          if (gl && gl.domElement) {
+            gl.domElement.style.cursor = orbitControlEnabled ? 'grab' : 'default';
+          }
         }}
       />
 
