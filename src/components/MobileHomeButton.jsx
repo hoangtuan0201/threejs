@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import { Button } from '@mui/material';
 import { useMobile } from "../hooks/useMobile";
+import { useTheme } from '../theme/ThemeContext';
 
-const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
+const MobileHomeButton = ({ onGoHome, resetViewFunction, isVisible = true }) => {
   const mobile = useMobile();
+  const { theme } = useTheme();
   const [isPressed, setIsPressed] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
@@ -46,77 +49,90 @@ const MobileHomeButton = ({ onGoHome, isVisible = true }) => {
   // Only show on mobile and when visible
   if (!isVisible) return null;
 
-  const styles = {
-    button: {
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      width: "auto",
-      minWidth: "80px",
-      height: "48px",
-      padding: "0 16px",
-      background: "linear-gradient(135deg, #1a1a1a 0%, #2c3e50 50%, #34495e 100%)",
-      border: "2px solid rgba(255, 255, 255, 0.15)",
-      borderRadius: "24px",
-      color: "white",
-      fontSize: "14px",
-      fontWeight: "600",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "8px",
-      zIndex: 1500, // Below NavigationGuide but above other elements
-      boxShadow: isPressed
-        ? "0 4px 15px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15)"
-        : "0 12px 35px rgba(0, 0, 0, 0.2), 0 6px 15px rgba(0, 0, 0, 0.15)",
-      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-      backdropFilter: "blur(15px)",
-      WebkitBackdropFilter: "blur(15px)",
-      WebkitTapHighlightColor: "transparent",
-      touchAction: "manipulation",
-      transform: isPressed ? "scale(0.92) translateY(2px)" : "scale(1) translateY(0)",
-      // Add subtle glow effect
-      filter: "drop-shadow(0 0 8px rgba(255, 255, 255, 0.1))",
-      // Entrance animation
-      opacity: showButton ? 1 : 0,
-      animation: showButton ? "slideInFromRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) both" : "none",
+  const containerStyle = {
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    zIndex: 1500,
+    opacity: showButton ? 1 : 0,
+    animation: showButton ? "slideInFromRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) both" : "none",
+    display: 'flex',
+    gap: '10px',
+    flexDirection: 'row'
+  };
+
+  const buttonBaseStyle = {
+    background: theme.gradients.accent,
+    color: theme.colors.text.inverse,
+    borderRadius: '8px',
+    padding: '12px 16px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    minWidth: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+    backdropFilter: 'blur(10px)',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
     },
-    text: {
-      fontSize: "14px",
-      fontWeight: "600",
-      letterSpacing: "0.5px",
-      textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
+    '&:active': {
+      transform: 'translateY(0)',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
     }
   };
 
   return (
-    <button
-      style={styles.button}
-      onClick={handleClick}
-      onTouchStart={() => setIsPressed(true)}
-      onTouchEnd={() => setIsPressed(false)}
-      onTouchCancel={() => setIsPressed(false)}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
-      aria-label="Go to Homepage"
-    >
-      {/* Home Icon SVG */}
-      <svg
-        width="20"
-        height="20"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-        style={{ filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))" }}
+    <div style={containerStyle}>
+      {/* Reset View Button */}
+      {resetViewFunction && (
+        <Button
+          variant="contained"
+          onClick={() => {
+            if (resetViewFunction) {
+              resetViewFunction();
+            }
+          }}
+          sx={buttonBaseStyle}
+          aria-label="Reset View"
+        >
+          {/* Reset Icon SVG */}
+          <svg
+            width="20"
+            height="20"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            style={{ filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))" }}
+          >
+            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+          Reset
+        </Button>
+      )}
+      
+      {/* Home Button */}
+      <Button
+        variant="contained"
+        onClick={handleClick}
+        sx={buttonBaseStyle}
+        aria-label="Go to Homepage"
       >
-        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
-        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" opacity="0.3" transform="translate(0.5, 0.5)"/>
-      </svg>
-
-      {/* Home Text */}
-      <span style={styles.text}>Home</span>
-    </button>
+        {/* Home Icon SVG */}
+        <svg
+          width="20"
+          height="20"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          style={{ filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))" }}
+        >
+          <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+        </svg>
+        Home
+      </Button>
+    </div>
   );
 };
 

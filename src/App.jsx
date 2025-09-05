@@ -8,6 +8,8 @@ import theatreState from "./states/FlyThrough2.json";
 import { SceneManager } from "./components/SceneManager";
 import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
+import { RenderingOptimizer } from './components/RenderingOptimizer';
+
 
 // UI Components
 import LoadingScreen from "./components/LoadingScreen";
@@ -38,6 +40,7 @@ export default function App({ isChatFocused = false }) {
   const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
   const [showNavigationGuide, setShowNavigationGuide] = useState(false);
   const [resetViewFunction, setResetViewFunction] = useState(null);
+  const [selectedHotspot, setSelectedHotspot] = useState(null);
 
   const navigate = useNavigate();
   const mobile = useMobile();
@@ -208,8 +211,6 @@ export default function App({ isChatFocused = false }) {
           }}
         >
           {/* Realistic Lighting */}
-          <color attach="background" args={["#d0d0d0"]} />
-          <ambientLight intensity={1.5 * Math.PI} />
 
             <SceneManager
               onTourEnd={endTour}
@@ -235,6 +236,7 @@ export default function App({ isChatFocused = false }) {
               }}
               onCurrentSheetChange={setCurrentSheet}
               onCurrentSceneChange={setCurrentScene}
+              onSelectedHotspotChange={setSelectedHotspot}
               project={project}
             />
 
@@ -248,7 +250,8 @@ export default function App({ isChatFocused = false }) {
         onNavigate={handleChapterNavigation}
         mobile={mobile}
         isVisible={!showControlPanel && !showCompareSystem && modelLoaded && currentScene === "main"}
-        isLocked={sceneLocked}
+        isLocked={sceneLocked || selectedHotspot !== null}
+        selectedHotspot={selectedHotspot}
       />
 
       <ScrollSensitivityControl
@@ -259,52 +262,11 @@ export default function App({ isChatFocused = false }) {
 
       <MobileHomeButton
         onGoHome={handleGoHome}
+        resetViewFunction={resetViewFunction}
         isVisible={!showControlPanel && !showCompareSystem && !showNavigationGuide}
       />
 
-      {/* Reset View Button */}
-      {!showControlPanel && !showCompareSystem && modelLoaded && (
-        <div style={{
-          position: 'fixed',
-          top: 20,
-          left: 20,
-          zIndex: 1000
-        }}>
-          <button
-            onClick={() => {
-              if (resetViewFunction) {
-                resetViewFunction();
-              }
-            }}
-            style={{
-              background: 'linear-gradient(45deg, #FF9800, #F57C00)',
-              color: 'white',
-              border: 'none',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '14px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-              backdropFilter: 'blur(10px)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-            }}
-          >
-            🏠 Reset View
-          </button>
-        </div>
-      )}
+
 
       <NavigationGuide
         isVisible={showNavigationGuide}

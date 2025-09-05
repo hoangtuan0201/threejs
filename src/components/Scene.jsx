@@ -12,7 +12,7 @@ import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
 import DoorAnimation from "./DoorAnimation";
-import { EnhancedLighting } from "./HDREnvironment";
+import { EnhancedLighting, HDREnvironment } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
 import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
 import GrassFloor from "./GrassFloor";
@@ -23,7 +23,7 @@ import { useMobile } from "../hooks/useMobile";
 
 
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView, onSelectedHotspotChange }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
@@ -60,6 +60,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     setActiveSequence(null);
     setOrbitControlEnabled(false);
     setTargetPosition(0);
+    
+    // Notify parent about hotspot change
+    if (onSelectedHotspotChange) {
+      onSelectedHotspotChange(null);
+    }
     
     // Reset path tracing if enabled
     if (pathTracerRef.current && typeof pathTracerRef.current.reset === 'function') {
@@ -100,6 +105,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       onResetView(() => resetView);
     }
   }, [onResetView]);
+
+  // Notify parent when selectedHotspot changes
+  useEffect(() => {
+    if (onSelectedHotspotChange) {
+      onSelectedHotspotChange(selectedHotspot);
+    }
+  }, [selectedHotspot, onSelectedHotspotChange]);
 
   // Track if we just returned from detail scene to prevent navigation guide
   useEffect(() => {
@@ -1030,7 +1042,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       )}
 
       {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
-      <EnhancedLighting type="main" enableHDR={true} shadowQuality="ultra" />
+      <HDREnvironment 
+        hdrUrl="/textures/empty_play_room_2k.hdr"
+        intensity={2.8}
+        backgroundIntensity={0.9}
+        enableBackground={false}
+        enableToneMapping={true}
+      />
+      
+      {/* Enhanced lighting system for maximum quality */}
+      <EnhancedLighting type="main" enableHDR={false} shadowQuality="medium" />
 
       {/* Enhanced ground plane with realistic materials for maximum reflections */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
@@ -1144,7 +1165,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         enableZoom={orbitControlEnabled}
         minDistance={1}
         maxDistance={20}
-        target={selectedHotspot?.hotspot?.targetPosition}
+        dampingFactor={0.05}
+        enableDamping={true}
+        
+        target={selectedHotspot?.hotspot?.targetPosition || [0, 0, 0]}
+        makeDefault
         // Giới hạn góc xoay dọc (polar) - chỉ một chút
         minPolarAngle={Math.PI / 2 - THREE.MathUtils.degToRad(15)}    // 75° (ngẩng lên một chút)
         maxPolarAngle={Math.PI / 2 + THREE.MathUtils.degToRad(15)} // 105° (cúi xuống một chút)

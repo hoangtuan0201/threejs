@@ -162,6 +162,7 @@ export function Model({ activeSequence, onModelLoaded }) {
         child.castShadow = true;
         child.receiveShadow = true;
         child.geometry?.computeBoundingSphere();
+        child.material.shadowSide = THREE.FrontSide;
 
         // Store original material
         if (!originalMaterials.current.has(child.name) && child.material) {

@@ -55,6 +55,7 @@ export function SceneManager({
   onCurrentSheetChange, // New prop to expose current sheet
   onCurrentSceneChange, // New prop to expose current scene
   onResetView, // New prop to receive reset view function
+  onSelectedHotspotChange, // New prop to expose selected hotspot
   project // Receive project from App.jsx
 }) {
   // Create main sheet from the passed project
@@ -92,6 +93,7 @@ export function SceneManager({
         showNavigationGuide={showNavigationGuide}
         isChatFocused={isChatFocused}
         onResetView={onResetView}
+        onSelectedHotspotChange={onSelectedHotspotChange}
       />
     </SheetProvider>
   );

@@ -129,7 +129,7 @@ export function EnhancedLighting({
   return (
     <>
       {/* HDR Environment với intensity cao cho photorealism */}
-      {enableHDR && <HDREnvironment intensity={3.0} enableBackground={false} />}
+      {enableHDR && <HDREnvironment intensity={2.8} enableBackground={false} />}
 
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
