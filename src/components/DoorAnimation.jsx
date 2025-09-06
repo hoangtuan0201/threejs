@@ -21,6 +21,11 @@ const DOOR_CONFIG = {
     "3DGeom-9290_3", "3DGeom-254_9", "3DGeom-255_9", "3DGeom-256_9", 
     "3DGeom-254_8", "3DGeom-256_8", "3DGeom-253_8", "3DGeom-255_8"
   ],
+  /** Mesh names for tenth door group */
+  TENTH_DOOR_MESHES: [
+    "3DGeom-141", "3DGeom-142", "3DGeom-139", "3DGeom-140",'3DGeom-136',
+    '3DGeom-146', '3DGeom-135', '3DGeom-137', '3DGeom-138'
+  ],
   /** Single door mesh names */
   SINGLE_DOORS: {
     DOOR_1: "3DGeom-9388",
@@ -102,7 +107,14 @@ const ANIMATION_CONFIG = [
     startTime: 13.9,
     endTime: 14.3,
     action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
-  }
+  },
+  {
+    id: "eleventh-door",
+    target: "TenthDoorGroup",
+    startTime: 15.3,
+    endTime: 16,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
 ];
 
 /**
@@ -289,6 +301,10 @@ export function DoorAnimation() {
       {
         group: createMultiMeshGroup(DOOR_CONFIG.NINTH_DOOR_MESHES, "NinthDoorGroup", "right-top"),
         name: "NinthDoorGroup"
+      },
+      {
+        group: createMultiMeshGroup(DOOR_CONFIG.TENTH_DOOR_MESHES, "TenthDoorGroup", "right-top"),
+        name: "TenthDoorGroup"
       },
       {
         group: createSingleMeshGroup(DOOR_CONFIG.SINGLE_DOORS.DOOR_1, "Door1Group"),
