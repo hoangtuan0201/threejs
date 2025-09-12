@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=1.22.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -23,6 +27,8 @@
     "@theatre/r3f": "^0.6.0",
     "@theatre/studio": "^0.6.0",
     "crypto-js": "^4.2.0",
+    "gsap": "^3.13.0",
+    "jeasings": "^0.0.16",
     "leva": "^0.10.0",
     "postprocessing": "^6.37.7",
     "r3f-perf": "^7.2.3",

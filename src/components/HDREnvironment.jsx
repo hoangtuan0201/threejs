@@ -35,7 +35,7 @@ export function HDREnvironment({
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = 0.28; // Cân bằng giữa chân thật và không chói
+      gl.toneMappingExposure = 0.4; // Cân bằng giữa chân thật và không chói
       gl.outputEncoding = THREE.sRGBEncoding;
       
       // Additional renderer settings for maximum quality
@@ -129,7 +129,7 @@ export function EnhancedLighting({
   return (
     <>
       {/* HDR Environment với intensity cao cho photorealism */}
-      {enableHDR && <HDREnvironment intensity={3.0} enableBackground={false} />}
+      {enableHDR && <HDREnvironment intensity={2.8} enableBackground={false} />}
 
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
@@ -148,30 +148,15 @@ export function EnhancedLighting({
         shadow-radius={6}
       />
 
-      {/* Fill Light - ánh sáng phụ để làm mềm shadows */}
-      <directionalLight
-        intensity={2.2} 
-        position={[-8, 6, -10]}
-        color="#b3d4fc" 
-        castShadow={false}
-      />
-
-      {/* Rim Light - tạo viền sáng cho objects */}
-      <directionalLight
-        intensity={1.6} 
-        position={[-12, 8, 15]}
-        color="#ffd4a3" 
-        castShadow={false}
-      />
 
       {/* Ambient Light thấp để giữ contrast cao */}
-      <ambientLight 
+      {/* <ambientLight 
         intensity={0.18} // Giữ ambient thấp để contrast cao
         color="#ffffff"
-      />
+      /> */}
 
       {/* Point lights để tạo highlights cục bộ */}
-      <pointLight
+      {/* <pointLight
         intensity={10} 
         position={[5, 8, 5]}
         color="#ffffff"
@@ -182,10 +167,10 @@ export function EnhancedLighting({
         shadow-camera-near={0.1}
         shadow-camera-far={25}
         shadow-bias={-0.0005}
-      />
+      /> */}
 
       {/* Spot light cho dramatic lighting */}
-      <spotLight
+      {/* <spotLight
         intensity={13} 
         position={[20, 15, 10]}
         target-position={[0, 0, 0]}
@@ -197,7 +182,7 @@ export function EnhancedLighting({
         shadow-camera-near={1}
         shadow-camera-far={50}
         shadow-bias={-0.0002}
-      />
+      /> */}
     </>
   );
 }

@@ -68,6 +68,9 @@ export function useMaterialEnhancer() {
   const enhanceMaterial = (material) => {
     if (!material) return;
 
+    // PRESERVE ORIGINAL MATERIAL NAME
+    const originalName = material.name;
+
     // Tăng environment map intensity cho reflections realistic hơn
     material.envMapIntensity = mobile.isMobile ? 1.8 : 2.2; // Tăng từ 1.2/1.5 lên 1.8/2.2
 
@@ -88,6 +91,8 @@ export function useMaterialEnhancer() {
       }
     }
 
+    // RESTORE MATERIAL NAME AFTER ENHANCEMENT
+    material.name = originalName;
     material.needsUpdate = true;
     return material;
   };

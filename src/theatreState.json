@@ -14,7 +14,7 @@
       },
       "sequence": {
         "subUnitsPerUnit": 30,
-        "length": 3.88,
+        "length": 16.5,
         "type": "PositionalSequence",
         "tracksByObject": {
           "Camera": {

@@ -1,91 +1,7 @@
 import { Html } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
+import { useThree } from "@react-three/fiber";
 import { useMobile } from "../hooks/useMobile";
 import * as THREE from "three";
-
-// Animated Chevron Down Icon Component with Scroll Hint
-function ChevronDownIcon() {
-  const groupRef = useRef();
-  const chevron1LeftRef = useRef();
-  const chevron1RightRef = useRef();
-  const chevron2LeftRef = useRef();
-  const chevron2RightRef = useRef();
-  const chevron3LeftRef = useRef();
-  const chevron3RightRef = useRef();
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-
-    if (groupRef.current) {
-      // Main floating animation
-      groupRef.current.position.y = Math.sin(time * 1.5) * 0.03;
-    }
-
-    // Cascading scroll-down animation for chevron 1
-    const wave1 = Math.sin(time * 3) * 0.5 + 0.5; // 0 to 1
-    if (chevron1LeftRef.current && chevron1RightRef.current) {
-      chevron1LeftRef.current.material.opacity = wave1;
-      chevron1RightRef.current.material.opacity = wave1;
-    }
-
-    // Cascading scroll-down animation for chevron 2
-    const wave2 = Math.sin(time * 3 - 0.5) * 0.5 + 0.5; // Delayed
-    if (chevron2LeftRef.current && chevron2RightRef.current) {
-      chevron2LeftRef.current.material.opacity = wave2;
-      chevron2RightRef.current.material.opacity = wave2;
-    }
-
-    // Cascading scroll-down animation for chevron 3
-    const wave3 = Math.sin(time * 3 - 1) * 0.5 + 0.5; // More delayed
-    if (chevron3LeftRef.current && chevron3RightRef.current) {
-      chevron3LeftRef.current.material.opacity = wave3;
-      chevron3RightRef.current.material.opacity = wave3;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {/* First chevron (main) */}
-      <group position={[0, 0.05, 0]}>
-        <mesh position={[-0.025, 0.025, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <boxGeometry args={[0.08, 0.012, 0.012]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.3} />
-        </mesh>
-        <mesh position={[0.025, 0.02, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <boxGeometry args={[0.08, 0.012, 0.012]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.3} />
-        </mesh>
-      </group>
-
-      {/* Second chevron (animated) */}
-      <group position={[0, -0.03, 0]}>
-        <mesh ref={chevron1LeftRef} position={[-0.025, 0.025, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <boxGeometry args={[0.07, 0.01, 0.01]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.2} transparent />
-        </mesh>
-        <mesh ref={chevron1RightRef} position={[0.025, 0.025, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <boxGeometry args={[0.07, 0.01, 0.01]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.2} transparent />
-        </mesh>
-      </group>
-
-      {/* Third chevron (animated) */}
-      <group position={[0, -0.08, 0]}>
-        <mesh ref={chevron2LeftRef} position={[-0.02, 0.02, 0]} rotation={[0, 0, Math.PI / 4]}>
-          <boxGeometry args={[0.06, 0.008, 0.008]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.15} transparent />
-        </mesh>
-        <mesh ref={chevron2RightRef} position={[0.02, 0.02, 0]} rotation={[0, 0, -Math.PI / 4]}>
-          <boxGeometry args={[0.06, 0.008, 0.008]} />
-          <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.15} transparent />
-        </mesh>
-      </group>
-
-      
-    </group>
-  );
-}
 
 export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosition }) {
   const mobile = useMobile();
@@ -186,8 +102,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
         document.body.style.cursor = 'default';
       }}
     >
-        {/* 3D Chevron Down Icon with Animation */}
-        <ChevronDownIcon />
+
       </group>
 
       {/* HTML label - separate from rotated group to maintain correct position */}
@@ -197,44 +112,182 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
           position={labelPosition}
           rotation={labelRotation}
           occlude={true}
+          style={{
+            pointerEvents: 'none',
+          }}
         >
-          <div
-            style={{
-              background: 'rgba(0, 0, 0, 0.9)',
-              color: 'white',
-              padding: mobile.isMobile ? '6px 12px' : '4px 8px',
-              borderRadius: mobile.isMobile ? '8px' : '6px',
-              fontSize: mobile.isMobile ? '16px' : '12px',
-              fontWeight: '600',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              pointerEvents: 'auto',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              opacity: 1,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-              backdropFilter: 'blur(4px)',
-              zIndex: 9999, // High z-index to ensure clickability above navigation guide
-              position: 'relative',
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onHotspotClick(chapter.id);
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(0, 0, 0, 0.95)';
-              e.target.style.transform = 'scale(1.05)';
-              e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(0, 0, 0, 0.9)';
-              e.target.style.transform = 'scale(1)';
-              e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4)';
-            }}
-          >
-            {chapter.hotspot.title || chapter.title || `H${chapter.id}`}
+          <style>
+            {`
+              .hotspotHTML {
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                padding: 5px;
+                width: max-content;
+                gap: 13px;
+                cursor: pointer;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation.active:before {
+                width: 100%;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation.active .hotspot-box .hotspot-title {
+                opacity: 1;
+                animation: hotspot-text-wipe .7s ease-in-out forwards;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -5px;
+                display: block;
+                border-radius: 28px;
+                background: none;
+                width: 40px;
+                height: 40px;
+                transition: all .4s ease-in-out;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-pulse {
+                position: absolute;
+                top: 5px;
+                left: 0;
+                width: 30px;
+                height: 30px;
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-pulse:after {
+                content: "";
+                display: block;
+                position: absolute;
+                border: 1px solid #ffffff;
+                left: -30px;
+                right: -30px;
+                top: -30px;
+                bottom: -30px;
+                border-radius: 50%;
+                animation: hotspot-animate-pulse 2.7s linear infinite;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-box {
+                display: flex;
+                flex-direction: column;
+                padding-right: 20px;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-box .hotspot-title {
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                font-size: ${mobile.isMobile ? '16px' : '12px'};
+                font-weight: 600;
+                line-height: 30px;
+                opacity: 0;
+                -webkit-mask-image: linear-gradient(to left, #0000 38%, #000 40%);
+                -webkit-mask-size: 300%;
+                mask-image: linear-gradient(to left, #0000 38%, #000 40%);
+                mask-size: 300%;
+                z-index: 10;
+                pointer-events: none;
+                color: #fff;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-statusCircle {
+                width: 20px;
+                height: 20px;
+                border-radius: 50px;
+                border: 1px solid rgba(255, 255, 255, 0.87);
+                z-index: 10;
+                background-color: #1976d2;
+                pointer-events: all;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+              }
+              
+              .hotspotHTML .hotspot-annotation .hotspot-statusCircle::before {
+                content: '?';
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+              }
+              
+              .hotspotHTML .hotspot-annotation:hover:before {
+                width: 100%;
+                box-shadow: 0 8px 24px rgba(25,118,210,0.4), 0 8px 16px rgba(25,118,210,0.4);
+                pointer-events: none;
+                -webkit-backdrop-filter: blur(6px);
+                backdrop-filter: blur(6px);
+                background: rgba(25, 118, 210, 0.95);
+                border-radius: ${mobile.isMobile ? '8px' : '6px'};
+              }
+              
+              .hotspotHTML .hotspot-annotation:hover .hotspot-box .hotspot-title {
+                animation: hotspot-text-wipe .9s ease-in-out forwards;
+                pointer-events: none;
+              }
+              
+              .hotspotHTML .hotspot-annotation:hover .hotspot-statusCircle {
+                background-color: #1565c0;
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(25,118,210,0.6);
+              }
+              
+              @keyframes hotspot-text-wipe {
+                0% {
+                  opacity: 0;
+                  -webkit-mask-position: 100%;
+                }
+                to {
+                  opacity: 1;
+                  -webkit-mask-position: 0%;
+                }
+              }
+              
+              @keyframes hotspot-animate-pulse {
+                0% {
+                  transform: scale(.5);
+                  opacity: 0;
+                }
+                50% {
+                  opacity: 1;
+                }
+                to {
+                  transform: scale(1.2);
+                  opacity: 0;
+                }
+              }
+            `}
+          </style>
+          
+          <div className="hotspotHTML">
+            <div 
+              className="hotspot-annotation"
+              onClick={(e) => {
+                e.stopPropagation();
+                onHotspotClick(chapter.id);
+              }}
+            >
+              <span className="hotspot-statusCircle"></span>
+              <div className="hotspot-box">
+                <span className="hotspot-title">{chapter.hotspot.title || chapter.title || `H${chapter.id}`}</span>
+              </div>
+            </div>
           </div>
         </Html>
       )}

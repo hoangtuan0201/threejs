@@ -8,6 +8,8 @@ import theatreState from "./states/FlyThrough2.json";
 import { SceneManager } from "./components/SceneManager";
 import studio from "@theatre/studio";
 import extension from "@theatre/r3f/dist/extension";
+import { RenderingOptimizer } from './components/RenderingOptimizer';
+
 
 // UI Components
 import LoadingScreen from "./components/LoadingScreen";
@@ -37,6 +39,8 @@ export default function App({ isChatFocused = false }) {
   const [currentSequencePosition, setCurrentSequencePosition] = useState(0);
   const [scrollSensitivity, setScrollSensitivity] = useState(1.0);
   const [showNavigationGuide, setShowNavigationGuide] = useState(false);
+  const [resetViewFunction, setResetViewFunction] = useState(null);
+  const [selectedHotspot, setSelectedHotspot] = useState(null);
 
   const navigate = useNavigate();
   const mobile = useMobile();
@@ -105,7 +109,13 @@ export default function App({ isChatFocused = false }) {
     setModelLoaded(false);
   };
 
-  const handleGoHome = () => navigate("/");
+  const handleGoHome = () => {
+    // Reset view before navigating home to prevent errors
+    if (resetViewFunction) {
+      resetViewFunction();
+    }
+    navigate("/");
+  };
 
   const handleModelLoaded = () => {
     setModelLoaded(true);
@@ -124,12 +134,12 @@ export default function App({ isChatFocused = false }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    localStorage.removeItem("hasVisitedDetailScene");
+
     sessionStorage.removeItem("navigationGuideShown");
     setShowNavigationGuide(false);
   }, []);
 
-  // Theatre.js Studio disabled for production
+  // // Theatre.js Studio disabled for production
   // if (import.meta.env.DEV && !window.__THEATRE_ALREADY_INIT__) {
   //   studio.initialize()
   //   studio.ui.hide()
@@ -201,8 +211,6 @@ export default function App({ isChatFocused = false }) {
           }}
         >
           {/* Realistic Lighting */}
-          <color attach="background" args={["#d0d0d0"]} />
-          <ambientLight intensity={1.5 * Math.PI} />
 
             <SceneManager
               onTourEnd={endTour}
@@ -217,6 +225,7 @@ export default function App({ isChatFocused = false }) {
               onHideNavigationGuide={useCallback(() => setShowNavigationGuide(false), [])}
               showNavigationGuide={showNavigationGuide}
               isChatFocused={isChatFocused}
+              onResetView={setResetViewFunction}
               navigationData={{
                 isNavigating: sceneNavigating,
                 targetPosition: sceneTargetPosition,
@@ -227,6 +236,7 @@ export default function App({ isChatFocused = false }) {
               }}
               onCurrentSheetChange={setCurrentSheet}
               onCurrentSceneChange={setCurrentScene}
+              onSelectedHotspotChange={setSelectedHotspot}
               project={project}
             />
 
@@ -240,7 +250,8 @@ export default function App({ isChatFocused = false }) {
         onNavigate={handleChapterNavigation}
         mobile={mobile}
         isVisible={!showControlPanel && !showCompareSystem && modelLoaded && currentScene === "main"}
-        isLocked={sceneLocked}
+        isLocked={sceneLocked || selectedHotspot !== null}
+        selectedHotspot={selectedHotspot}
       />
 
       <ScrollSensitivityControl
@@ -251,8 +262,11 @@ export default function App({ isChatFocused = false }) {
 
       <MobileHomeButton
         onGoHome={handleGoHome}
+        resetViewFunction={resetViewFunction}
         isVisible={!showControlPanel && !showCompareSystem && !showNavigationGuide}
       />
+
+
 
       <NavigationGuide
         isVisible={showNavigationGuide}

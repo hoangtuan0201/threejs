@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '../theme/ThemeContext';
 import Homepage from '../pages/Homepage';
 import CompareSystem from '../pages/CompareSystem';
+import XRayMode from '../pages/X-ray';
 import App from '../App'; // 3D Experience
 
 const AppRouter = () => {
@@ -45,6 +46,10 @@ const AppRouter = () => {
 
           {/* 3D Experience Route */}
           <Route path="/experience" element={<App isChatFocused={isChatFocused} />} />
+
+
+          {/* X-Ray Mode Route */}
+          <Route path="/x-ray" element={<XRayMode />} />
 
           {/* Fallback to Homepage */}
           <Route path="*" element={<Homepage />} />

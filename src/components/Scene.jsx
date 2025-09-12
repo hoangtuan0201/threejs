@@ -2,6 +2,7 @@ import { Suspense, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { PerspectiveCamera, useCurrentSheet } from "@theatre/r3f";
 import { useThree, useFrame } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
 import { WebGLPathTracer } from 'three-gpu-pathtracer';
 
@@ -10,22 +11,19 @@ import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
 import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
-import ToggleHiddenObjects from "./ToggleHiddenObjects";
 import DoorAnimation from "./DoorAnimation";
-import { EnhancedLighting } from "./HDREnvironment";
+import { EnhancedLighting, HDREnvironment } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
 import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
+import GrassFloor from "./GrassFloor";
+import Tree, { TreeGroup } from "./XRayMode/Tree";
 
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
 
 
 
-
-
-
-
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView, onSelectedHotspotChange }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
@@ -33,7 +31,59 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [selectedHotspot, setSelectedHotspot] = useState(null); // For hotspot detail popup
   const [showVideoScreen, setShowVideoScreen] = useState(null); // Control video screen visibility
   const [hasNavigated, setHasNavigated] = useState(false); // Track if user has navigated
-  const [localHiddenState, setLocalHiddenState] = useState(false); // Local state for 3D toggle
+  const [activeSequence, setActiveSequence] = useState(null); // For hiding mesh when hotspot is clicked
+  const [orbitControlEnabled, setOrbitControlEnabled] = useState(false); // Control orbit control activation
+  const orbitControlsRef = useRef(); // Reference to OrbitControls
+  
+  // Enhanced reset view function - reset everything
+  const resetView = () => {
+    // // Reset orbit controls
+    // if (orbitControlsRef.current) {
+    //   orbitControlsRef.current.reset();
+    // }
+    
+    // // Reset camera to initial position
+    // if (camera) {
+    //   camera.position.set(33.5381764274176, 5.205671442619433, -22.03415991352903);
+    //   camera.lookAt(0, 0, 0);
+    // }
+    
+    // Reset sequence position to beginning
+    if (sheet && sheet.sequence) {
+      sheet.sequence.position = 0.1;
+    }
+    
+    // Reset all states completely
+    setActiveChapter(0);
+    setSelectedHotspot(null);
+    setShowVideoScreen(null);
+    setActiveSequence(null);
+    setOrbitControlEnabled(false);
+    setTargetPosition(0);
+    
+    // Notify parent about hotspot change
+    if (onSelectedHotspotChange) {
+      onSelectedHotspotChange(null);
+    }
+    
+    // Reset path tracing if enabled
+    if (pathTracerRef.current && typeof pathTracerRef.current.reset === 'function') {
+      pathTracerRef.current.reset();
+    }
+    setPathTracingProgress(0);
+    
+    // Reset navigation guide state
+    setHasShownNavigationGuide(false);
+    hasTriggeredGuideRef.current = false;
+    
+    // Call onPositionChange to update parent state
+    if (onPositionChange) {
+      onPositionChange(0);
+    }
+    
+    console.log('Complete view and sequence reset to initial state');
+  };
+
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
   const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown in current session
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
@@ -48,6 +98,20 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   // Canvas filters for enhanced visuals
   const canvasFilters = useCanvasFilters();
+
+  // Send resetView function to parent component
+  useEffect(() => {
+    if (onResetView) {
+      onResetView(() => resetView);
+    }
+  }, [onResetView]);
+
+  // Notify parent when selectedHotspot changes
+  useEffect(() => {
+    if (onSelectedHotspotChange) {
+      onSelectedHotspotChange(selectedHotspot);
+    }
+  }, [selectedHotspot, onSelectedHotspotChange]);
 
   // Track if we just returned from detail scene to prevent navigation guide
   useEffect(() => {
@@ -74,10 +138,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Mobile detection and responsive utilities
   const mobile = useMobile();
 
-  // Handle toggle hidden objects
-  const handleToggleHidden = (isHidden) => {
-    setLocalHiddenState(isHidden);
-  };
+
 
 
 
@@ -432,6 +493,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   }, [camera, mobile.isMobile, mobile.isTablet]);
 
+  // Update cursor style when orbit control is enabled/disabled
+  useEffect(() => {
+    if (gl && gl.domElement) {
+      gl.domElement.style.cursor = orbitControlEnabled ? 'grab' : 'default';
+    }
+  }, [orbitControlEnabled, gl]);
+
   // Handle resize events (basic)
   useEffect(() => {
     const handleResize = () => {
@@ -488,8 +556,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           onComplete?.();
         }
       }
-    } else if (!isNavigating) {
+    } else if (!isNavigating && !selectedHotspot) {
       // comment these to turn off useframe
+      // Only allow smooth scrolling when no hotspot is selected
       if (targetPosition !== sheet.sequence.position) {
         const diff = targetPosition - sheet.sequence.position;
         const speed = 0.02; // Smooth scrolling speed
@@ -538,8 +607,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Enhanced keyboard navigation for escape key and arrow keys
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Only handle keys in explore mode
-      if (!isExploreMode) return;
+      // Only handle keys in explore mode and when no hotspot is selected
+      if (!isExploreMode || selectedHotspot) return;
 
       switch (event.key) {
         case 'Escape':
@@ -561,8 +630,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowRight':
           event.preventDefault();
           // Smooth navigation forward using setTargetPosition (like scroll)
-          if (targetPosition < 12.5) {
-            const newPosition = Math.min(12.5, targetPosition + 0.3);
+          if (targetPosition < 16.5) {
+            const newPosition = Math.min(16.5, targetPosition + 0.3);
             setTargetPosition(newPosition);
             setHasNavigated(true);
           }
@@ -577,14 +646,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onTourEnd, isExploreMode, targetPosition, setHasNavigated]);
+  }, [onTourEnd, isExploreMode, targetPosition, setHasNavigated, selectedHotspot]);
 
   // Handle scroll only in explore mode
   useEffect(() => {
     const handleWheel = (event) => {
-      // Only allow scroll if in explore mode, when not navigating, and when chat is not focused
+      // Only allow scroll if in explore mode, when not navigating, when chat is not focused, and when no hotspot is selected
       // Note: Removed showNavigationGuide blocking to allow scroll while guide is showing
-      if (!isExploreMode || isNavigating || isChatFocused) {
+      if (!isExploreMode || isNavigating || isChatFocused || selectedHotspot) {
         return;
       }
 
@@ -613,7 +682,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         let newPosition = prevTarget + (deltaY * finalSensitivity);
 
         // Limit within range [0.1, 12.5] (entire sequence) - start from 0.1 to avoid wall clipping
-        newPosition = Math.max(0, Math.min(12.5, newPosition));
+        newPosition = Math.max(0, Math.min(16.5, newPosition));
 
 
 
@@ -632,8 +701,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     let hasMovedSignificantly = false;
 
     const handleTouchStart = (event) => {
-      // Allow touch even when navigation guide is showing
-      if (!isExploreMode || isNavigating) return;
+      // Allow touch even when navigation guide is showing, but block when hotspot is selected
+      if (!isExploreMode || isNavigating || selectedHotspot) return;
 
       const touch = event.touches[0];
       touchStartY = touch.clientY;
@@ -650,8 +719,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
 
     const handleTouchMove = (event) => {
-      // Allow touch move even when navigation guide is showing
-      if (!isExploreMode || !isTouching || isNavigating) return;
+      // Allow touch move even when navigation guide is showing, but block when hotspot is selected
+      if (!isExploreMode || !isTouching || isNavigating || selectedHotspot) return;
 
       const touch = event.touches[0];
       const touchY = touch.clientY;
@@ -683,7 +752,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + (deltaY * touchSensitivity);
-          newPosition = Math.max(0, Math.min(12.5, newPosition)); // Thống nhất range với wheel events
+          newPosition = Math.max(0, Math.min(16.5, newPosition)); // Thống nhất range với wheel events
 
 
 
@@ -697,8 +766,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     };
 
     const handleTouchEnd = () => {
-      // Allow touch end even when navigation guide is showing
-      if (!isExploreMode) return;
+      // Allow touch end even when navigation guide is showing, but block when hotspot is selected
+      if (!isExploreMode || selectedHotspot) return;
 
       isTouching = false;
 
@@ -713,7 +782,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + momentum;
-          newPosition = Math.max(0, Math.min(12.5, newPosition)); // Thống nhất range
+          newPosition = Math.max(0, Math.min(16.5, newPosition)); // Thống nhất range
 
 
 
@@ -760,7 +829,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       canvas.removeEventListener('touchcancel', handleTouchEnd);
     };
 
-  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile, isNavigating, showNavigationGuide, isChatFocused]);
+  }, [gl.domElement, onHideControlPanel, onShowControlPanel, isExploreMode, mobile.isMobile, isNavigating, showNavigationGuide, isChatFocused, selectedHotspot]);
 
   // Handle mesh click to log mesh name to console
   useEffect(() => {
@@ -814,6 +883,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         fallbackColor="#84a4f4"
         enableIndustrial={true}
       />
+  
+
 
       {/* Enhanced Path Tracing Controls with Quality Settings */}
       {isPathTracingReady && (
@@ -978,7 +1049,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       )}
 
       {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
-      <EnhancedLighting type="main" enableHDR={true} shadowQuality="ultra" />
+      <HDREnvironment 
+        hdrUrl="/textures/empty_play_room_2k.hdr"
+        intensity={2.8}
+        backgroundIntensity={0.9}
+        enableBackground={false}
+        enableToneMapping={true}
+      />
+      
+      {/* Enhanced lighting system for maximum quality */}
+      <EnhancedLighting type="main" enableHDR={false} shadowQuality="medium" />
 
       {/* Enhanced ground plane with realistic materials for maximum reflections */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
@@ -998,16 +1078,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Hotspot Lighting - spotlights shining down on each hotspot */}
       <HotspotLighting sequenceChapters={sequenceChapters} />
 
-      {/* 3D Toggle Hidden Objects Button */}
-      <ToggleHiddenObjects
-        onToggleHidden={handleToggleHidden}
-        isVisible={isExploreMode}
-      />
+
 
 
       <Suspense fallback={null}>
         <Model
-          hiddenObjectsState={localHiddenState}
+          activeSequence={activeSequence}
           onModelLoaded={() => {
             setModelLoaded(true);
             onModelLoaded?.();
@@ -1015,6 +1091,12 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         />
         {/* Door animation controller */}
         <DoorAnimation />
+        
+        {/* Grass Floor - sàn cỏ xung quanh nhà */}
+        <GrassFloor size={[100, 100]} position={[29, -0.77, -25]} />
+        
+        {/* Tree Group - nhóm cây xung quanh nhà */}
+        <TreeGroup />
       </Suspense>
     
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}
@@ -1023,6 +1105,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         selectedHotspot={selectedHotspot}
         currentPosition={sheet.sequence.position}
         onHotspotClick={(chapterId) => {
+          // Reset state khi chuyển sang khu vực khác
+          setSelectedHotspot(null);
+          setShowVideoScreen(null);
+          setOrbitControlEnabled(false); // Disable orbit control when switching areas
+          
           // Find the chapter and show hotspot details + video screen
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
           if (chapter && chapter.hotspot) {
@@ -1033,6 +1120,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
               onHotspotDetailRequest(chapter, currentState);
             } else {
               setSelectedHotspot(chapter);
+              setActiveSequence(chapterId); // Activate mesh hiding for this sequence
+              setOrbitControlEnabled(true); // Enable orbit control when hotspot is clicked
               // Show video screen when hotspot is clicked
               if (chapter.videoScreen) {
                 setShowVideoScreen(chapter);
@@ -1062,6 +1151,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         onClose={() => {
           setSelectedHotspot(null);
           setShowVideoScreen(null); // Also hide video screen
+          setActiveSequence(null); // Turn off mesh hiding when closing hotspot detail
+          setOrbitControlEnabled(false); // Disable orbit control when closing hotspot detail
         }}
       />
 
@@ -1070,6 +1161,46 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         makeDefault
         fov={75} // Default FOV, will be overridden by FOVManager
         position={[33.5381764274176, 5.205671442619433, -22.03415991352903]}
+      />
+
+      {/* Orbit Controls - activated when hotspot is clicked */}
+      <OrbitControls
+        ref={orbitControlsRef}
+        enabled={orbitControlEnabled}
+        enablePan={false}
+        enableRotate={orbitControlEnabled}
+        enableZoom={orbitControlEnabled}
+        minDistance={1}
+        maxDistance={20}
+        dampingFactor={0.05}
+        enableDamping={true}
+        
+        target={selectedHotspot?.hotspot?.targetPosition || [0, 0, 0]}
+        makeDefault={orbitControlEnabled}
+        // Giới hạn góc xoay dọc (polar) - chỉ một chút
+        minPolarAngle={Math.PI / 2 - THREE.MathUtils.degToRad(15)}    // 75° (ngẩng lên một chút)
+        maxPolarAngle={Math.PI / 2 + THREE.MathUtils.degToRad(15)} // 105° (cúi xuống một chút)
+        mouseButtons={{
+          LEFT: THREE.MOUSE.ROTATE,
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.PAN
+        }}
+        // Touch controls for mobile zoom
+        touches={{
+          ONE: THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.DOLLY_PAN
+        }}
+        // Cursor styles for better UX
+        onStart={() => {
+          if (gl && gl.domElement) {
+            gl.domElement.style.cursor = 'grabbing';
+          }
+        }}
+        onEnd={() => {
+          if (gl && gl.domElement) {
+            gl.domElement.style.cursor = orbitControlEnabled ? 'grab' : 'default';
+          }
+        }}
       />
 
       {/* Post-processing effects for photorealistic quality (Game 4K) - Temporarily disabled */}

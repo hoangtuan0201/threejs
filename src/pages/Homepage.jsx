@@ -351,6 +351,7 @@ export default function Homepage() {
               Compare Systems
             </Button>
 
+           
 
             <Button
               variant="outlined"
@@ -412,6 +413,36 @@ export default function Homepage() {
               >
                 More Features...
               </Button>
+               <Button
+              variant="outlined"
+              size="large"
+              onClick={() => navigate("/x-ray")}
+              sx={{
+                color: theme.colors.text.primary,
+                borderColor: theme.colors.border.medium,
+                borderWidth: 2,
+                fontWeight: 600,
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+                borderRadius: 2,
+                textTransform: "none",
+                px: { xs: 4, sm: 4 },
+                py: { xs: 1.8, sm: 1.5 },
+                minWidth: { xs: 200, sm: 200 },
+                width: { xs: "100%", sm: "auto" },
+                minHeight: { xs: 48, sm: 44 },
+                background: theme.colors.background.overlay,
+                backdropFilter: "blur(10px)",
+                "&:hover": {
+                  bgcolor: theme.colors.background.secondary,
+                  borderColor: theme.colors.border.dark,
+                  transform: "translateY(-1px)",
+                  boxShadow: theme.shadows.md,
+                },
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              X-Ray Mode
+            </Button>
           </Stack>
 
         </Box>

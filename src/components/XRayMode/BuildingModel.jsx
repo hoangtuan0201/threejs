@@ -1,66 +1,34 @@
-import { useGLTF } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useMemo, useEffect, useState } from 'react';
+import { useGLTF } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
+import * as THREE from 'three';
+import { useMaterialEnhancer } from '../RenderingOptimizer';
+import SequenceMeshController from './SequenceMeshController';
+import MeshClickHandler from './MeshClickHandler';
 
-import { useMaterialEnhancer } from "./RenderingOptimizer";
-import { useFrame, useThree } from "@react-three/fiber";
-import SequenceMeshController from "./SequenceMeshController";
-import * as THREE from "three";
-import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
-const MODEL_URL = "./3ddd.glb"; // Adjust path as needed
-const SIGNED_MODEL_URL = convertToSignedUrl(MODEL_URL);
-export function Model({ activeSequence, onModelLoaded }) {
-  const [modelReady, setModelReady] = useState(false);
+function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlightedComponent, onModelLoaded }) {
+  const { scene } = useGLTF('/3ddd.glb');
+  const modelRef = useRef();
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
-  const { scene, error } = useGLTF(MODEL_URL);
   const { scene: globalScene } = useThree();
+  const [modelReady, setModelReady] = useState(false);
+  
+  // Clone scene một lần duy nhất
+  const clonedScene = useMemo(() => {
+    if (!scene) return null;
+    return scene.clone();
+  }, [scene]);
 
-  // // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
-  // const applyRealisticShader = (material) => {
-  //   material.onBeforeCompile = (shader) => {
-  //     shader.uniforms.uTime = { value: 0 };
-  //     shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
-
-  //     shader.fragmentShader = shader.fragmentShader.replace(
-  //       `#include <dithering_fragment>`,
-  //       `
-  //         // 🔹 Fresnel rim lighting subtle
-  //         vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
-  //         gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
-
-  //         // 🔹 Subtle AO boost (darken crevices more)
-  //         gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
-
-  //         #include <dithering_fragment>
-  //       `
-  //     );
-
-  //     material.userData.shader = shader;
-  //   };
-  //   material.needsUpdate = true;
-  // };
-
-
-  // Update shader uniforms for dynamic effects
-  useFrame(({ clock }) => {
-    scene?.traverse((child) => {
-      if (child.isMesh && child.material?.userData?.shader) {
-        child.material.userData.shader.uniforms.uTime.value = clock.elapsedTime;
-      }
-    });
-  });
-
-  // Notify when model is loaded
+  // Gọi onModelLoaded khi clonedScene sẵn sàng (sau khi áp dụng material)
   useEffect(() => {
-    if (scene && !modelReady) {
-      setModelReady(true);
-      onModelLoaded?.();
-    }
-  }, [scene, modelReady, onModelLoaded]);
+    if (!clonedScene || modelReady) return;
+    // Việc gọi onModelLoaded sẽ được thực hiện ở cuối effect áp dụng material bên dưới
+  }, [clonedScene, modelReady]);
 
-  // Traverse model and enhance realism
+  // Apply enhanced materials like in Explore 3D mode
   useEffect(() => {
-    if (!scene) return;
+    if (!clonedScene) return;
 
     // Helper to create ultra-realistic PBR materials (Game 4K quality)
     const toPhysicalMaterial = (src) => {
@@ -123,15 +91,11 @@ export function Model({ activeSequence, onModelLoaded }) {
         ior: 1.3,
         
         // Balanced environment mapping for natural realism
-        envMapIntensity: 1.2, // Giảm intensity để tránh chói lóa
+        envMapIntensity: 1.2,
         
         // Advanced transmission for glass materials
         transmission: src.transmission ?? 0,
         thickness: src.thickness ?? 0.5,
-        
-        // Note: anisotropy is not available in all Three.js versions
-        // anisotropy: 0.1,
-        // anisotropyRotation: 0,
       };
 
       const mat = new THREE.MeshPhysicalMaterial(params);
@@ -145,7 +109,7 @@ export function Model({ activeSequence, onModelLoaded }) {
       if (src.sheenColor !== undefined) mat.sheenColor = src.sheenColor;
 
       // Ensure balanced env map intensity for natural reflections
-      mat.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 1.2); // Giảm intensity để tránh chói lóa
+      mat.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 1.2);
 
       // Enable double-sided rendering for thin materials
       if (src.side === THREE.DoubleSide) {
@@ -156,13 +120,13 @@ export function Model({ activeSequence, onModelLoaded }) {
       return mat;
     };
 
-    scene.traverse((child) => {
+    clonedScene.traverse((child) => {
       if (child.isMesh) {
         // Enable soft shadows
         child.castShadow = true;
         child.receiveShadow = true;
-        child.geometry?.computeBoundingSphere();
         child.material.shadowSide = THREE.FrontSide;
+        child.geometry?.computeBoundingSphere();
 
         // Store original material
         if (!originalMaterials.current.has(child.name) && child.material) {
@@ -191,7 +155,7 @@ export function Model({ activeSequence, onModelLoaded }) {
           }
 
           // Make reflections balanced and natural for comfortable viewing
-          child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0); // Giảm intensity để tránh chói lóa
+          child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0);
           if (child.material.isMeshPhysicalMaterial) {
             child.material.clearcoat = Math.max(child.material.clearcoat ?? 0, 0.3);
             child.material.clearcoatRoughness = Math.min(child.material.clearcoatRoughness ?? 0.02, 0.15);
@@ -202,11 +166,6 @@ export function Model({ activeSequence, onModelLoaded }) {
             
             // Advanced IOR for glass-like materials
             child.material.ior = child.material.ior ?? 1.5;
-            
-            // Note: Add subtle anisotropy for brushed metal effects if supported
-            // if (child.material.metalness > 0.8 && child.material.anisotropy !== undefined) {
-            //   child.material.anisotropy = 0.1;
-            // }
           }
 
           child.material.needsUpdate = true;
@@ -217,7 +176,7 @@ export function Model({ activeSequence, onModelLoaded }) {
           if (globalScene?.environment && !child.material.envMap) {
             child.material.envMap = globalScene.environment;
             // Balanced intensity for natural reflections
-            child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0); // Giảm intensity để tránh chói lóa
+            child.material.envMapIntensity = Math.max(child.material.envMapIntensity ?? 1.0, 1.0);
             child.material.needsUpdate = true;
           }
         } catch (e) {
@@ -225,19 +184,30 @@ export function Model({ activeSequence, onModelLoaded }) {
         }
       }
     });
-  }, [scene]);
 
-  if (!scene || error) return null;
+    // Đánh dấu model đã sẵn sàng sau khi hoàn tất áp dụng material và env map
+    if (!modelReady) {
+      setModelReady(true);
+      onModelLoaded?.();
+    }
+  }, [clonedScene, enhanceMaterial, globalScene, modelReady, onModelLoaded]);
 
+  if (!clonedScene) return null;
+  
   return (
-    <group>
-      <primitive object={scene} />
+    <group ref={modelRef}>
+      <primitive object={clonedScene} />
       <SequenceMeshController 
-        scene={scene}
+        scene={clonedScene}
         activeSequence={activeSequence}
+        onTransitionComplete={onSequenceTransitionComplete}
       />
+      {/* <MeshClickHandler scene={clonedScene} /> */}
     </group>
   );
 }
 
-useGLTF.preload(MODEL_URL);
+// Preload the model
+useGLTF.preload('/3ddd.glb');
+
+export default BuildingModel;
