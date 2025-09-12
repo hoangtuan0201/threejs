@@ -605,7 +605,7 @@
                       0.5,
                       1,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 15.313377068646707
@@ -616,9 +616,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 15.123
@@ -629,9 +629,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 15.123377068646706
@@ -642,9 +642,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 19.563377068646723
@@ -655,9 +655,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 19.653377068646723
@@ -668,9 +668,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 18.063377068646723
@@ -681,9 +681,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 20.43337706864672
@@ -694,9 +694,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 21.82337706864673
@@ -707,9 +707,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 21.82337706864673
@@ -720,9 +720,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 21.32337706864673
@@ -733,9 +733,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 13.433377068646728
@@ -746,9 +746,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 13.133377068646729
@@ -759,9 +759,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 13.133377068646729
@@ -772,20 +772,20 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 13.163377068646728
                   },
                   {
                     "id": "_6xsqOJik1",
-                    "position": 18.033,
+                    "position": 17.967,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -1287,7 +1287,7 @@
                       0.5,
                       0.5,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 5
@@ -1298,9 +1298,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 4
@@ -1311,9 +1311,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 2.18
@@ -1324,9 +1324,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 1.6299999999999997
@@ -1337,20 +1337,20 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 1.64
                   },
                   {
                     "id": "PUdlF48loT",
-                    "position": 18.033,
+                    "position": 17.967,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -1904,7 +1904,7 @@
                       0.5,
                       1,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -22.97562886571878
@@ -1915,9 +1915,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -23.055628865718774
@@ -1928,9 +1928,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -23.061
@@ -1941,9 +1941,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -20.16099999999999
@@ -1954,9 +1954,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -19.250999999999983
@@ -1967,9 +1967,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -23.20824673929385
@@ -1980,9 +1980,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -21.998246739293844
@@ -1993,9 +1993,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -21.998246739293844
@@ -2006,9 +2006,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -23.468246739293857
@@ -2019,9 +2019,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -24
@@ -2032,9 +2032,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -24
@@ -2045,9 +2045,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -23.03
@@ -2058,20 +2058,20 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -27.51
                   },
                   {
                     "id": "MwmAeo30jx",
-                    "position": 18.033,
+                    "position": 17.967,
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -2105,7 +2105,7 @@
                       0.5,
                       1,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0
@@ -2116,9 +2116,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0.3641291377097446
@@ -2129,9 +2129,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0.44998246732909414
@@ -2142,9 +2142,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0
@@ -2155,9 +2155,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": 0
@@ -2168,9 +2168,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -0.3
@@ -2181,7 +2181,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -2709,7 +2709,7 @@
                       0.5,
                       1,
                       0.5,
-                      0
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -11.139999999999997
@@ -2720,9 +2720,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -13.909999999999998
@@ -2733,9 +2733,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -13.91
@@ -2746,9 +2746,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -14.01
@@ -2759,9 +2759,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -15.579999999999995
@@ -2772,9 +2772,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -15.679999999999994
@@ -2785,9 +2785,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -15.949999999999992
@@ -2798,9 +2798,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -16.199999999999992
@@ -2811,9 +2811,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -17.06999999999999
@@ -2824,9 +2824,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -18.8
@@ -2837,9 +2837,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -18.879999999999995
@@ -2850,9 +2850,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -20.279999999999994
@@ -2863,9 +2863,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -19.079999999999995
@@ -2876,9 +2876,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -19.079999999999995
@@ -2889,9 +2889,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -18.159999999999993
@@ -2902,9 +2902,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -17.469999999999988
@@ -2915,9 +2915,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -17.169999999999984
@@ -2928,9 +2928,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -15.68999999999999
@@ -2941,9 +2941,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -15.68999999999999
@@ -2954,9 +2954,9 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
                       0.5,
-                      0
+                      0.5,
+                      0.5
                     ],
                     "type": "bezier",
                     "value": -18.929999999999996
@@ -2967,7 +2967,7 @@
                     "connectedRight": true,
                     "handles": [
                       0.5,
-                      1,
+                      0.5,
                       0.5,
                       0
                     ],
@@ -3030,6 +3030,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "1jjgNEQCBxK2eYxw",
     "7t8jV30t5Hcb29TI",
     "qfgAUgb-PkzEHRYG",
     "U-UcRnDRspPkDn6Z",
