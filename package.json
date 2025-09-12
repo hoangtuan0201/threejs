@@ -11,7 +11,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "setup": "yarn dev --host 0.0.0.0"
+    "setup": "yarn dev --host 0.0.0.0",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.842.0",
