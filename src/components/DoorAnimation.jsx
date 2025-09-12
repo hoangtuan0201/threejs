@@ -19,12 +19,17 @@ const DOOR_CONFIG = {
   /** Mesh names for ninth door group */
   NINTH_DOOR_MESHES: [
     "3DGeom-9290_3", "3DGeom-254_9", "3DGeom-255_9", "3DGeom-256_9", 
-    "3DGeom-254_8", "3DGeom-256_8", "3DGeom-253_8", "3DGeom-255_8"
+    "3DGeom-254_8", "3DGeom-256_8", "3DGeom-253_8", "3DGeom-255_8",'3DGeom-253_9'
   ],
   /** Mesh names for tenth door group */
   TENTH_DOOR_MESHES: [
     "3DGeom-141", "3DGeom-142", "3DGeom-139", "3DGeom-140",'3DGeom-136',
     '3DGeom-146', '3DGeom-135', '3DGeom-137', '3DGeom-138'
+  ],
+  /** Mesh names for eleventh door group */
+  ELEVENTH_DOOR_MESHES: [
+    "3DGeom-139_4", "3DGeom-142_4", "3DGeom-141_4", "3DGeom-140_4", "3DGeom-146_4", 
+    "3DGeom-135_4", "3DGeom-138_4", "3DGeom-136_4", '3DGeom-137_4'
   ],
   /** Single door mesh names */
   SINGLE_DOORS: {
@@ -113,6 +118,27 @@ const ANIMATION_CONFIG = [
     target: "TenthDoorGroup",
     startTime: 15.3,
     endTime: 16,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "twelfth-door",
+    target: "TenthDoorGroup",
+    startTime: 16.4,
+    endTime: 17,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "thirteenth-door",
+    target: "EleventhDoorGroup",
+    startTime: 17.7,
+    endTime: 18.1,
+    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
+  },
+  {
+    id: "eleventh-door-second",
+    target: "EleventhDoorGroup",
+    startTime: 17.5,
+    endTime: 18.1,
     action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
   },
 ];
@@ -305,6 +331,10 @@ export function DoorAnimation() {
       {
         group: createMultiMeshGroup(DOOR_CONFIG.TENTH_DOOR_MESHES, "TenthDoorGroup", "right-top"),
         name: "TenthDoorGroup"
+      },
+      {
+        group: createMultiMeshGroup(DOOR_CONFIG.ELEVENTH_DOOR_MESHES, "EleventhDoorGroup", "right-top"),
+        name: "EleventhDoorGroup"
       },
       {
         group: createSingleMeshGroup(DOOR_CONFIG.SINGLE_DOORS.DOOR_1, "Door1Group"),

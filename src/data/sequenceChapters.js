@@ -349,5 +349,76 @@ export const sequenceChapters = [
       mobileSize: { width: 340, height: 200 }
     }
   },
+  {
+    id: "air-duct",
+    position: 13,
+    hotspot: {
+      position: [13, 1.7, -22.2],
+      rotation: [0, Math.PI / 1, 0],
+      detailPosition: [13, 1, -22.2],
+      detailRotation: [0, Math.PI / 1, 0],
+      targetPosition: [13.3, 1.8, -23],
+      // Mobile-specific positioning
+      mobileDetailPosition: [13, 1, -22.2],
+      mobileDetailRotation: [0, Math.PI / 1, 0],
+      // Hotspot label positioning
+      labelPosition: [13, 1.7, -22.2],
+      labelRotation: [0, 0, 0],
+      // Mobile-specific label positioning
+      mobileLabelPosition: [13, 1.7, -22.2],
+      mobileLabelRotation: [0, 0, 0],
+      title: "Air Duct",
+      description: "Air duct system for distributing conditioned air throughout the building with efficient airflow management.",
+      link: "https://vimeo.com/912208263",
+    },
+    videoScreen: {
+      position: [13, 1.9, -22.2],
+      rotation: [0, Math.PI / 1, 0],
+      // Mobile-specific positioning
+      mobilePosition: [13, 1.9, -22.2],
+      mobileRotation: [0, Math.PI / 1, 0],
+      videoId: "https://vimeo.com/912208263",
+      title: "Air Duct Demo",
+      size: { width: 320, height: 180 },
+      // Mobile-specific size
+      mobileSize: { width: 340, height: 200 }
+    }
+  },
+  {
+    id: "linear-grille-new",
+    position: 14,
+    hotspot: {
+      position: [10.4, 2, -29.7],
+      rotation: [0, 0, 0],
+      detailPosition: [9.9, 1.8, -29.7],
+      detailRotation: [0, 0, 0],
+      targetPosition: [10.8, 1.9, -29.1],
+      // Mobile-specific positioning
+      mobileDetailPosition: [10.4, 1.8, -29.7],
+      mobileDetailRotation: [0, 0, 0],
+      // Hotspot label positioning
+      labelPosition: [10, 2.4, -29.7],
+      labelRotation: [0, 0, 0],
+      // Mobile-specific label positioning
+      mobileLabelPosition: [10.4, 2, -29.7],
+      mobileLabelRotation: [0, 0, 0],
+      title: "Linear Grille",
+      description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic.",
+      link: "https://vimeo.com/912201609",
+      hiddenMeshes: ["3DGeom-78"]
+    },
+    videoScreen: {
+      position: [11.6, 1.8, -29.7],
+      rotation: [0, 0, 0],
+      // Mobile-specific positioning
+      mobilePosition: [11.6, 1.8, -29.7],
+      mobileRotation: [0, 0, 0],
+      videoId: "https://vimeo.com/912201609",
+      title: "Linear Grille Demo",
+      size: { width: 320, height: 180 },
+      // Mobile-specific size
+      mobileSize: { width: 340, height: 200 }
+    }
+  }
 
 ];

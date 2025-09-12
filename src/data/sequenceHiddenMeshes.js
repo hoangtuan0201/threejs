@@ -195,6 +195,26 @@ export const sequenceHiddenMeshes = {
     ],
     transitionDuration: 400,
     fadeOpacity: 0.1
+  },
+  
+  // Air Duct System - Ẩn các mesh để hiển thị hệ thống ống dẫn khí
+  "air-duct": {
+    hiddenMeshes: [
+      "3DGeom-78",
+      "3DGeom-306",
+      "3DGeom-307",
+      "3DGeom-309"
+    ],
+    hiddenMaterials: [
+    ],
+    transitionDuration: 400,
+    fadeOpacity: 0.1
+  },
+  "linear-grille-new": {
+    hiddenMeshes: ["3DGeom-78"],
+    transitionDuration: 400,
+    fadeOpacity: 0.1,
+    hiddenMaterials: []
   }
 };
 

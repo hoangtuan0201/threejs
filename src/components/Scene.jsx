@@ -630,8 +630,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'ArrowRight':
           event.preventDefault();
           // Smooth navigation forward using setTargetPosition (like scroll)
-          if (targetPosition < 16.5) {
-            const newPosition = Math.min(16.5, targetPosition + 0.3);
+          if (targetPosition < 18.1) {
+            const newPosition = Math.min(18.1, targetPosition + 0.3);
             setTargetPosition(newPosition);
             setHasNavigated(true);
           }
@@ -682,7 +682,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         let newPosition = prevTarget + (deltaY * finalSensitivity);
 
         // Limit within range [0.1, 12.5] (entire sequence) - start from 0.1 to avoid wall clipping
-        newPosition = Math.max(0, Math.min(16.5, newPosition));
+        newPosition = Math.max(0, Math.min(18.1, newPosition));
 
 
 
@@ -752,7 +752,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + (deltaY * touchSensitivity);
-          newPosition = Math.max(0, Math.min(16.5, newPosition)); // Thống nhất range với wheel events
+          newPosition = Math.max(0, Math.min(18.1, newPosition)); // Thống nhất range với wheel events
 
 
 
@@ -782,7 +782,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           }
 
           let newPosition = prevTarget + momentum;
-          newPosition = Math.max(0, Math.min(16.5, newPosition)); // Thống nhất range
+          newPosition = Math.max(0, Math.min(18.1, newPosition)); // Thống nhất range
 
 
 

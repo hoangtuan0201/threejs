@@ -16,7 +16,7 @@ function useSceneLock(sheet, delay = 3000) {
       return;
     }
 
-    const clampedPos = Math.max(0, Math.min(16.5, targetPos)); // Updated max to 16.5
+    const clampedPos = Math.max(0, Math.min(18.1, targetPos)); // Updated max to 16.5
     const stepSize = options.stepSize || 1.5; // Default step size or custom
     const customDuration = options.duration || null; // Custom duration
 
