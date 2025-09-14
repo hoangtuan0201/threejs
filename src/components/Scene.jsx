@@ -9,7 +9,6 @@ import { WebGLPathTracer } from 'three-gpu-pathtracer';
 import { Model } from "./Model";
 import { VideoScreen } from "./VideoScreen";
 import { HotspotDetail } from "./HotspotDetail";
-import { HotspotLighting } from "./HotspotLighting";
 import { HotspotsRenderer } from "./Hotspot";
 import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting, HDREnvironment } from "./HDREnvironment";
@@ -614,7 +613,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         case 'Escape':
           event.preventDefault();
           // Navigate back to homepage
-          navigate("/homepage");
+          window.location.href = "/";
           break;
 
         case 'ArrowLeft':
@@ -1074,10 +1073,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       </mesh>
 
       <fog attach="fog" color="#84a4f4" near={0} far={100} />
-
-      {/* Hotspot Lighting - spotlights shining down on each hotspot */}
-      <HotspotLighting sequenceChapters={sequenceChapters} />
-
 
 
 

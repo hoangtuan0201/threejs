@@ -130,17 +130,11 @@ const ANIMATION_CONFIG = [
   {
     id: "thirteenth-door",
     target: "EleventhDoorGroup",
-    startTime: 17.7,
-    endTime: 18.1,
+    startTime: 17.4,
+    endTime: 17.9,
     action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
   },
-  {
-    id: "eleventh-door-second",
-    target: "EleventhDoorGroup",
-    startTime: 17.5,
-    endTime: 18.1,
-    action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
-  },
+
 ];
 
 /**

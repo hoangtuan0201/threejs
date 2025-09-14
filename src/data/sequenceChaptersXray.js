@@ -68,7 +68,7 @@ export const sequenceChaptersXray = [
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118501005"
     },
  
     videoScreen: {
@@ -77,7 +77,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [29.7, 8.5, -20.6],
       mobileRotation: [-0.1, Math.PI / 1, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118501005",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -100,7 +100,7 @@ export const sequenceChaptersXray = [
       mobileDetailRotation: [0, 0, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118500811"
     },
     videoScreen: {
       position: [21.4, 5.3, -31.9],
@@ -108,7 +108,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [21.4, 5.3, -31.9],
       mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118500811",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -131,7 +131,7 @@ export const sequenceChaptersXray = [
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118501437"
     },
     videoScreen: {
       position: [13.9, 5.3, -26.75],
@@ -139,7 +139,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [13.9, 5.3, -26.75],
       mobileRotation: [-0.1, Math.PI / 1, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118501437",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -160,7 +160,7 @@ export const sequenceChaptersXray = [
       mobileDetailRotation: [0, -1.6, 0],
       title: "Air Purification System",
       description: "An Air Purification System uses HEPA (and optionally carbon/UV) filtration to remove allergens, pollutants, odors, and pathogens—improving air quality, reducing sickness, and boosting comfort and HVAC efficiency. ",
-      link: "https://vimeo.com/912208263",
+      link: "https://vimeo.com/1118501752",
       labelPosition: [14.75, 4.4, -34.3],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
@@ -173,7 +173,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [17.3, 5.25, -32.3],
       mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912208263",
+      videoId: "https://vimeo.com/1118501752",
       title: "Air Purification Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -230,7 +230,7 @@ export const sequenceChaptersXray = [
       mobileDetailRotation: [0, Math.PI / 2, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118500723"
     },
     videoScreen: {
       position: [20.7, 5.5, -19.8],
@@ -238,7 +238,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [20.7, 5.5, -19.8],
       mobileRotation: [0, Math.PI / 2, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118500723",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -264,7 +264,7 @@ export const sequenceChaptersXray = [
       mobileLabelRotation: [0, 0, 0],
       title: "Smart Thermostat",
       description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
-      link: "https://vimeo.com/912200130"
+      link: "https://vimeo.com/1118502490"
     },
     
     videoScreen: {
@@ -273,7 +273,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [16.67, 5.5, -22.5],
       mobileRotation: [0, -1.6, 0],
-      videoId: "https://vimeo.com/912200130",
+      videoId: "https://vimeo.com/1118502490",
       title: "Smart Thermostat Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -299,7 +299,7 @@ export const sequenceChaptersXray = [
       mobileLabelRotation: [0, 0, 0],
       title: "Base Floor System",
       description: "The base floor system houses the main HVAC infrastructure including ductwork, air handlers, and distribution components that deliver conditioned air throughout the building.",
-      link: "https://vimeo.com/912208263"
+      link: "https://vimeo.com/1118502852"
     },
     videoScreen: {
       position: [21.5, 2, -24],
@@ -307,7 +307,7 @@ export const sequenceChaptersXray = [
       // Mobile-specific positioning
       mobilePosition: [21.5, 2, -24],
       mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912208263",
+      videoId: "https://vimeo.com/1118502852",
       title: "Base Floor System Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size

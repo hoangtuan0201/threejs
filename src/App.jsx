@@ -114,7 +114,9 @@ export default function App({ isChatFocused = false }) {
     if (resetViewFunction) {
       resetViewFunction();
     }
-    navigate("/");
+    
+    // Force refresh page to completely reset state and prevent model lighting issues
+    window.location.href = "/";
   };
 
   const handleModelLoaded = () => {

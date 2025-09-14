@@ -48,7 +48,7 @@ export const sequenceChapters = [
       // rotation: [0.1, Math.PI / 1, 0],
       detailPosition: [31.6 , 8.3, -20.6],
       detailRotation: [0, Math.PI / 1, 0],
-      targetPosition: [30.6, 7.933, -22.326],
+      targetPosition: [30.6, 7.933, -22.6],
      // Hotspot label positioning
       mobileLabelPosition: [31.4, 8, -20.5],
       // Hotspot label positioning
@@ -58,20 +58,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
-    },
-    lighting: {
-      mainSpotlight: {
-        position: [31.4, 9.5, -20.9],
-        intensity: 1.5,
-        angle: Math.PI / 4,
-        penumbra: 0.4,
-        color: "#ffff00",
-        distance: 12,
-        decay: 2,
-        castShadow: true
-      },
-
+      link: "https://vimeo.com/1118501005"
     },
     videoScreen: {
       position: [29.7, 8.3, -20.6],
@@ -79,7 +66,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [29.7, 8.5, -20.6],
       mobileRotation: [-0.1, Math.PI / 1, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118501005",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -103,7 +90,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, 0, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118500811"
     },
     videoScreen: {
       position: [21.4, 5.3, -31.9],
@@ -111,7 +98,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [21.4, 5.3, -31.9],
       mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118500811",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -135,7 +122,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118501437"
     },
     videoScreen: {
       position: [13.9, 5.3, -26.75],
@@ -143,7 +130,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [13.9, 5.3, -26.75],
       mobileRotation: [-0.1, Math.PI / 1, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118501437",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -157,40 +144,28 @@ export const sequenceChapters = [
     hotspot: {
       position: [14.75, 4, -34],
       rotation: [0, Math.PI / 2, 0],
-      detailPosition: [14.8, 4.2, -34],
+      detailPosition: [14.8, 3.6, -34],
       detailRotation: [0, -1.6, 0],
       targetPosition: [14, 5, -34],
       // Mobile-specific positioning
-      mobileDetailPosition: [14.8, 4.2, -34.3],
+      mobileDetailPosition: [14.8, 3.6, -34],
       mobileDetailRotation: [0, -1.6, 0],
       title: "Air Purification System",
       description: "An Air Purification System uses HEPA (and optionally carbon/UV) filtration to remove allergens, pollutants, odors, and pathogens—improving air quality, reducing sickness, and boosting comfort and HVAC efficiency. ",
-      link: "https://vimeo.com/912208263",
+      link: "https://vimeo.com/1118501752",
       labelPosition: [14.75, 4.4, -34.3],
       labelRotation: [0, 0, 0],
       // Mobile-specific label positioning
       mobileLabelPosition: [14.75, 4.4, -34.3],
       mobileLabelRotation: [0, 0, 0],
     },
-    lighting: {
-      mainSpotlight: {
-        position: [15.7, 7, -33],
-        intensity: 1.5,
-        angle: Math.PI / 4,
-        penumbra: 0.4,
-        color: "#ffff00",
-        distance: 12,
-        decay: 2,
-        castShadow: true
-      }
-    },
     videoScreen: {
-      position: [17.8, 4.7, -32.3],
-      rotation: [0, 0, 0],
+      position: [14.8, 4.58, -34],
+      rotation: [0, -1.6, 0],
       // Mobile-specific positioning
-      mobilePosition: [17.3, 5.25, -32.3],
-      mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912208263",
+      mobilePosition: [14.8, 4.5, -34],
+      mobileRotation: [0, -1.6, 0],
+      videoId: "https://vimeo.com/1118501752",
       title: "Air Purification Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -216,7 +191,7 @@ export const sequenceChapters = [
       mobileDetailRotation: [0, Math.PI / 2, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
-      link: "https://vimeo.com/912201609"
+      link: "https://vimeo.com/1118500723"
     },
     videoScreen: {
       position: [20.7, 5.5, -19.8],
@@ -224,7 +199,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [20.7, 5.5, -19.8],
       mobileRotation: [0, Math.PI / 2, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118500723",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -253,7 +228,7 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
       title: "Smart Thermostat",
       description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
-      link: "https://vimeo.com/912200130"
+      link: "https://vimeo.com/1118502490"
     },
     
     videoScreen: {
@@ -262,7 +237,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [16.67, 5.5, -24.5],
       mobileRotation: [0, -1.6, 0],
-      videoId: "https://vimeo.com/912200130",
+      videoId: "https://vimeo.com/1118502490",
       title: "Smart Thermostat Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -289,7 +264,7 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
       title: "Base Floor System",
       description: "The base floor system houses the main HVAC infrastructure including ductwork, air handlers, and distribution components that deliver conditioned air throughout the building.",
-      link: "https://vimeo.com/912208263"
+      link: "https://vimeo.com/1118502852"
     },
     videoScreen: {
       position: [21.5, 2, -24],
@@ -297,7 +272,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [21.5, 2, -24],
       mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912208263",
+      videoId: "https://vimeo.com/1118502852",
       title: "Base Floor System Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -323,18 +298,6 @@ export const sequenceChapters = [
       title: "Outdoor Unit",
       description: "The AirSmart Air Purification System delivers whole-home air filtration with HEPA-grade purity, removing pollutants and improving indoor air quality for healthier breathing.",
       link: "https://vimeo.com/912207265"
-    },
-    lighting: {
-      mainSpotlight: {
-        position: [22.58, 7.5, -17.6],
-        intensity: 1.5,
-        angle: Math.PI / 6,
-        penumbra: 0.4,
-        color: "#ffff00",
-        distance: 10,
-        decay: 2,
-        castShadow: true
-      }
     },
     videoScreen: {
       position: [21, 4.9, -18],
@@ -369,7 +332,7 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
       title: "Air Duct",
       description: "Air duct system for distributing conditioned air throughout the building with efficient airflow management.",
-      link: "https://vimeo.com/912208263",
+      link: "https://vimeo.com/1118503191",
     },
     videoScreen: {
       position: [13, 1.9, -22.2],
@@ -377,7 +340,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [13, 1.9, -22.2],
       mobileRotation: [0, Math.PI / 1, 0],
-      videoId: "https://vimeo.com/912208263",
+      videoId: "https://vimeo.com/1118503191",
       title: "Air Duct Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
@@ -404,7 +367,7 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic.",
-      link: "https://vimeo.com/912201609",
+      link: "https://vimeo.com/1118503216",
       hiddenMeshes: ["3DGeom-78"]
     },
     videoScreen: {
@@ -413,7 +376,7 @@ export const sequenceChapters = [
       // Mobile-specific positioning
       mobilePosition: [11.6, 1.8, -29.7],
       mobileRotation: [0, 0, 0],
-      videoId: "https://vimeo.com/912201609",
+      videoId: "https://vimeo.com/1118503216",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
