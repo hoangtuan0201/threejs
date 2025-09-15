@@ -116,8 +116,8 @@ const ANIMATION_CONFIG = [
   {
     id: "eleventh-door",
     target: "TenthDoorGroup",
-    startTime: 15.3,
-    endTime: 16,
+    startTime: 15.5,
+    endTime: 16.1,
     action: { type: "rotate", axis: "y", angle: Math.PI / 2 }
   },
   {

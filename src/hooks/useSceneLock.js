@@ -32,7 +32,12 @@ function useSceneLock(sheet, delay = 3000) {
     // console.log(`Starting navigation from ${startPositionRef.current} to ${clampedPos} with stepSize: ${stepSize}`);
 
     // Adjust delay based on step size for smoother navigation
-    const adjustedDelay = options.smooth ? delay * 0.5 : delay; // Shorter delay for smooth navigation
+    let adjustedDelay = options.smooth ? delay * 0.5 : delay; // Shorter delay for smooth navigation
+    
+    // Special condition: lock for 5 seconds if sequence is between 8s and 13s
+    if (clampedPos >= 8 && clampedPos <= 18.1) {
+      adjustedDelay = 5000; // 5 seconds lock
+    }
 
     // Unlock after delay (but keep navigating until animation completes)
     setTimeout(() => {

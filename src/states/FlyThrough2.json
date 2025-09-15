@@ -676,6 +676,19 @@
                     "value": 18.063377068646723
                   },
                   {
+                    "id": "8eXx04TX2o",
+                    "position": 15.733,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 18.366599817443607
+                  },
+                  {
                     "id": "cRx5btfQHW",
                     "position": 16.033,
                     "connectedRight": true,
@@ -1320,7 +1333,7 @@
                   },
                   {
                     "id": "9zsIhgdS-m",
-                    "position": 15.7,
+                    "position": 15.733,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -1963,7 +1976,7 @@
                   },
                   {
                     "id": "lXCCIHItIx",
-                    "position": 15.7,
+                    "position": 15.733,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -1973,6 +1986,19 @@
                     ],
                     "type": "bezier",
                     "value": -23.20824673929385
+                  },
+                  {
+                    "id": "zCoe7KSc04",
+                    "position": 15.9,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -23.36410785186469
                   },
                   {
                     "id": "h_xOZnrEUl",
@@ -2177,7 +2203,7 @@
                   },
                   {
                     "id": "XhGtOMzpcR",
-                    "position": 15.7,
+                    "position": 15.733,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -3030,6 +3056,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "Uzbg1l9fUc_TKvk1",
     "1jjgNEQCBxK2eYxw",
     "7t8jV30t5Hcb29TI",
     "qfgAUgb-PkzEHRYG",
