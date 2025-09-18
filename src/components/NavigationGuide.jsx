@@ -273,7 +273,7 @@ const NavigationGuide = ({ isVisible, onClose }) => {
   ] : [
     {
       iconType: "mouse",
-      text: "Scroll up/down to navigate through scenes",
+      text: "Scroll up to go forward, scroll down to go backward",
       keys: ["SCROLL"]
     },
     {

@@ -677,8 +677,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           return 0.1;
         }
 
-        // Calculate new position based on current targetPosition
-        let newPosition = prevTarget + (deltaY * finalSensitivity);
+        // Calculate new position based on current targetPosition (reversed: scroll up = forward, scroll down = backward)
+        let newPosition = prevTarget - (deltaY * finalSensitivity);
 
         // Limit within range [0.1, 12.5] (entire sequence) - start from 0.1 to avoid wall clipping
         newPosition = Math.max(0, Math.min(18.1, newPosition));
@@ -750,7 +750,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             return 0;
           }
 
-          let newPosition = prevTarget + (deltaY * touchSensitivity);
+          let newPosition = prevTarget - (deltaY * touchSensitivity);
           newPosition = Math.max(0, Math.min(18.1, newPosition)); // Thống nhất range với wheel events
 
 
@@ -780,7 +780,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             return 0;
           }
 
-          let newPosition = prevTarget + momentum;
+          let newPosition = prevTarget - momentum;
           newPosition = Math.max(0, Math.min(18.1, newPosition)); // Thống nhất range
 
 
