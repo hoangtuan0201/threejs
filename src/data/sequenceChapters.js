@@ -12,8 +12,13 @@ export const sequenceChapters = [
       detailPosition: [27.78, 4, -22.7],
       detailRotation: [0, Math.PI / 2, 0],
       targetPosition: [28.2, 5, -22.67],
+      // Giới hạn góc quay ngang (azimuth) cho hotspot này
+      azimuthLimits: {
+        min: (40 * Math.PI) / 180,   // ~0.698 rad
+        max: (120 * Math.PI) / 180   // ~2.199 rad
+      },
       // Mobile-specific positioning
-      mobileDetailPosition: [27.78, 3.8 , -21.5],
+      mobileDetailPosition: [27.78, 3.8 , -22],
       mobileDetailRotation: [0, Math.PI / 2, 0],
       // Hotspot label positioning
       labelPosition: [27.78, 4.6, -21.7],
@@ -22,7 +27,7 @@ export const sequenceChapters = [
       mobileLabelPosition: [27.78, 4.8, -21.7],
       mobileLabelRotation: [0, 0, 0],
       title: "Smart Thermostat",
-      description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
+      description: "The AirSmart Gen 4 Smart Thermostat features Wi‑Fi-enabled multi-zone control, sleek minimal design, and Venturi/Bernoulli-driven airflow that cuts airflow by ~40% for even, draft‑free comfort and up to 50% better efficiency—all in one elegant unit. ",
       link: "https://vimeo.com/912200130"
     },
   
@@ -31,7 +36,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 2, 0],
       
       // Mobile-specific positioning
-      mobilePosition: [27.78, 4.7, -21.5],
+      mobilePosition: [27.78, 4.7, -21.6],
       mobileRotation: [0, Math.PI / 2, 0],
       videoId: "https://vimeo.com/912200130",
       title: "Smart Thermostat Demo",
@@ -49,6 +54,12 @@ export const sequenceChapters = [
       detailPosition: [31.6 , 8.3, -20.6],
       detailRotation: [0, Math.PI / 1, 0],
       targetPosition: [30.6, 7.933, -22.6],
+      // Giới hạn góc quay ngang cho Linear Grille
+      azimuthLimits: {
+        min: Math.PI - Math.PI / 6, //  -30
+        max: Math.PI + Math.PI / 6  // -30
+        },
+
      // Hotspot label positioning
       mobileLabelPosition: [31.4, 8, -20.5],
       // Hotspot label positioning
@@ -81,6 +92,12 @@ export const sequenceChapters = [
       detailPosition: [23.2, 5.3, -31.9],
       detailRotation: [0, 0, 0],
       targetPosition: [23.1, 5, -31.115],
+      // Giới hạn góc quay ngang cho Linear Grille 2
+      azimuthLimits: { 
+        min: -Math.PI / 6, // -30°
+        max:  Math.PI / 6  // +30°
+      },
+
       // Hotspot label positioning
       mobileLabelPosition: [23, 5.3, -31.9],
       // Hotspot label positioning
@@ -113,6 +130,10 @@ export const sequenceChapters = [
       detailPosition: [15.5, 5.3, -26.75],
       detailRotation: [0, Math.PI / 1, 0],
       targetPosition: [16.1, 5.2, -29],
+      azimuthLimits: {
+        min: Math.PI - Math.PI / 6, //  -30
+        max: Math.PI + Math.PI / 20  // -30
+        },
       // Hotspot label positioning
       mobileLabelPosition: [15.5, 5.3, -26.75],
       // Hotspot label positioning
@@ -147,6 +168,11 @@ export const sequenceChapters = [
       detailPosition: [14.8, 3.6, -34],
       detailRotation: [0, -1.6, 0],
       targetPosition: [14, 5, -34],
+      azimuthLimits: { 
+        min: -110 * Math.PI / 180, // ~ -1.919 rad
+        max: -70 * Math.PI / 180   // ~ -1.222 rad
+      },
+
       // Mobile-specific positioning
       mobileDetailPosition: [14.8, 3.6, -34],
       mobileDetailRotation: [0, -1.6, 0],
@@ -182,8 +208,12 @@ export const sequenceChapters = [
       detailPosition: [20.7, 5.5, -21.54],
       detailRotation: [0, Math.PI / 2, 0],
       targetPosition: [22.2, 5.4, -20.7],
+       azimuthLimits: {
+        min: (40 * Math.PI) / 180,   // ~0.698 rad
+        max: (120 * Math.PI) / 180   // ~2.199 rad
+      },
       // Hotspot label positioning
-      mobileLabelPosition: [20.7, 5.5, -21.54],
+      mobileLabelPosition: [20.7, 5.8, -21],
       // Hotspot label positioning
       labelPosition: [20.7, 5.8, -21.54],
       // Mobile-specific positioning
@@ -217,6 +247,10 @@ export const sequenceChapters = [
       detailPosition: [16.67, 5.5, -22.8],
       detailRotation: [0, -1.6, 0],
       targetPosition: [16.1, 5, -23],
+      azimuthLimits: {
+        min: -100 * Math.PI / 180, // ~ -1.745 rad
+        max: -75 * Math.PI / 180   // ~ -1.396 rad
+      },
       // Mobile-specific positioning
       mobileDetailPosition: [16.67, 5.2, -22.8],
       mobileDetailRotation: [0, -1.6, 0],
@@ -289,6 +323,11 @@ export const sequenceChapters = [
       detailPosition: [22.7, 4.9, -18],
       detailRotation: [0, 0, 0],
       targetPosition: [21.903, 5, -16.823],
+      azimuthLimits: {
+        min: -15 * Math.PI / 180, // ~ -0.262 rad
+        max: 20 * Math.PI / 180   // ~ 0.349 rad
+      },
+
       // mobile label
       mobileLabelPosition: [21.8  , 5, -18],
 
@@ -321,6 +360,10 @@ export const sequenceChapters = [
       detailPosition: [13, 1, -22.2],
       detailRotation: [0, Math.PI / 1, 0],
       targetPosition: [13.3, 1.8, -23],
+      azimuthLimits: {
+        min: Math.PI - Math.PI / 6, //  -30
+        max: Math.PI + Math.PI / 6  // -30
+      },
       // Mobile-specific positioning
       mobileDetailPosition: [13, 1, -22.2],
       mobileDetailRotation: [0, Math.PI / 1, 0],
@@ -356,6 +399,10 @@ export const sequenceChapters = [
       detailPosition: [9.9, 1.8, -29.7],
       detailRotation: [0, 0, 0],
       targetPosition: [10.8, 1.9, -29.1],
+      azimuthLimits: {
+        min: -23 * Math.PI / 180, // ~ -0.262 rad
+        max: 23 * Math.PI / 180   // ~ 0.349 rad
+      },
       // Mobile-specific positioning
       mobileDetailPosition: [10.4, 1.8, -29.7],
       mobileDetailRotation: [0, 0, 0],

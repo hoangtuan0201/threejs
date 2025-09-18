@@ -93,7 +93,7 @@ export const useMobile = () => {
   const getCameraFOV = () => {
     if (isMobile) return 110; // Moderate wide FOV for mobile
     if (isTablet) return 80;
-    return 65;
+    return 80;
   };
 
   const getPixelRatio = () => {
