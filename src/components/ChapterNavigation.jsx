@@ -4,6 +4,7 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   if (!isVisible) return null;
 
   const chapters = [
+    { position: 0.1, label: "Start" }, // Vị trí ban đầu
     { position: 1.5, label: "Smart Thermostat" },
     { position: 2.5, label: "Linear Grille" },
     { position: 4.5, label: "study room" },
@@ -15,67 +16,77 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
     { position: 16.4, label: "media" },
     { position: 17.3, label: "road to the gym" },
     { position: 18.1, label: "Gym" },
-
   ];
 
-  const currentIndex = chapters.findIndex(chapter =>
-    Math.abs(currentPosition - chapter.position) < 0.3
+  const currentIndex = chapters.findIndex(
+    (chapter) => Math.abs(currentPosition - chapter.position) < 0.3
   );
 
-  const canGoBack = currentIndex > 0 && !isLocked;
-  const canGoForward = currentIndex < chapters.length - 1 && !isLocked;
+  // Chỉ hiện nút back khi đã tới chapter 1 (Smart Thermostat) trở lên
+  const canGoBack = currentIndex >= 1; // Index 1 là Smart Thermostat
+  const canGoForward = currentIndex < chapters.length - 1;
 
   const handlePrevious = () => {
-    if (canGoBack) {
+    if (canGoBack && !isLocked) {
       const targetPosition = chapters[currentIndex - 1].position;
-      // Navigation time: 7s for chapters after 2.5s, default for others
       const navigationTime = targetPosition > 8 ? 5000 : 3000;
       onNavigate(targetPosition, { smooth: true, stepSize: 0.3, duration: navigationTime });
     }
   };
 
   const handleNext = () => {
-    if (canGoForward) {
+    if (canGoForward && !isLocked) {
       const targetPosition = chapters[currentIndex + 1].position;
-      // Navigation time: 7s for chapters after 2.5s, default for others
       const navigationTime = targetPosition > 8 ? 5000 : 3000;
       onNavigate(targetPosition, { smooth: true, stepSize: 0.3, duration: navigationTime });
     }
   };
 
+  const ChevronLeft = () => (
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="15,18 9,12 15,6"></polyline>
+    </svg>
+  );
+
+  const ChevronRight = () => (
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9,18 15,12 9,6"></polyline>
+    </svg>
+  );
+
   const buttonStyle = {
-    position: 'fixed',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    width: mobile.isMobile ? '50px' : '40px',
-    height: mobile.isMobile ? '50px' : '40px',
-    borderRadius: '50%',
-    border: '2px solid rgba(255, 255, 255, 0.3)',
-    background: 'rgba(0, 0, 0, 0.6)',
-    color: 'white',
-    fontSize: mobile.isMobile ? '20px' : '16px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: "fixed",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "80px",
+    height: "75px",
+    borderRadius: "50%",
+    border: "2px solid rgba(255, 255, 255, 0.3)",
+    background: "rgba(0, 0, 0, 0.6)",
+    color: "white",
+    fontSize: mobile.isMobile ? "20px" : "16px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1000,
-    transition: 'all 0.3s ease',
-    backdropFilter: 'blur(10px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(10px)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
   };
 
   const disabledStyle = {
-    opacity: 0.3,
-    cursor: 'not-allowed',
-    pointerEvents: 'none',
+    display: "none",
   };
 
   const lockedStyle = {
     opacity: 0.6,
-    cursor: 'wait',
-    pointerEvents: 'none',
-    background: 'rgba(255, 165, 0, 0.6)', // Orange when locked
+    cursor: "wait",
+    pointerEvents: "none",
+    background: "rgba(255, 165, 0, 0.6)", // Orange when locked
   };
 
   return (
@@ -85,23 +96,11 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
         onClick={handlePrevious}
         style={{
           ...buttonStyle,
-          left: mobile.isMobile ? '15px' : '20px',
-          ...(isLocked ? lockedStyle : canGoBack ? {} : disabledStyle),
-        }}
-        onMouseEnter={(e) => {
-          if (canGoBack) {
-            e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-            e.target.style.transform = 'translateY(-50%) scale(1.1)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (canGoBack) {
-            e.target.style.background = 'rgba(0, 0, 0, 0.6)';
-            e.target.style.transform = 'translateY(-50%) scale(1)';
-          }
+          left: mobile.isMobile ? "15px" : "20px",
+          ...(canGoBack ? (isLocked ? lockedStyle : {}) : disabledStyle),
         }}
       >
-        ←
+        <ChevronLeft />
       </button>
 
       {/* Right Arrow - Next Chapter */}
@@ -109,26 +108,12 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
         onClick={handleNext}
         style={{
           ...buttonStyle,
-          right: mobile.isMobile ? '15px' : '20px',
-          ...(isLocked ? lockedStyle : canGoForward ? {} : disabledStyle),
-        }}
-        onMouseEnter={(e) => {
-          if (canGoForward) {
-            e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-            e.target.style.transform = 'translateY(-50%) scale(1.1)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (canGoForward) {
-            e.target.style.background = 'rgba(0, 0, 0, 0.6)';
-            e.target.style.transform = 'translateY(-50%) scale(1)';
-          }
+          right: mobile.isMobile ? "15px" : "20px",
+          ...(canGoForward ? (isLocked ? lockedStyle : {}) : disabledStyle),
         }}
       >
-        →
+        <ChevronRight />
       </button>
-
-     
     </>
   );
 };

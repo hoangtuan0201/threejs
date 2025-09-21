@@ -677,8 +677,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           return 0.1;
         }
 
-        // Calculate new position based on current targetPosition
-        let newPosition = prevTarget + (deltaY * finalSensitivity);
+        // Calculate new position based on current targetPosition (reversed: scroll up = forward, scroll down = backward)
+        let newPosition = prevTarget - (deltaY * finalSensitivity);
 
         // Limit within range [0.1, 12.5] (entire sequence) - start from 0.1 to avoid wall clipping
         newPosition = Math.max(0, Math.min(18.1, newPosition));
@@ -750,7 +750,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             return 0;
           }
 
-          let newPosition = prevTarget + (deltaY * touchSensitivity);
+          let newPosition = prevTarget - (deltaY * touchSensitivity);
           newPosition = Math.max(0, Math.min(18.1, newPosition)); // Thống nhất range với wheel events
 
 
@@ -780,7 +780,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             return 0;
           }
 
-          let newPosition = prevTarget + momentum;
+          let newPosition = prevTarget - momentum;
           newPosition = Math.max(0, Math.min(18.1, newPosition)); // Thống nhất range
 
 
@@ -1154,7 +1154,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <PerspectiveCamera
         theatreKey="Camera"
         makeDefault
-        fov={75} // Default FOV, will be overridden by FOVManager
+        fov={80} // Default FOV, will be overridden by FOVManager
         position={[33.5381764274176, 5.205671442619433, -22.03415991352903]}
       />
 
@@ -1175,6 +1175,9 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         // Giới hạn góc xoay dọc (polar) - chỉ một chút
         minPolarAngle={Math.PI / 2 - THREE.MathUtils.degToRad(15)}    // 75° (ngẩng lên một chút)
         maxPolarAngle={Math.PI / 2 + THREE.MathUtils.degToRad(15)} // 105° (cúi xuống một chút)
+        // Giới hạn góc quay ngang (azimuth) - tùy chỉnh cho từng hotspot
+        minAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.min || -Infinity}
+        maxAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.max || Infinity}
         mouseButtons={{
           LEFT: THREE.MOUSE.ROTATE,
           MIDDLE: THREE.MOUSE.DOLLY,
@@ -1191,6 +1194,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             gl.domElement.style.cursor = 'grabbing';
           }
         }}
+        // onChange={() => {
+        //   // Debug góc quay khi người dùng tương tác
+        //   if (orbitControlsRef.current) {
+        //     console.log("Azimuth:", orbitControlsRef.current.getAzimuthalAngle() * 180 / Math.PI, "deg");
+        //     console.log("Polar:", orbitControlsRef.current.getPolarAngle() * 180 / Math.PI, "deg");
+        //   }
+        // }}
         onEnd={() => {
           if (gl && gl.domElement) {
             gl.domElement.style.cursor = orbitControlEnabled ? 'grab' : 'default';
