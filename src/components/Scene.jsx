@@ -34,6 +34,10 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [orbitControlEnabled, setOrbitControlEnabled] = useState(false); // Control orbit control activation
   const orbitControlsRef = useRef(); // Reference to OrbitControls
   
+  // Debug hover state for mesh visualization
+  const [hoveredMesh, setHoveredMesh] = useState(null); // Currently hovered/clicked mesh
+  const [originalMaterial, setOriginalMaterial] = useState(null); // Store original material for restoration
+  
   // Enhanced reset view function - reset everything
   const resetView = () => {
     // // Reset orbit controls
@@ -74,6 +78,13 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Reset navigation guide state
     setHasShownNavigationGuide(false);
     hasTriggeredGuideRef.current = false;
+    
+    // Reset debug highlight
+    if (hoveredMesh && originalMaterial) {
+      hoveredMesh.material = originalMaterial;
+      setHoveredMesh(null);
+      setOriginalMaterial(null);
+    }
     
     // Call onPositionChange to update parent state
     if (onPositionChange) {
@@ -558,16 +569,16 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     } else if (!isNavigating && !selectedHotspot) {
       // comment these to turn off useframe
       // Only allow smooth scrolling when no hotspot is selected
-      if (targetPosition !== sheet.sequence.position) {
-        const diff = targetPosition - sheet.sequence.position;
-        const speed = 0.02; // Smooth scrolling speed
+      // if (targetPosition !== sheet.sequence.position) {
+      //   const diff = targetPosition - sheet.sequence.position;
+      //   const speed = 0.02; // Smooth scrolling speed
 
-        if (Math.abs(diff) > 0.001) {
-          sheet.sequence.position += diff * speed;
-        } else {
-          sheet.sequence.position = targetPosition;
-        }
-      }
+      //   if (Math.abs(diff) > 0.001) {
+      //     sheet.sequence.position += diff * speed;
+      //   } else {
+      //     sheet.sequence.position = targetPosition;
+      //   }
+      // }
     }
     // When isNavigating but not navigationData.isNavigating, we're in lock mode - do nothing
 
@@ -859,6 +870,34 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         const intersectedMesh = intersects.find(intersect => intersect.object.name);
         if (intersectedMesh) {
           console.log('Clicked mesh name:', intersectedMesh.object.name);
+          
+          // Reset previous highlighted mesh
+          if (hoveredMesh && originalMaterial) {
+            hoveredMesh.material = originalMaterial;
+          }
+          
+          // Highlight new mesh with pink color for debug
+          const mesh = intersectedMesh.object;
+          if (mesh.material) {
+            // Store original material
+            setOriginalMaterial(mesh.material);
+            
+            // Create pink debug material
+            const debugMaterial = mesh.material.clone();
+            debugMaterial.color = new THREE.Color(0xff69b4); // Hot pink color
+            debugMaterial.emissive = new THREE.Color(0x330022); // Slight pink glow
+            
+            // Apply debug material
+            mesh.material = debugMaterial;
+            setHoveredMesh(mesh);
+          }
+        }
+      } else {
+        // Reset highlighted mesh when clicking empty space
+        if (hoveredMesh && originalMaterial) {
+          hoveredMesh.material = originalMaterial;
+          setHoveredMesh(null);
+          setOriginalMaterial(null);
         }
       }
     };
@@ -871,7 +910,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     return () => {
       canvas.removeEventListener('click', handleClick);
     };
-  }, [gl.domElement, camera, threeScene, isExploreMode]);
+  }, [gl.domElement, camera, threeScene, isExploreMode, hoveredMesh, originalMaterial]);
 
   return (
     <>
@@ -1162,7 +1201,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <OrbitControls
         ref={orbitControlsRef}
         enabled={orbitControlEnabled}
-        enablePan={false}
+        enablePan={true}
         enableRotate={orbitControlEnabled}
         enableZoom={orbitControlEnabled}
         minDistance={1}
@@ -1176,8 +1215,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         minPolarAngle={Math.PI / 2 - THREE.MathUtils.degToRad(15)}    // 75° (ngẩng lên một chút)
         maxPolarAngle={Math.PI / 2 + THREE.MathUtils.degToRad(15)} // 105° (cúi xuống một chút)
         // Giới hạn góc quay ngang (azimuth) - tùy chỉnh cho từng hotspot
-        minAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.min || -Infinity}
-        maxAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.max || Infinity}
+        // minAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.min || -Infinity}
+        // maxAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.max || Infinity}
         mouseButtons={{
           LEFT: THREE.MOUSE.ROTATE,
           MIDDLE: THREE.MOUSE.DOLLY,

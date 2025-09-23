@@ -71,18 +71,18 @@ export const sequenceChapters = [
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118501005"
     },
-    videoScreen: {
-      position: [29.7, 8.3, -20.6],
-      rotation: [-0.1, Math.PI / 1, 0],
-      // Mobile-specific positioning
-      mobilePosition: [29.7, 8.5, -20.6],
-      mobileRotation: [-0.1, Math.PI / 1, 0],
-      videoId: "https://vimeo.com/1118501005",
-      title: "Linear Grille Demo",
-      size: { width: 320, height: 180 },
-      // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
-    }
+    // videoScreen: {
+    //   position: [29.7, 8.3, -20.6],
+    //   rotation: [-0.1, Math.PI / 1, 0],
+    //   // Mobile-specific positioning
+    //   mobilePosition: [29.7, 8.5, -20.6],
+    //   mobileRotation: [-0.1, Math.PI / 1, 0],
+    //   videoId: "https://vimeo.com/1118501005",
+    //   title: "Linear Grille Demo",
+    //   size: { width: 320, height: 180 },
+    //   // Mobile-specific size
+    //   mobileSize: { width: 340, height: 200 }
+    // }
   },
   //living room 2
   {
