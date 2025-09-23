@@ -1,3 +1,43 @@
+// Import grille types configuration
+export const grilleTypes = {
+  'original': {
+    name: 'Original Grille',
+    description: 'Original grille model from the scene',
+    materialConfig: null // Use original material
+  },
+  'normal': {
+    name: 'Normal Ugly Grille',
+    description: 'Standard basic grille design',
+    materialConfig: {
+      color: 0x888888,
+      metalness: 0.3,
+      roughness: 0.8,
+      clearcoat: 0.1
+    }
+  },
+  'round': {
+    name: 'Round Grille',
+    description: 'Circular grille design',
+    materialConfig: {
+      color: 0xaaaaaa,
+      metalness: 0.5,
+      roughness: 0.4,
+      clearcoat: 0.3
+    }
+  },
+  'linear-bulkhead': {
+    name: 'Linear Grille in Bulkhead',
+    description: 'Linear grille integrated in joinery bulkhead unit',
+    materialConfig: {
+      color: 0xffffff,
+      metalness: 0.7,
+      roughness: 0.2,
+      clearcoat: 0.6,
+      clearcoatRoughness: 0.1
+    }
+  }
+};
+
 export const sequenceChapters = [
   {
     id: "start",
@@ -71,6 +111,21 @@ export const sequenceChapters = [
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118501005"
     },
+    grilleConfig: {
+      position: [30, 9, -20.5],
+      rotation: [0.1, Math.PI / 1, 0],
+      scale: [0.05, 0.05, 0.05], // Fixed scale to make model smaller
+      meshesToHide: ['3DGeom-856', '3DGeom-729'], // Original grille meshes to hide
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
+    },
     // videoScreen: {
     //   position: [29.7, 8.3, -20.6],
     //   rotation: [-0.1, Math.PI / 1, 0],
@@ -109,6 +164,21 @@ export const sequenceChapters = [
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118500811"
     },
+    grilleConfig: {
+      position: [23.2, 5.3, -31.9],
+      rotation: [0, 0, 0],
+      scale: [0.1, 0.1, 0.1], // Fixed scale to make model smaller
+      meshesToHide: [],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
+    },
     videoScreen: {
       position: [21.4, 5.3, -31.9],
       rotation: [0, 0, 0],
@@ -144,6 +214,21 @@ export const sequenceChapters = [
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118501437"
+    },
+    grilleConfig: {
+      position: [15.5, 5.3, -26.75],
+      rotation: [0, Math.PI / 1, 0],
+      scale: [0.1, 0.1, 0.1], // Fixed scale to make model smaller
+      meshesToHide: [],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
     },
     videoScreen: {
       position: [13.9, 5.3, -26.75],
@@ -222,6 +307,21 @@ export const sequenceChapters = [
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118500723"
+    },
+    grilleConfig: {
+      position: [20.7, 5.5, -21.54],
+      rotation: [0, Math.PI / 2, 0],
+      scale: [0.1, 0.1, 0.1], // Fixed scale to make model smaller
+      meshesToHide: [],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
     },
     videoScreen: {
       position: [20.7, 5.5, -19.8],
@@ -416,6 +516,21 @@ export const sequenceChapters = [
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic.",
       link: "https://vimeo.com/1118503216",
       hiddenMeshes: ["3DGeom-78"]
+    },
+    grilleConfig: {
+      position: [9.9, 1.8, -29.7],
+      rotation: [0, 0, 0],
+      scale: [0.1, 0.1, 0.1], // Fixed scale to make model smaller
+      meshesToHide: ["3DGeom-78"],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
     },
     videoScreen: {
       position: [11.6, 1.8, -29.7],

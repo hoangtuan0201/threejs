@@ -16,13 +16,14 @@ import { EnhancedBackground } from "./Background";
 import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
 import GrassFloor from "./GrassFloor";
 import Tree, { TreeGroup } from "./XRayMode/Tree";
+import { LinearGrilleManager } from "./LinearGrilleManager";
 
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
 
 
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView, onSelectedHotspotChange }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView, onSelectedHotspotChange, currentGrille = 'linear-bulkhead' }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
@@ -1123,6 +1124,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             onModelLoaded?.();
           }}
         />
+        
+        {/* Linear Grille Manager - handles grille switching */}
+        <LinearGrilleManager
+          scene={threeScene}
+          currentGrille={currentGrille}
+          selectedHotspot={selectedHotspot}
+        />
+        
         {/* Door animation controller */}
         <DoorAnimation />
         
