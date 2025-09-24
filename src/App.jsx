@@ -17,6 +17,7 @@ import ScrollSensitivityControl from "./components/ScrollSensitivityControl";
 import ChapterNavigation from "./components/ChapterNavigation";
 import NavigationGuide from "./components/NavigationGuide";
 import MobileHomeButton from "./components/MobileHomeButton";
+import { LinearGrilleSelector } from "./components/LinearGrilleSelector";
 import { ThemeProvider } from "./theme/ThemeContext";
 
 // Hooks
@@ -41,6 +42,7 @@ export default function App({ isChatFocused = false }) {
   const [showNavigationGuide, setShowNavigationGuide] = useState(false);
   const [resetViewFunction, setResetViewFunction] = useState(null);
   const [selectedHotspot, setSelectedHotspot] = useState(null);
+  const [currentGrille, setCurrentGrille] = useState('original');
 
   const navigate = useNavigate();
   const mobile = useMobile();
@@ -228,6 +230,7 @@ export default function App({ isChatFocused = false }) {
               showNavigationGuide={showNavigationGuide}
               isChatFocused={isChatFocused}
               onResetView={setResetViewFunction}
+              currentGrille={currentGrille}
               navigationData={{
                 isNavigating: sceneNavigating,
                 targetPosition: sceneTargetPosition,
@@ -273,6 +276,13 @@ export default function App({ isChatFocused = false }) {
       <NavigationGuide
         isVisible={showNavigationGuide}
         onClose={() => setShowNavigationGuide(false)}
+      />
+
+      <LinearGrilleSelector
+        isVisible={!showControlPanel && !showCompareSystem && modelLoaded}
+        currentGrille={currentGrille}
+        onGrilleChange={setCurrentGrille}
+        selectedHotspot={selectedHotspot}
       />
     </ThemeProvider>
   );

@@ -4,6 +4,7 @@ import { ThemeProvider } from '../theme/ThemeContext';
 import Homepage from '../pages/Homepage';
 import CompareSystem from '../pages/CompareSystem';
 import XRayMode from '../pages/X-ray';
+import Test from '../pages/Test';
 import App from '../App'; // 3D Experience
 
 const AppRouter = () => {
@@ -49,7 +50,10 @@ const AppRouter = () => {
 
 
           {/* X-Ray Mode Route */}
-          <Route path="/x-ray" element={<XRayMode />} />
+          {/* <Route path="/x-ray" element={<XRayMode />} /> */}
+
+          {/* Test/Debug Route */}
+          <Route path="/test" element={<Test />} />
 
           {/* Fallback to Homepage */}
           <Route path="*" element={<Homepage />} />

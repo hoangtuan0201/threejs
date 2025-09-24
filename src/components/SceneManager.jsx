@@ -56,6 +56,7 @@ export function SceneManager({
   onCurrentSceneChange, // New prop to expose current scene
   onResetView, // New prop to receive reset view function
   onSelectedHotspotChange, // New prop to expose selected hotspot
+  currentGrille, // New prop for grille selection
   project // Receive project from App.jsx
 }) {
   // Create main sheet from the passed project
@@ -94,6 +95,7 @@ export function SceneManager({
         isChatFocused={isChatFocused}
         onResetView={onResetView}
         onSelectedHotspotChange={onSelectedHotspotChange}
+        currentGrille={currentGrille}
       />
     </SheetProvider>
   );

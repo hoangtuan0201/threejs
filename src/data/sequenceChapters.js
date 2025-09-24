@@ -1,3 +1,43 @@
+// Import grille types configuration
+export const grilleTypes = {
+  'original': {
+    name: 'Original Grille',
+    description: 'Original grille model from the scene',
+    materialConfig: null // Use original material
+  },
+  'normal': {
+    name: 'Normal Ugly Grille',
+    description: 'Standard basic grille design',
+    materialConfig: {
+      color: 0x888888,
+      metalness: 0.3,
+      roughness: 0.8,
+      clearcoat: 0.1
+    }
+  },
+  'round': {
+    name: 'Round Grille',
+    description: 'Circular grille design',
+    materialConfig: {
+      color: 0xaaaaaa,
+      metalness: 0.5,
+      roughness: 0.4,
+      clearcoat: 0.3
+    }
+  },
+  'linear-bulkhead': {
+    name: 'Linear Grille in Bulkhead',
+    description: 'Linear grille integrated in joinery bulkhead unit',
+    materialConfig: {
+      color: 0xffffff,
+      metalness: 0.7,
+      roughness: 0.2,
+      clearcoat: 0.6,
+      clearcoatRoughness: 0.1
+    }
+  }
+};
+
 export const sequenceChapters = [
   {
     id: "start",
@@ -71,6 +111,34 @@ export const sequenceChapters = [
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118501005"
     },
+    grilleConfig: {
+      position: [30, 9, -20.5],
+      rotation: [0.1, Math.PI / 1, 0],
+      scale: [0.05, 0.05, 0.05], // Fixed scale to make model smaller
+      meshesToHide: ['3DGeom-856', '3DGeom-729', '3DGeom-518_1', '3DGeom-455_21', '3DGeom-438_25', '3DGeom-521','3DGeom-896_58', '3DGeom-896_59',
+        '3DGeom-455_20', '3DGeom-438_24', '3DGeom-523', '3DGeom-896_74', '3DGeom-896_75',
+        '3DGeom-455_11', '3DGeom-438_15', '3DGeom-522', '3DGeom-896_68', '3DGeom-896_69',
+        '3DGeom-455_12', '3DGeom-438_16', '3DGeom-524', '3DGeom-896_76', '3DGeom-896_77',
+        '3DGeom-455_10', '3DGeom-438_14', '3DGeom-525', '3DGeom-896_72', '3DGeom-896_73',
+        '3DGeom-455_24', '3DGeom-438_28', '3DGeom-527', '3DGeom-896_70', '3DGeom-896_71',
+        '3DGeom-455_8', '3DGeom-438_12', '3DGeom-526', '3DGeom-896_62', '3DGeom-896_63',
+        '3DGeom-455_15', '3DGeom-438_19', '3DGeom-520', '3DGeom-896_66', '3DGeom-896_67',
+        '3DGeom-896_2', '3DGeom-896_3', '3DGeom-896_4', '3DGeom-896_5',
+        '3DGeom-896_6', '3DGeom-896_7', '3DGeom-896_8', '3DGeom-896_9',
+        '3DGeom-896_10', '3DGeom-896_11', '3DGeom-896_12', '3DGeom-896_13',
+        '3DGeom-896_14', '3DGeom-896_15', '3DGeom-896_16', '3DGeom-896_17',
+        '3DGeom-896_18', '3DGeom-896_19', '3DGeom-896_20', '3DGeom-896_21'
+      ], // Original grille meshes to hide
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
+    },
     videoScreen: {
       position: [29.7, 8.3, -20.6],
       rotation: [-0.1, Math.PI / 1, 0],
@@ -109,6 +177,31 @@ export const sequenceChapters = [
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118500811"
     },
+    grilleConfig: {
+      position: [23.2, 6, -32.4],
+      rotation: [0, 0, 0],
+      scale: [0.05, 0.02, 0.02], // Fixed scale to make model smaller
+      meshesToHide: ['3DGeom-852', '3DGeom-455_9', '3DGeom-438_13', '3DGeom-878',
+        '3DGeom-455_26', '3DGeom-438_30', '3DGeom-879',
+        '3DGeom-455_27', '3DGeom-438_31', '3DGeom-880',
+        '3DGeom-455_28', '3DGeom-438_32', '3DGeom-881',
+        '3DGeom-455_29', '3DGeom-438_33', '3DGeom-882',
+        '3DGeom-455_30', '3DGeom-438_34', '3DGeom-883',
+        '3DGeom-455_31', '3DGeom-438_35', '3DGeom-884',
+        '3DGeom-455_32', '3DGeom-438_36', '3DGeom-885',
+        '3DGeom-455_33', '3DGeom-438_37', '3DGeom-886',
+        '3DGeom-455_34', '3DGeom-438_38', '3DGeom-887',
+      ],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
+    },
     videoScreen: {
       position: [21.4, 5.3, -31.9],
       rotation: [0, 0, 0],
@@ -144,6 +237,27 @@ export const sequenceChapters = [
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118501437"
+    },
+    grilleConfig: {
+      position: [15, 6, -26.5],
+      rotation: [0, Math.PI / 1, 0],
+      scale: [0.05, 0.02, 0.02], // Fixed scale to make model smaller
+      meshesToHide: ['3DGeom-853', '3DGeom-891', '3DGeom-455_38', '3DGeom-438_42',
+        '3DGeom-892', '3DGeom-455_37', '3DGeom-438_41',
+        '3DGeom-893', '3DGeom-455_36', '3DGeom-438_40',
+        '3DGeom-894', '3DGeom-455_35', '3DGeom-438_39',
+        '3DGeom-895', '3DGeom-455_34', '3DGeom-438_38',
+
+      ],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
     },
     videoScreen: {
       position: [13.9, 5.3, -26.75],
@@ -222,6 +336,24 @@ export const sequenceChapters = [
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
       link: "https://vimeo.com/1118500723"
+    },
+    grilleConfig: {
+      position: [20.7, 6, -21.54],
+      rotation: [0, Math.PI / 2, 0],
+      scale: [0.03, 0.01, 0.01], // Fixed scale to make model smaller
+      meshesToHide: ['3DGeom-855', '3DGeom-455_42', '3DGeom-438_46', '3DGeom-1015',
+        '3DGeom-455_41', '3DGeom-438_45', '3DGeom-1014',
+        '3DGeom-455_17', '3DGeom-438_21', '3DGeom-1013'
+      ],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
     },
     videoScreen: {
       position: [20.7, 5.5, -19.8],
@@ -415,7 +547,23 @@ export const sequenceChapters = [
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic.",
       link: "https://vimeo.com/1118503216",
-      hiddenMeshes: ["3DGeom-78"]
+    },
+    grilleConfig: {
+      position: [9.9, 2.4, -29.7],
+      rotation: [0, 0, 0],
+      scale: [0.03, 0.01, 0.01], // Fixed scale to make model smaller
+      meshesToHide: ['3DGeom-431', '3DGeom-437', '3DGeom-438', '3DGeom-514',
+        '3DGeom-437_1', '3DGeom-438_1', '3DGeom-515'
+      ],
+      hasGrilleSelector: true,
+      // Model URLs for different grille types
+      modelUrls: {
+        'normal': './lineartest.glb', // Current ugly grille model
+        'round': './lineartest.glb', // Will be replaced with round model
+        'linear-bulkhead': './lineartest.glb', // Will be replaced with bulkhead model
+        'linear-fascia': './lineartest.glb', // Will be replaced with fascia model
+        'linear-trowelled': './lineartest.glb' // Will be replaced with trowelled model
+      }
     },
     videoScreen: {
       position: [11.6, 1.8, -29.7],

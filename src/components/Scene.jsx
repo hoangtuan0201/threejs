@@ -16,13 +16,14 @@ import { EnhancedBackground } from "./Background";
 import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
 import GrassFloor from "./GrassFloor";
 import Tree, { TreeGroup } from "./XRayMode/Tree";
+import { LinearGrilleManager } from "./LinearGrilleManager";
 
 import { sequenceChapters } from "../data/sequenceChapters";
 import { useMobile } from "../hooks/useMobile";
 
 
 
-export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView, onSelectedHotspotChange }) {
+export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExploreMode, onModelLoaded, onPositionChange, isNavigating, navigationData, scrollSensitivity = 1.0, onShowNavigationGuide, showNavigationGuide, isChatFocused = false, onHotspotDetailRequest, shouldRestorePosition, savedSceneState, onSceneStateCleared, onHideNavigationGuide, hasVisitedDetailScene, onResetView, onSelectedHotspotChange, currentGrille = 'linear-bulkhead' }) {
   const navigate = useNavigate();
   const sheet = useCurrentSheet();
   const [activeChapter, setActiveChapter] = useState(null);
@@ -33,6 +34,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [activeSequence, setActiveSequence] = useState(null); // For hiding mesh when hotspot is clicked
   const [orbitControlEnabled, setOrbitControlEnabled] = useState(false); // Control orbit control activation
   const orbitControlsRef = useRef(); // Reference to OrbitControls
+  
+
   
   // Enhanced reset view function - reset everything
   const resetView = () => {
@@ -74,6 +77,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     // Reset navigation guide state
     setHasShownNavigationGuide(false);
     hasTriggeredGuideRef.current = false;
+    
+
     
     // Call onPositionChange to update parent state
     if (onPositionChange) {
@@ -859,6 +864,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         const intersectedMesh = intersects.find(intersect => intersect.object.name);
         if (intersectedMesh) {
           console.log('Clicked mesh name:', intersectedMesh.object.name);
+          
         }
       }
     };
@@ -1084,6 +1090,14 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             onModelLoaded?.();
           }}
         />
+        
+        {/* Linear Grille Manager - handles grille switching */}
+        <LinearGrilleManager
+          scene={threeScene}
+          currentGrille={currentGrille}
+          selectedHotspot={selectedHotspot}
+        />
+        
         {/* Door animation controller */}
         <DoorAnimation />
         
@@ -1162,7 +1176,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <OrbitControls
         ref={orbitControlsRef}
         enabled={orbitControlEnabled}
-        enablePan={false}
+        enablePan={true}
         enableRotate={orbitControlEnabled}
         enableZoom={orbitControlEnabled}
         minDistance={1}
@@ -1176,8 +1190,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         minPolarAngle={Math.PI / 2 - THREE.MathUtils.degToRad(15)}    // 75° (ngẩng lên một chút)
         maxPolarAngle={Math.PI / 2 + THREE.MathUtils.degToRad(15)} // 105° (cúi xuống một chút)
         // Giới hạn góc quay ngang (azimuth) - tùy chỉnh cho từng hotspot
-        minAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.min || -Infinity}
-        maxAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.max || Infinity}
+        // minAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.min || -Infinity}
+        // maxAzimuthAngle={selectedHotspot?.hotspot?.azimuthLimits?.max || Infinity}
         mouseButtons={{
           LEFT: THREE.MOUSE.ROTATE,
           MIDDLE: THREE.MOUSE.DOLLY,
