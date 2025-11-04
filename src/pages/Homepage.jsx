@@ -320,7 +320,7 @@ export default function Homepage() {
               Explore in 3D
             </Button>
 
-            <Button
+            {/* <Button
               variant="outlined"
               size="large"
               onClick={() => navigate("/compare")}
@@ -349,7 +349,7 @@ export default function Homepage() {
               }}
             >
               Compare Systems
-            </Button>
+            </Button> */}
 
            
 
@@ -411,7 +411,7 @@ export default function Homepage() {
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
-                More Features...
+                Customize AirSmart
               </Button>
                {/* <Button
               variant="outlined"
