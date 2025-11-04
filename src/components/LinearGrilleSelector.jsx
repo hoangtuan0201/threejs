@@ -12,36 +12,39 @@ import {
   alpha
 } from '@mui/material';
 import { 
-  Home as HomeIcon,
+  Dashboard as DashboardIcon,
   CropSquare as SquareIcon,
   RadioButtonUnchecked as CircleIcon,
-  LinearScale as LinearIcon
+  LinearScale as LinearIcon,
+  Texture as TextureIcon,
+  Home as HomeIcon
 } from '@mui/icons-material';
 import { useMobile } from '../hooks/useMobile';
 
 const grilleOptions = [
   {
-    id: 'original',
-    name: 'Original Grille',
-    description: 'Original grille model from the scene',
-    icon: HomeIcon
-  },
-  {
-    id: 'normal',
-    name: 'Normal Grille',
-    description: 'Standard basic grille design',
-    icon: SquareIcon
-  },
-  {
     id: 'round',
     name: 'Round Grille',
-    description: 'Circular grille design',
     icon: CircleIcon
   },
   {
-    id: 'linear-bulkhead',
-    name: 'Linear Bulkhead',
-    description: 'Linear grille in bulkhead unit',
+    id: 'original',
+    name: 'Original Grille',
+    icon: HomeIcon
+  },
+  {
+    id: 'plaster-trowled',
+    name: 'Plaster Trowled Linear Grille',
+    icon: TextureIcon
+  },
+  {
+    id: 'shadow-line',
+    name: 'Shadow Line Linear Grille Ceiling',
+    icon: DashboardIcon
+  },
+  {
+    id: 'linear-ceiling',
+    name: 'Linear Grille Ceiling',
     icon: LinearIcon
   },
 ];
@@ -80,8 +83,8 @@ export function LinearGrilleSelector({
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 1000,
-        maxWidth: mobile.isMobile ? '90vw' : 800,
-        width: mobile.isMobile ? 'auto' : '100%'
+        maxWidth: mobile.isMobile ? '95vw' : 1000,
+        width: mobile.isMobile ? '95vw' : '100%'
       }}
     >
       <Paper
@@ -109,9 +112,10 @@ export function LinearGrilleSelector({
         
         <Grid 
           container 
-          spacing={mobile.isMobile ? 1.5 : 2}
+          spacing={mobile.isMobile ? 1 : 2}
           justifyContent="center"
           alignItems="stretch"
+          sx={{ flexDirection: 'row', flexWrap: 'wrap' }}
         >
           {grilleOptions.map((option) => {
             const IconComponent = option.icon;
@@ -120,17 +124,17 @@ export function LinearGrilleSelector({
             return (
               <Grid 
                 item 
-                xs={mobile.isMobile ? 6 : 3} 
+                xs={6} 
                 sm={3} 
                 md={3} 
                 key={option.id}
-                sx={{ display: 'flex' }}
+                sx={{ display: 'flex', mb: mobile.isMobile ? 1 : 0 }}
               >
                 <Card
                   elevation={isSelected ? 4 : 1}
                   sx={{
                     width: '100%',
-                    height: '100%',
+                    height: mobile.isMobile ? 'auto' : '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -147,14 +151,17 @@ export function LinearGrilleSelector({
                       borderColor: isSelected 
                         ? theme.palette.primary.main 
                         : alpha(theme.palette.primary.main, 0.3)
-                    }
+                    },
+                    aspectRatio: mobile.isMobile ? 'auto' : '1/0.5',
+                    minHeight: 50
+                    
                   }}
                 >
                   <CardActionArea
                     onClick={() => handleGrilleSelect(option.id)}
                     sx={{
                       height: '100%',
-                      p: mobile.isMobile ? 1.5 : 2,
+                      p: mobile.isMobile ? 1 : 2,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',

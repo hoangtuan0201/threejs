@@ -64,6 +64,16 @@ export function LinearGrilleModel({
           clearcoat: 0.2
         };
         break;
+      case 'linear-ceiling':
+        materialConfig = {
+          color: new THREE.Color(0xf0f0f0),
+          metalness: 0.8,
+          roughness: 0.1,
+          clearcoat: 0.7,
+          clearcoatRoughness: 0.05,
+          envMapIntensity: 1.5
+        };
+        break;
       default:
         materialConfig = {
           color: new THREE.Color(0xffffff),
