@@ -34,7 +34,7 @@ export function RenderingOptimizer() {
     // Shadows
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = false;
+    gl.shadowMap.autoUpdate = true;
 
     // Lighting physically correct
     gl.physicallyCorrectLights = true;
