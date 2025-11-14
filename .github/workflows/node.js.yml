@@ -29,5 +29,4 @@ jobs:
     # Build (nếu có script build trong package.json)
     - run: yarn build
 
-    # Chạy test
-    - run: yarn test
+

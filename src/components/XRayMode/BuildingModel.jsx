@@ -7,7 +7,7 @@ import SequenceMeshController from './SequenceMeshController';
 import MeshClickHandler from './MeshClickHandler';
 
 function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlightedComponent, onModelLoaded }) {
-  const { scene } = useGLTF('/3ddd.glb');
+  const { scene } = useGLTF('/lagmodel.glb');
   const modelRef = useRef();
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
@@ -208,6 +208,6 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
 }
 
 // Preload the model
-useGLTF.preload('/3ddd.glb');
+useGLTF.preload('/lagmodel.glb');
 
 export default BuildingModel;

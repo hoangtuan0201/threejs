@@ -50,7 +50,7 @@ const AppRouter = () => {
 
 
           {/* X-Ray Mode Route */}
-          {/* <Route path="/x-ray" element={<XRayMode />} /> */}
+          <Route path="/x-ray" element={<XRayMode />} />
 
           {/* Test/Debug Route */}
           <Route path="/test" element={<Test />} />
