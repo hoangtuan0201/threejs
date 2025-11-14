@@ -42,7 +42,7 @@ export function HDREnvironment({
       gl.physicallyCorrectLights = true;
       gl.shadowMap.enabled = true;
       gl.shadowMap.type = THREE.PCFSoftShadowMap;
-      gl.shadowMap.autoUpdate = false;
+      gl.shadowMap.autoUpdate = true;
       
       // Advanced anti-aliasing for crisp edges
       gl.antialias = true;
