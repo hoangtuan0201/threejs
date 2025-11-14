@@ -44,6 +44,16 @@ const HVAC_POSITIONS = {
     position: [15.26, 5.5, -28],
     cameraPosition: [15.35, 4.9, -29],
     label: "Kitchen"
+  },
+  Airduct: {
+    position: [13, 1.7, -22.2], 
+    cameraPosition: [12, 1.7, -22.2],
+    label: "Airduct"
+  },
+  Gym: {
+    position: [10.4, 2, -29.7], 
+    cameraPosition: [11.4, 2, -29],
+    label: "Gym"
   }
 };
 

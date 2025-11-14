@@ -8,6 +8,7 @@ import { useTheme } from '../theme/ThemeContext';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { Hotspot, CameraController, BuildingModel, HVAC_POSITIONS } from '../components/XRayMode';
+import { LinearGrilleSelector } from '../components/LinearGrilleSelector';
 import { TreeGroup } from '../components/XRayMode/Tree';
 import { HotspotsRenderer } from '../components/Hotspot';
 import { HotspotDetail } from '../components/HotspotDetail';
@@ -58,6 +59,7 @@ export default function XRayMode() {
   const [selectedHotspot, setSelectedHotspot] = useState(null);
   const [showVideoScreen, setShowVideoScreen] = useState(null);
   const [activeSequence, setActiveSequence] = useState(null); // Sequence đang active
+  const [currentGrille, setCurrentGrille] = useState('original');
   const orbitControlsRef = useRef();
   const limit = THREE.MathUtils.degToRad(15); // 15 độ
    
@@ -124,6 +126,7 @@ export default function XRayMode() {
         setActiveSequence(componentKey); // Kích hoạt ẩn mesh cho sequence này
         setSelectedHotspot(chapter);
         setShowVideoScreen(chapter);
+        setCurrentGrille('original');
       }
     }
   };
@@ -136,6 +139,7 @@ export default function XRayMode() {
     setShowVideoScreen(null);
     setActiveSequence(null);
     setActiveComponent(null);
+    setCurrentGrille('original');
     navigate('/');
   };
 
@@ -145,6 +149,7 @@ export default function XRayMode() {
     setShowVideoScreen(null);
     setActiveSequence(null);
     setActiveComponent(null);
+    setCurrentGrille('original');
     // Reset camera to initial position smoothly
     setCameraTarget(new THREE.Vector3(42.08, 20, -24.98));
   };
@@ -156,6 +161,7 @@ export default function XRayMode() {
     setShowVideoScreen(null);
     setActiveSequence(null);
     setActiveComponent(null);
+    setCurrentGrille('original');
   };
 
   return (
@@ -239,6 +245,12 @@ export default function XRayMode() {
           />
         </Box>
       </Box>
+      <LinearGrilleSelector 
+        isVisible={!!selectedHotspot}
+        currentGrille={currentGrille}
+        onGrilleChange={setCurrentGrille}
+        selectedHotspot={selectedHotspot}
+      />
 
       {/* 3D Canvas */}
       <Canvas
@@ -254,9 +266,9 @@ export default function XRayMode() {
           fov: 75
         }}
         shadows
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{
-          preserveDrawingBuffer: true,
+          preserveDrawingBuffer: false,
           antialias: true,
           alpha: false,
           powerPreference: "high-performance",
@@ -338,6 +350,8 @@ export default function XRayMode() {
               // console.log(`Sequence transition ${action} completed for mesh:`, mesh.name);
             }}
             onModelLoaded={() => setModelLoaded(true)}
+            selectedHotspot={selectedHotspot}
+            currentGrille={currentGrille}
           />
         </Suspense>
         
@@ -386,6 +400,7 @@ export default function XRayMode() {
             onClose={() => {
               setSelectedHotspot(null);
               setShowVideoScreen(null);
+              setActiveSequence(null);
             }}
           />
         )}

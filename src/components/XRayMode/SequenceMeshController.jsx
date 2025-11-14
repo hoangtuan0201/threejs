@@ -3,48 +3,54 @@ import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { sequenceHiddenMeshes, hiddenMeshConfig } from '../../data/sequenceHiddenMeshes';
 
-function SequenceMeshController({ activeSequence, onTransitionComplete }) {
-  const { scene } = useThree();
+function SequenceMeshController({ scene: propScene, activeSequence, onTransitionComplete }) {
+  const { scene: globalScene } = useThree();
+  const scene = propScene || globalScene;
   const originalMaterialsRef = useRef(new Map());
   const currentHiddenMeshesRef = useRef(new Set());
   const transitionTimeoutsRef = useRef(new Map());
+  const nameQueryCacheRef = useRef(new Map());
+  const materialQueryCacheRef = useRef(new Map());
+  const hiddenMeshRefsRef = useRef(new Map());
 
   // Hàm tìm mesh theo tên (hỗ trợ tìm kiếm partial match)
   const findMeshByName = useCallback((meshName) => {
+    const key = meshName.toLowerCase();
+    if (nameQueryCacheRef.current.has(key)) {
+      return nameQueryCacheRef.current.get(key);
+    }
     const foundMeshes = [];
     scene.traverse((child) => {
-      if (child.isMesh && child.name && 
-          child.name.toLowerCase().includes(meshName.toLowerCase())) {
+      if (child.isMesh && child.name && child.name.toLowerCase().includes(key)) {
         foundMeshes.push(child);
       }
     });
+    nameQueryCacheRef.current.set(key, foundMeshes);
     return foundMeshes;
   }, [scene]);
 
   // Hàm tìm mesh theo tên material (hỗ trợ tìm kiếm partial match)
   const findMeshByMaterial = useCallback((materialName) => {
+    const key = materialName.toLowerCase();
+    if (materialQueryCacheRef.current.has(key)) {
+      return materialQueryCacheRef.current.get(key);
+    }
     const foundMeshes = [];
     scene.traverse((child) => {
       if (child.isMesh && child.material) {
         let hasMatchingMaterial = false;
-        
-        // Kiểm tra material name
-        if (child.material.name && child.material.name.toLowerCase().includes(materialName.toLowerCase())) {
+        if (child.material.name && child.material.name.toLowerCase().includes(key)) {
           hasMatchingMaterial = true;
         }
-        
-        // Kiểm tra array of materials
         if (!hasMatchingMaterial && Array.isArray(child.material)) {
-          hasMatchingMaterial = child.material.some(mat => 
-            mat.name && mat.name.toLowerCase().includes(materialName.toLowerCase())
-          );
+          hasMatchingMaterial = child.material.some(mat => mat.name && mat.name.toLowerCase().includes(key));
         }
-        
         if (hasMatchingMaterial) {
           foundMeshes.push(child);
         }
       }
     });
+    materialQueryCacheRef.current.set(key, foundMeshes);
     return foundMeshes;
   }, [scene]);
 
@@ -60,6 +66,7 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
         alphaTest: mesh.material.alphaTest
       });
     }
+    hiddenMeshRefsRef.current.set(meshId, mesh);
   }, []);
 
   // Hàm ẩn mesh với hiệu ứng fade
@@ -97,8 +104,8 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
       mesh.material.needsUpdate = true;
       
       if (progress < 1) {
-        const timeoutId = setTimeout(animate, 16); // ~60fps
-        transitionTimeoutsRef.current.set(meshId, timeoutId);
+        const rafId = requestAnimationFrame(animate);
+        transitionTimeoutsRef.current.set(meshId, rafId);
       } else {
         // Transition complete
         mesh.material.opacity = targetOpacity;
@@ -147,8 +154,8 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
       mesh.material.needsUpdate = true;
       
       if (progress < 1) {
-        const timeoutId = setTimeout(animate, 16); // ~60fps
-        transitionTimeoutsRef.current.set(meshId, timeoutId);
+        const rafId = requestAnimationFrame(animate);
+        transitionTimeoutsRef.current.set(meshId, rafId);
       } else {
         // Transition complete - restore original material
         mesh.material = originalData.material.clone();
@@ -168,13 +175,11 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
   // Hàm hiện tất cả mesh đang ẩn
   const showAllHiddenMeshes = useCallback(() => {
     const hiddenMeshIds = Array.from(currentHiddenMeshesRef.current);
-    
     hiddenMeshIds.forEach(meshId => {
-      scene.traverse((child) => {
-        if (child.isMesh && child.uuid === meshId) {
-          showMesh(child, { transitionDuration: hiddenMeshConfig.defaultTransitionDuration });
-        }
-      });
+      const mesh = hiddenMeshRefsRef.current.get(meshId);
+      if (mesh) {
+        showMesh(mesh, { transitionDuration: hiddenMeshConfig.defaultTransitionDuration });
+      }
     });
   }, [scene]);
 
@@ -228,7 +233,7 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
           }
         });
       }
-    }, 100);
+    }, 50);
 
   }, [activeSequence, scene]);
 
@@ -237,7 +242,7 @@ function SequenceMeshController({ activeSequence, onTransitionComplete }) {
     return () => {
       // Clear all timeouts
       transitionTimeoutsRef.current.forEach(timeoutId => {
-        clearTimeout(timeoutId);
+        cancelAnimationFrame(timeoutId);
       });
       transitionTimeoutsRef.current.clear();
       

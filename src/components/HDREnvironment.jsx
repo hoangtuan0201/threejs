@@ -35,14 +35,14 @@ export function HDREnvironment({
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = 0.4; // Cân bằng giữa chân thật và không chói
+      gl.toneMappingExposure = 0.3; // Cân bằng giữa chân thật và không chói
       gl.outputEncoding = THREE.sRGBEncoding;
       
       // Additional renderer settings for maximum quality
       gl.physicallyCorrectLights = true;
       gl.shadowMap.enabled = true;
       gl.shadowMap.type = THREE.PCFSoftShadowMap;
-      gl.shadowMap.autoUpdate = true;
+      gl.shadowMap.autoUpdate = false;
       
       // Advanced anti-aliasing for crisp edges
       gl.antialias = true;
@@ -52,7 +52,7 @@ export function HDREnvironment({
     // Enable shadows with high quality
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = true;
+    gl.shadowMap.autoUpdate = false;
 
     // Optimize pixel ratio for 4K quality
     const pixelRatio = mobile.isMobile 
@@ -103,7 +103,7 @@ export function HDREnvironment({
   return (
     <>
       {/* High-quality soft shadows for realism */}
-      <SoftShadows samples={mobile.isMobile ? 17 : 25} size={2.5} focus={0} />
+      <SoftShadows samples={mobile.isMobile ? 12 : 16} size={2.5} focus={0} />
     </>
   );
 }

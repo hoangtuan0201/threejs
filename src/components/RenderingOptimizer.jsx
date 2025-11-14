@@ -28,13 +28,13 @@ export function RenderingOptimizer() {
     // Pixel ratio
     const pixelRatio = mobile.isMobile
       ? Math.min(window.devicePixelRatio, 2)
-      : window.devicePixelRatio;
+      : Math.min(window.devicePixelRatio, 1.5);
     gl.setPixelRatio(pixelRatio);
 
     // Shadows
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = true;
+    gl.shadowMap.autoUpdate = false;
 
     // Lighting physically correct
     gl.physicallyCorrectLights = true;
