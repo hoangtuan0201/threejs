@@ -413,7 +413,7 @@ export default function Homepage() {
               >
                 Customize AirSmart
               </Button>
-               <Button
+               {/* <Button
               variant="outlined"
               size="large"
               onClick={() => navigate("/x-ray")}
@@ -442,7 +442,7 @@ export default function Homepage() {
               }}
             >
               X-Ray Mode
-            </Button>
+            </Button> */}
           </Stack>
 
         </Box>
