@@ -16,11 +16,8 @@ export function RenderingOptimizer() {
     if (!gl) return;
 
    
-    if ('outputColorSpace' in gl) {
-      gl.outputColorSpace = THREE.SRGBColorSpace;
-    } else {
-      gl.outputEncoding = THREE.sRGBEncoding;
-    }
+    // Color space
+    gl.outputColorSpace = THREE.SRGBColorSpace;
 
     // Antialias
     gl.antialias = true;

@@ -66,9 +66,6 @@ export function HDREnvironment({
 
     const pmremGenerator = pmremGeneratorRef.current;
     
-    // Ensure proper color space for HDR radiance
-    hdrTexture.colorSpace = THREE.LinearSRGBColorSpace;
-    hdrTexture.flipY = false;
     // Generate environment map with enhanced quality
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
     
@@ -85,7 +82,7 @@ export function HDREnvironment({
 
     // Ensure proper color space
     if (envMap) {
-      envMap.colorSpace = THREE.LinearSRGBColorSpace;
+      envMap.colorSpace = THREE.SRGBColorSpace;
       envMap.needsUpdate = true;
     }
 
