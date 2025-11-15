@@ -79,7 +79,7 @@ export function LinearGrilleSelector({
     <Box
       sx={{
         position: 'fixed',
-        bottom: mobile.isMobile ? 8 : 30,
+        bottom: mobile.isMobile ? 0 : 30,
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 1000,
@@ -90,7 +90,7 @@ export function LinearGrilleSelector({
       <Paper
         elevation={8}
         sx={{
-          mb: mobile.isMobile ? 4 : 0,
+          mb: mobile.isMobile ? 0 : 2,
           background: alpha(theme.palette.background.paper, 0.95),
           backdropFilter: 'blur(20px)',
           borderRadius: 3,
