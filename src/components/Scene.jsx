@@ -1055,7 +1055,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
       <HDREnvironment 
         hdrUrl="/textures/empty_play_room_2k.hdr"
-        intensity={mobile.isMobile ? 1.6 : 2.8}
+        intensity={2.8}
         backgroundIntensity={0.9}
         enableBackground={false}
         enableToneMapping={true}
@@ -1175,10 +1175,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <OrbitControls
         ref={orbitControlsRef}
         enabled={orbitControlEnabled}
-        enablePan={false}
+        enablePan={true}
         enableRotate={orbitControlEnabled}
         enableZoom={orbitControlEnabled}
         minDistance={0}
+        
         maxDistance={1.5}
         dampingFactor={0.05}
         enableDamping={true}

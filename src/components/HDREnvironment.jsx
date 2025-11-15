@@ -22,10 +22,12 @@ export function HDREnvironment({
 
   // Load HDR texture with maximum quality settings
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
-
+    if (mobile.isMobile) {
+      loader.setDataType(THREE.HalfFloatType); // Sử dụng half float cho mobile quality tốt hơn
+    } else {
       loader.setDataType(THREE.FloatType); // Full float cho desktop maximum quality
     }
-  );
+  });
 
   useEffect(() => {
     if (!gl || !scene || !hdrTexture) return;
@@ -80,9 +82,9 @@ export function HDREnvironment({
       scene.backgroundRotation = new THREE.Euler(0, 0, 0); // Cho phép xoay background nếu cần
     }
 
-    // Ensure proper color space
+    // Ensure proper encoding for Three.js r149
     if (envMap) {
-      envMap.colorSpace = THREE.SRGBColorSpace;
+      envMap.encoding = THREE.sRGBEncoding;
       envMap.needsUpdate = true;
     }
 
@@ -132,7 +134,7 @@ export function EnhancedLighting({
 
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
-        intensity={mobile.isMobile ? 7 : 7.5}
+        intensity={7.5}
         position={[15, 12, 8]} 
         castShadow={!mobile.isMobile}
         shadow-mapSize={shadowMapSize}
