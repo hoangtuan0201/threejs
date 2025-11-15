@@ -15,10 +15,7 @@ export function RenderingOptimizer() {
   useEffect(() => {
     if (!gl) return;
 
-    // Tone mapping cải thiện cho màu sắc realistic hơn
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 1.0; // 1.0 là trung tính, bạn có thể chỉnh 0.8 - 1.2 tùy cảnh
-
+   
     // Color space
     gl.outputColorSpace = THREE.SRGBColorSpace;
 
