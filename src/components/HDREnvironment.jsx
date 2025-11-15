@@ -22,11 +22,7 @@ export function HDREnvironment({
 
   // Load HDR texture with maximum quality settings
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
-    if (mobile.isMobile) {
-      loader.setDataType(THREE.HalfFloatType); // Sử dụng half float cho mobile quality tốt hơn
-    } else {
-      loader.setDataType(THREE.FloatType); // Full float cho desktop maximum quality
-    }
+    loader.setDataType(THREE.FloatType);
   });
 
   useEffect(() => {
@@ -54,11 +50,7 @@ export function HDREnvironment({
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.shadowMap.autoUpdate = false;
 
-    // Optimize pixel ratio for 4K quality
-    const pixelRatio = mobile.isMobile 
-      ? Math.min(window.devicePixelRatio, 2) 
-      : Math.min(window.devicePixelRatio, 3); // Cho phép pixel ratio cao hơn
-    gl.setPixelRatio(pixelRatio);
+  
 
     // PMREM generator with high-quality settings
     if (!pmremGeneratorRef.current) {
@@ -69,6 +61,8 @@ export function HDREnvironment({
     const pmremGenerator = pmremGeneratorRef.current;
     
     // Generate environment map with enhanced quality
+    hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+    hdrTexture.needsUpdate = true;
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
     
     // Apply environment with high intensity for maximum realism
@@ -91,7 +85,7 @@ export function HDREnvironment({
     return () => {
       envMap?.dispose();
     };
-  }, [gl, scene, hdrTexture, intensity, backgroundIntensity, enableBackground, enableToneMapping, mobile.isMobile]);
+  }, [gl, scene, hdrTexture, intensity, backgroundIntensity, enableBackground, enableToneMapping,]);
 
   useEffect(() => {
     return () => {
@@ -136,7 +130,7 @@ export function EnhancedLighting({
       <directionalLight
         intensity={7.5}
         position={[15, 12, 8]} 
-        castShadow={!mobile.isMobile}
+        castShadow={true}
         shadow-mapSize={shadowMapSize}
         shadow-camera-top={60}
         shadow-camera-bottom={-60}
