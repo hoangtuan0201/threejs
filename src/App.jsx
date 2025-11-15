@@ -188,7 +188,7 @@ export default function App({ isChatFocused = false }) {
             far: 1000,
           }}
           gl={{
-            preserveDrawingBuffer: true,
+            preserveDrawingBuffer: false,
             antialias: true,
             alpha: false,
             powerPreference: "high-performance",

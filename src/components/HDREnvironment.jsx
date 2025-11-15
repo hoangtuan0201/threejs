@@ -103,7 +103,7 @@ export function HDREnvironment({
   return (
     <>
       {/* High-quality soft shadows for realism */}
-      <SoftShadows samples={mobile.isMobile ? 12 : 16} size={2.5} focus={0} />
+      <SoftShadows samples={mobile.isMobile ? 8 : 16} size={2.0} focus={0} />
     </>
   );
 }
@@ -117,6 +117,7 @@ export function EnhancedLighting({
   shadowQuality = 'ultra'
 }) {
   const hdrConfig = useHDRConfig();
+  const mobile = useMobile();
 
   const config = {
     ambientIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 0.6 : hdrConfig.hdr.intensity * 0.4,
@@ -124,7 +125,7 @@ export function EnhancedLighting({
     hdrIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 3.0 : hdrConfig.hdr.intensity * 2.5,
   };
 
-  const shadowMapSize = shadowQuality === 'ultra' ? 4096 : shadowQuality === 'high' ? 2048 : 1024;
+  const shadowMapSize = mobile.isMobile ? 1024 : shadowQuality === 'ultra' ? 4096 : shadowQuality === 'high' ? 2048 : 1024;
 
   return (
     <>
@@ -133,9 +134,9 @@ export function EnhancedLighting({
 
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
-        intensity={7.5} // Khôi phục intensity cao nhưng không quá chói
+        intensity={mobile.isMobile ? 4.0 : 7.5}
         position={[15, 12, 8]} 
-        castShadow
+        castShadow={!mobile.isMobile}
         shadow-mapSize={shadowMapSize}
         shadow-camera-top={60}
         shadow-camera-bottom={-60}

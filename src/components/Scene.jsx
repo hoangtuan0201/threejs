@@ -15,7 +15,7 @@ import { EnhancedLighting, HDREnvironment } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
 import { EnhancedPostProcessing, useCanvasFilters } from "./PostProcessing";
 import GrassFloor from "./GrassFloor";
-import Tree, { TreeGroup } from "./XRayMode/Tree";
+// import Tree, { TreeGroup } from "./XRayMode/Tree";
 import { LinearGrilleManager } from "./LinearGrilleManager";
 
 import { sequenceChapters } from "../data/sequenceChapters";
@@ -85,7 +85,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       onPositionChange(0);
     }
     
-    console.log('Complete view and sequence reset to initial state');
   };
 
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
@@ -177,6 +176,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   // Initialize GPU path tracer when model and environment are ready
   useEffect(() => {
     if (initializedRef.current || !modelLoaded || !threeScene || !threeScene.environment || !gl || !camera) return;
+    if (mobile.isMobile) return;
 
     let mounted = true;
 
@@ -276,7 +276,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       pathTracerRef.current = pathTracer;
       if (mounted) setIsPathTracingReady(true);
       initializedRef.current = true;
-      console.log('GPU Path tracer initialized successfully');
 
       // Handle window resize to keep tracer size synced
       const handleResize = () => {
@@ -892,7 +891,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
 
       {/* Enhanced Path Tracing Controls with Quality Settings */}
-      {isPathTracingReady && (
+      {isPathTracingReady && !mobile.isMobile && (
         <div style={{
           position: 'fixed',
           top: 20,
@@ -1056,7 +1055,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
       <HDREnvironment 
         hdrUrl="/textures/empty_play_room_2k.hdr"
-        intensity={2.8}
+        intensity={mobile.isMobile ? 1.6 : 2.8}
         backgroundIntensity={0.9}
         enableBackground={false}
         enableToneMapping={true}
@@ -1105,7 +1104,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         <GrassFloor size={[100, 100]} position={[29, -0.77, -25]} />
         
         {/* Tree Group - nhóm cây xung quanh nhà */}
-        <TreeGroup />
+        {/* <TreeGroup /> */}
       </Suspense>
     
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}

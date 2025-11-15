@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { Hotspot, CameraController, BuildingModel, HVAC_POSITIONS } from '../components/XRayMode';
 import { LinearGrilleSelector } from '../components/LinearGrilleSelector';
-import { TreeGroup } from '../components/XRayMode/Tree';
+// import { TreeGroup } from '../components/XRayMode/Tree';
 import { HotspotsRenderer } from '../components/Hotspot';
 import { HotspotDetail } from '../components/HotspotDetail';
 import { VideoScreen } from '../components/VideoScreen';
@@ -361,10 +361,10 @@ export default function XRayMode() {
           position={[29, -0.77, -25]} 
         />
         
-        {/* Trees around the house */}
+        {/* Trees around the house
         <Suspense fallback={null}>
           <TreeGroup />
-        </Suspense>
+        </Suspense> */}
         {/* HVAC Hotspots - hide when selected */}
         {Object.entries(HVAC_POSITIONS).map(([key, data]) => {
           // Hide hotspot when it's the active component
