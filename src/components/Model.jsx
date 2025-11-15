@@ -209,6 +209,14 @@ export function Model({ activeSequence, onModelLoaded }) {
             // }
           }
 
+          const tex = child.material;
+          const setCS = (t, cs) => { if (!t) return; if ('colorSpace' in t) { t.colorSpace = cs; } else if ('encoding' in t) { t.encoding = cs === THREE.SRGBColorSpace ? THREE.sRGBEncoding : THREE.LinearEncoding; } t.needsUpdate = true; };
+          setCS(tex.map, THREE.SRGBColorSpace);
+          setCS(tex.emissiveMap, THREE.SRGBColorSpace);
+          setCS(tex.normalMap, THREE.LinearSRGBColorSpace);
+          setCS(tex.roughnessMap, THREE.LinearSRGBColorSpace);
+          setCS(tex.metalnessMap, THREE.LinearSRGBColorSpace);
+          setCS(tex.aoMap, THREE.LinearSRGBColorSpace);
           child.material.needsUpdate = true;
         }
 
