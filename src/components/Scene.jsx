@@ -1175,11 +1175,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       <OrbitControls
         ref={orbitControlsRef}
         enabled={orbitControlEnabled}
-        enablePan={true}
+        enablePan={false}
         enableRotate={orbitControlEnabled}
         enableZoom={orbitControlEnabled}
-        minDistance={1}
-        maxDistance={20}
+        minDistance={0}
+        maxDistance={1.5}
         dampingFactor={0.05}
         enableDamping={true}
         

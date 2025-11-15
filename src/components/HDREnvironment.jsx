@@ -22,12 +22,10 @@ export function HDREnvironment({
 
   // Load HDR texture with maximum quality settings
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
-    if (mobile.isMobile) {
-      loader.setDataType(THREE.HalfFloatType); // Sử dụng half float cho mobile quality tốt hơn
-    } else {
+
       loader.setDataType(THREE.FloatType); // Full float cho desktop maximum quality
     }
-  });
+  );
 
   useEffect(() => {
     if (!gl || !scene || !hdrTexture) return;
@@ -35,7 +33,7 @@ export function HDREnvironment({
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = mobile.isMobile ? 0.75 : 0.35; // Tăng exposure trên mobile để tránh tối
+      gl.toneMappingExposure = 0.35; // Tăng exposure trên mobile để tránh tối
       gl.outputEncoding = THREE.sRGBEncoding;
       
       // Additional renderer settings for maximum quality
