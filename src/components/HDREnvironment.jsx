@@ -35,7 +35,7 @@ export function HDREnvironment({
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = 0.3; // Cân bằng giữa chân thật và không chói
+      gl.toneMappingExposure = mobile.isMobile ? 0.75 : 0.35; // Tăng exposure trên mobile để tránh tối
       gl.outputEncoding = THREE.sRGBEncoding;
       
       // Additional renderer settings for maximum quality

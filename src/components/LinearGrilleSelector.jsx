@@ -79,18 +79,18 @@ export function LinearGrilleSelector({
     <Box
       sx={{
         position: 'fixed',
-        bottom: mobile.isMobile ? 12 : 30,
+        bottom: mobile.isMobile ? 8 : 30,
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 1000,
-        maxWidth: mobile.isMobile ? '90vw' : 1000,
-        width: mobile.isMobile ? '90vw' : '100%'
+        maxWidth: mobile.isMobile ? '88vw' : 1000,
+        width: mobile.isMobile ? '88vw' : '100%'
       }}
     >
       <Paper
         elevation={8}
         sx={{
-          mb: mobile.isMobile ? 6 : 0,
+          mb: mobile.isMobile ? 4 : 0,
           background: alpha(theme.palette.background.paper, 0.95),
           backdropFilter: 'blur(20px)',
           borderRadius: 3,
@@ -116,7 +116,7 @@ export function LinearGrilleSelector({
           sx={{
             display: 'grid',
             gridTemplateColumns: mobile.isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)',
-            gap: mobile.isMobile ? 0 : 2,
+            gap: mobile.isMobile ? 0.5 : 2,
             alignItems: 'stretch'
           }}
         >
@@ -157,7 +157,7 @@ export function LinearGrilleSelector({
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    minHeight: mobile.isMobile ? 60 : 140,
+                    minHeight: mobile.isMobile ? 52 : 140,
                     flex: 1
                   }}
                 >
@@ -176,7 +176,7 @@ export function LinearGrilleSelector({
                   >
                       <IconComponent 
                         sx={{ 
-                          fontSize: mobile.isMobile ? 30 : 36,
+                          fontSize: mobile.isMobile ? 24 : 36,
                           color: isSelected 
                             ? theme.palette.primary.main 
                             : theme.palette.text.secondary,
