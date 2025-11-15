@@ -279,8 +279,8 @@ export const sequenceChapters = [
     hotspot: {
       position: [14.75, 4, -34],
       rotation: [0, Math.PI / 2, 0],
-      detailPosition: [14.8, 3.6, -34],
-      detailRotation: [0, -1.6, 0],
+      detailPosition: [14.2, 3.75, -33.3],
+      rotation: [0, Math.PI / 1, 0],
       targetPosition: [14, 5, -33.6],
       azimuthLimits: { 
         min: -110 * Math.PI / 180, // ~ -1.919 rad
@@ -288,8 +288,8 @@ export const sequenceChapters = [
       },
 
       // Mobile-specific positioning
-      mobileDetailPosition: [14.8, 3.6, -34],
-      mobileDetailRotation: [0, -1.6, 0],
+      mobileDetailPosition:  [14.2, 3.75, -33.3],
+      rotation: [0, Math.PI / 1, 0],
       title: "Air Purification System",
       description: "An Air Purification System uses HEPA (and optionally carbon/UV) filtration to remove allergens, pollutants, odors, and pathogens—improving air quality, reducing sickness, and boosting comfort and HVAC efficiency. ",
       link: "https://vimeo.com/1118501752",
@@ -300,10 +300,10 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
     },
     videoScreen: {
-      position: [14, 4.58, -33.27],
+      position: [14.2, 4.7, -33.27],
       rotation: [0, Math.PI / 1, 0],
       // Mobile-specific positioning
-      mobilePosition: [14.2, 4.58, -33.3],
+      mobilePosition: [14.2, 4.9, -33.3],
       mobileRotation: [0, Math.PI / 1, 0],
       videoId: "https://vimeo.com/1118501752",
       title: "Air Purification Demo",
@@ -451,8 +451,8 @@ export const sequenceChapters = [
     hotspot: {
       position: [22.58, 0, -18],
       rotation: [0, Math.PI / 1, 0],
-      labelPosition: [22.5, 4.85, -18],
-      detailPosition: [22.7, 4.9, -18],
+      labelPosition: [22, 4.85, -18],
+      detailPosition: [22, 5.1, -18],
       detailRotation: [0, 0, 0],
       targetPosition: [21.903, 5, -16.823],
       azimuthLimits: {
@@ -464,17 +464,17 @@ export const sequenceChapters = [
       mobileLabelPosition: [21.8  , 5, -18],
 
       // Mobile-specific positioning
-      mobileDetailPosition: [22, 4.1, -17.8],
+      mobileDetailPosition: [22, 5.1, -17.8],
       mobileDetailRotation: [0, 0, 0],
       title: "Outdoor Unit",
       description: "The AirSmart Air Purification System delivers whole-home air filtration with HEPA-grade purity, removing pollutants and improving indoor air quality for healthier breathing.",
       link: "https://vimeo.com/912207265"
     },
     videoScreen: {
-      position: [21, 4.9, -18],
+      position: [22, 6, -18],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobilePosition: [22, 5, -17.7],
+      mobilePosition: [22, 6, -17.7],
       mobileRotation: [0, 0, 0],
       videoId: "https://vimeo.com/912207265",
       title: "Outdoor Unit Demo",

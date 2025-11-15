@@ -6,7 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import SequenceMeshController from "./SequenceMeshController";
 import * as THREE from "three";
 import { convertToSignedUrl } from "../utils/wasabiHelper"; // Adjust import path as needed
-const MODEL_URL = "./scenelagmodeldraco.glb"; // Adjust path as needed
+const MODEL_URL = "./optimizedmodel.glb"; // Adjust path as needed
 const SIGNED_MODEL_URL = convertToSignedUrl(MODEL_URL);
 export function Model({ activeSequence, onModelLoaded }) {
   const [modelReady, setModelReady] = useState(false);
