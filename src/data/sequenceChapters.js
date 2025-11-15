@@ -51,7 +51,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 1.8, 0],
       detailPosition: [27.78, 4, -22.7],
       detailRotation: [0, Math.PI / 2, 0],
-      targetPosition: [28.2, 5, -22.67],
+      targetPosition: [27, 5, -22],
       // Giới hạn góc quay ngang (azimuth) cho hotspot này
       azimuthLimits: {
         min: (40 * Math.PI) / 180,   // ~0.698 rad
@@ -101,11 +101,11 @@ export const sequenceChapters = [
         },
 
      // Hotspot label positioning
-      mobileLabelPosition: [31.4, 8, -20.5],
+      mobileLabelPosition: [31, 8, -20.6],
       // Hotspot label positioning
       labelPosition:  [31.5, 8, -20.8],
       // Mobile-specific positioning
-      mobileDetailPosition: [31.35, 8.3, -20.3],
+      mobileDetailPosition: [31.6, 8.3, -20.6],
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
@@ -143,13 +143,13 @@ export const sequenceChapters = [
       position: [29.7, 8.3, -20.6],
       rotation: [-0.1, Math.PI / 1, 0],
       // Mobile-specific positioning
-      mobilePosition: [29.7, 8.5, -20.6],
+      mobilePosition: [29.7, 8.3, -20.6],
       mobileRotation: [-0.1, Math.PI / 1, 0],
       videoId: "https://vimeo.com/1118501005",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
+      mobileSize: { width: 380, height: 250 }
     }
   },
   //living room 2
@@ -157,7 +157,7 @@ export const sequenceChapters = [
     id: "linear-grille-2",
     position: 4.5,
     hotspot: {
-      detailPosition: [23.2, 5.3, -31.9],
+      detailPosition: [23.5, 5.3, -32.3],
       detailRotation: [0, 0, 0],
       targetPosition: [23.1, 5, -31.115],
       // Giới hạn góc quay ngang cho Linear Grille 2
@@ -171,7 +171,7 @@ export const sequenceChapters = [
       // Hotspot label positioning
       labelPosition: [22.5, 5.5, -31.9],
       // Mobile-specific positioning
-      mobileDetailPosition: [23.2, 5.3, -31.9],
+      mobileDetailPosition: [23.7, 5.3, -31.9],
       mobileDetailRotation: [0, 0, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
@@ -203,16 +203,16 @@ export const sequenceChapters = [
       }
     },
     videoScreen: {
-      position: [21.4, 5.3, -31.9],
+      position: [21.8, 5.3, -32.3],
       rotation: [0, 0, 0],
       // Mobile-specific positioning
-      mobilePosition: [21.4, 5.3, -31.9],
+      mobilePosition: [22, 5.3, -31.9],
       mobileRotation: [0, 0, 0],
       videoId: "https://vimeo.com/1118500811",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
+      mobileSize: { width: 400, height: 270 }
     }
   },
   //kitchen room
@@ -232,7 +232,7 @@ export const sequenceChapters = [
       // Hotspot label positioning
       labelPosition: [15.5, 5.3, -26.75],
       // Mobile-specific positioning
-      mobileDetailPosition: [15.5, 5.3, -26.75],
+      mobileDetailPosition: [16, 5.3, -26.75],
       mobileDetailRotation: [0, Math.PI / 1, 0],
       title: "Linear Grille",
       description: "The linear grille (linear slot diffuser) is a long, narrow vent cover—usually made of aluminum—installed flush in ceilings, walls, or floors to evenly distribute conditioned air with silent, draft‑free flow and a sleek, minimalist aesthetic. ",
@@ -263,13 +263,13 @@ export const sequenceChapters = [
       position: [13.9, 5.3, -26.75],
       rotation: [-0.1, Math.PI / 1, 0],
       // Mobile-specific positioning
-      mobilePosition: [13.9, 5.3, -26.75],
+      mobilePosition: [14.4 , 5.3, -26.75],
       mobileRotation: [-0.1, Math.PI / 1, 0],
       videoId: "https://vimeo.com/1118501437",
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
+      mobileSize: { width: 400, height: 270 }
     }
   },
   
@@ -281,7 +281,7 @@ export const sequenceChapters = [
       rotation: [0, Math.PI / 2, 0],
       detailPosition: [14.8, 3.6, -34],
       detailRotation: [0, -1.6, 0],
-      targetPosition: [14, 5, -34],
+      targetPosition: [14, 5, -33.6],
       azimuthLimits: { 
         min: -110 * Math.PI / 180, // ~ -1.919 rad
         max: -70 * Math.PI / 180   // ~ -1.222 rad
@@ -300,16 +300,16 @@ export const sequenceChapters = [
       mobileLabelRotation: [0, 0, 0],
     },
     videoScreen: {
-      position: [14.8, 4.58, -34],
-      rotation: [0, -1.6, 0],
+      position: [14, 4.58, -33.27],
+      rotation: [0, Math.PI / 1, 0],
       // Mobile-specific positioning
-      mobilePosition: [14.8, 4.5, -34],
-      mobileRotation: [0, -1.6, 0],
+      mobilePosition: [14.2, 4.58, -33.3],
+      mobileRotation: [0, Math.PI / 1, 0],
       videoId: "https://vimeo.com/1118501752",
       title: "Air Purification Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 320, height: 180 }
+      mobileSize: { width: 400, height: 270 }
     }
   },
   // study room
@@ -365,7 +365,7 @@ export const sequenceChapters = [
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
+      mobileSize: { width: 400, height: 270 }
     }
   },
   //bedroom
@@ -442,7 +442,7 @@ export const sequenceChapters = [
       title: "Base Floor System Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
+      mobileSize: { width: 400, height: 270 }
     }
   },
   {
@@ -528,7 +528,7 @@ export const sequenceChapters = [
     hotspot: {
       position: [10.4, 2, -29.7],
       rotation: [0, 0, 0],
-      detailPosition: [9.9, 1.8, -29.7],
+      detailPosition: [9.9, 1.7, -29.7],
       detailRotation: [0, 0, 0],
       targetPosition: [10.8, 1.9, -29.1],
       azimuthLimits: {
@@ -536,7 +536,7 @@ export const sequenceChapters = [
         max: 23 * Math.PI / 180   // ~ 0.349 rad
       },
       // Mobile-specific positioning
-      mobileDetailPosition: [10.4, 1.8, -29.7],
+      mobileDetailPosition: [10, 1.7, -29.7],
       mobileDetailRotation: [0, 0, 0],
       // Hotspot label positioning
       labelPosition: [10, 2.4, -29.7],
@@ -575,7 +575,7 @@ export const sequenceChapters = [
       title: "Linear Grille Demo",
       size: { width: 320, height: 180 },
       // Mobile-specific size
-      mobileSize: { width: 340, height: 200 }
+      mobileSize: { width: 400, height: 270 }
     }
   }
 

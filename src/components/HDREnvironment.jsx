@@ -134,7 +134,7 @@ export function EnhancedLighting({
 
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
-        intensity={mobile.isMobile ? 4.0 : 7.5}
+        intensity={mobile.isMobile ? 7 : 7.5}
         position={[15, 12, 8]} 
         castShadow={!mobile.isMobile}
         shadow-mapSize={shadowMapSize}

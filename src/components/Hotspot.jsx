@@ -108,7 +108,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
       {/* HTML label - separate from rotated group to maintain correct position */}
       {!isSelected && !shouldHideAtStart && (
         <Html
-          distanceFactor={10}
+          distanceFactor={mobile.isMobile ? 8 : 10}
           position={labelPosition}
           rotation={labelRotation}
           occlude={true}
@@ -189,7 +189,7 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
               
               .hotspotHTML .hotspot-annotation .hotspot-box .hotspot-title {
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                font-size: ${mobile.isMobile ? '16px' : '12px'};
+                font-size: ${mobile.isMobile ? '18px' : '12px'};
                 font-weight: 600;
                 line-height: 30px;
                 opacity: 0;
@@ -204,8 +204,8 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
               }
               
               .hotspotHTML .hotspot-annotation .hotspot-statusCircle {
-                width: 20px;
-                height: 20px;
+                width: ${mobile.isMobile ? '24px' : '20px'};
+                height: ${mobile.isMobile ? '24px' : '20px'};
                 border-radius: 50px;
                 border: 1px solid rgba(255, 255, 255, 0.87);
                 z-index: 10;
@@ -216,14 +216,14 @@ export function Hotspot({ chapter, onHotspotClick, selectedHotspot, currentPosit
                 align-items: center;
                 justify-content: center;
                 color: white;
-                font-size: 12px;
+                font-size: ${mobile.isMobile ? '14px' : '12px'};
                 font-weight: bold;
               }
               
               .hotspotHTML .hotspot-annotation .hotspot-statusCircle::before {
                 content: '?';
                 color: white;
-                font-size: 12px;
+                font-size: ${mobile.isMobile ? '14px' : '12px'};
                 font-weight: bold;
               }
               

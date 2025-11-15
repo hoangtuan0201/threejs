@@ -44,7 +44,7 @@ export function HotspotDetail({ selectedHotspot, onClose }) {
             width: "auto",
             height: "auto",
             minHeight: mobile.isMobile ? "100px" : "90px",
-            maxHeight: mobile.isMobile ? "220px" : "200px",
+            maxHeight: mobile.isMobile ? "240px" : "200px",
             boxShadow: "0 6px 24px rgba(0, 0, 0, 0.7)",
             border: "1px solid rgba(255, 255, 255, 0.3)",
             position: "relative",
