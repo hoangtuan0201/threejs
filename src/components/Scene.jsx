@@ -684,7 +684,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
       {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
       <HDREnvironment 
-        hdrUrl="/textures/empty_play_room_2k.hdr"
+        hdrUrl="/textures/empty_play_room_1k.hdr"
         intensity={2.8}
         backgroundIntensity={0.9}
         enableBackground={false}

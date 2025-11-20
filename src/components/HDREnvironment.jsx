@@ -10,7 +10,7 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  * HDR Environment for maximum photorealistic PBR lighting (Game 4K+ quality)
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/empty_play_room_2k.hdr',
+  hdrUrl = '/textures/empty_play_room_1k.hdr',
   intensity = 2.8, // Tối ưu cho realism tối đa
   backgroundIntensity = 0.9, // Tăng cho background chân thật
   enableBackground = false,
