@@ -159,7 +159,7 @@ export default function Homepage() {
                   height: "28px",
                 }}
               />
-              <Box sx={{ height: 25, color: 'text.primary', display: 'flex', alignItems: 'center' }}> 
+              <Box sx={{ height: 25, color: theme.colors.text.primary, display: 'flex', alignItems: 'center' }}> 
                 <svg 
                   version="1.1" 
                   xmlns="http://www.w3.org/2000/svg" 
