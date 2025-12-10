@@ -4,7 +4,6 @@ import { keyframes } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../theme/ThemeContext";
 import ColorModeSelect from "../theme/ColorModeSelect.jsx";
-import FileManagerPopup from "../components/FileManagerPopup";
 import MoreFeaturesDialog from '../components/MoreFeaturesDialog';
 
 // Animation keyframes
@@ -62,18 +61,11 @@ export default function Homepage() {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
-  const [showFileManager, setShowFileManager] = useState(false);
   const [showMoreFeatures, setShowMoreFeatures] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
-
-
-
-  const handleCloseFileManager = () => {
-    setShowFileManager(false);
-  };
 
   return (
     <Box
@@ -159,7 +151,7 @@ export default function Homepage() {
                   height: "28px",
                 }}
               />
-              <Box sx={{ height: 25, color: theme.colors.text.primary, display: 'flex', alignItems: 'center' }}> 
+              <Box sx={{ height: 25, color: theme.isDark ? '#ffffff' : theme.colors.text.primary, display: 'flex', alignItems: 'center' }}> 
                 <svg 
                   version="1.1" 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -356,7 +348,7 @@ export default function Homepage() {
             <Button
               variant="outlined"
               size="large"
-              onClick={() => setShowFileManager(true)}
+              onClick={() => window.open('https://bim-library.vercel.app/', '_blank')}
               sx={{
                 color: theme.colors.text.primary,
                 borderColor: theme.colors.border.medium,
@@ -447,14 +439,6 @@ export default function Homepage() {
 
         </Box>
       </Container>
-
-      {/* File Manager Popup */}
-      <FileManagerPopup
-        open={showFileManager}
-        onClose={handleCloseFileManager}
-        folderName="Brochures & Documents"
-        userRole="Customer"
-      />
 
       <MoreFeaturesDialog open={showMoreFeatures} onClose={() => setShowMoreFeatures(false)} />
 

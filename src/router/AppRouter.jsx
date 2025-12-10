@@ -13,23 +13,19 @@ const AppRouter = () => {
   useEffect(() => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.innerHTML = `
-      (function(d, t) {
-        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        v.onload = function() {
-          window.voiceflow.chat.load({
-            verify: { projectID: '681b3d6dda61d6d332c798a0' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            voice: {
-              url: "https://runtime-api.voiceflow.com"
-            }
-          });
+    script.onload = function() {
+      window.voiceflow.chat.load({
+        verify: { projectID: '6933ce37ed72408e2affe876' },
+        url: 'https://general-runtime.voiceflow.com',
+        versionID: 'production',
+        voice: {
+          url: "https://runtime-api.voiceflow.com"
         }
-        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
-      })(document, 'script');
-    `;
+      });
+    };
+    script.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
     document.body.appendChild(script);
+
     return () => {
       document.body.removeChild(script);
     };
