@@ -4,10 +4,11 @@ import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useMaterialEnhancer } from '../RenderingOptimizer';
 import SequenceMeshController from './SequenceMeshController';
+import { LinearGrilleManager } from '../LinearGrilleManager';
 import MeshClickHandler from './MeshClickHandler';
 
-function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlightedComponent, onModelLoaded }) {
-  const { scene } = useGLTF('/3ddd.glb');
+function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlightedComponent, onModelLoaded, selectedHotspot, currentGrille }) {
+  const { scene } = useGLTF('/model02.glb');
   const modelRef = useRef();
   const originalMaterials = useRef(new Map());
   const { enhanceMaterial } = useMaterialEnhancer();
@@ -122,8 +123,7 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
 
     clonedScene.traverse((child) => {
       if (child.isMesh) {
-        // Enable soft shadows
-        child.castShadow = true;
+        child.castShadow = false;
         child.receiveShadow = true;
         child.material.shadowSide = THREE.FrontSide;
         child.geometry?.computeBoundingSphere();
@@ -202,12 +202,17 @@ function BuildingModel({ activeSequence, onSequenceTransitionComplete, highlight
         activeSequence={activeSequence}
         onTransitionComplete={onSequenceTransitionComplete}
       />
+      <LinearGrilleManager
+        scene={clonedScene}
+        currentGrille={currentGrille}
+        selectedHotspot={selectedHotspot}
+      />
       {/* <MeshClickHandler scene={clonedScene} /> */}
     </group>
   );
 }
 
 // Preload the model
-useGLTF.preload('/3ddd.glb');
+useGLTF.preload('/lagmodel.glb');
 
 export default BuildingModel;

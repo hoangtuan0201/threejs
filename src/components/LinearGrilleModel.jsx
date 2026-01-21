@@ -112,7 +112,7 @@ export function LinearGrilleModel({
     clonedScene.traverse((child) => {
       if (child.isMesh) {
         // Enable shadows
-        child.castShadow = true;
+        child.castShadow = false;
         child.receiveShadow = true;
         
         // Apply grille-specific material

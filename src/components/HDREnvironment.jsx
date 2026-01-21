@@ -10,7 +10,7 @@ import { useHDRConfig } from '../hooks/useHDRConfig';
  * HDR Environment for maximum photorealistic PBR lighting (Game 4K+ quality)
  */
 export function HDREnvironment({
-  hdrUrl = '/textures/empty_play_room_2k.hdr',
+  hdrUrl = '/textures/empty_play_room_1k.hdr',
   intensity = 2.8, // Tối ưu cho realism tối đa
   backgroundIntensity = 0.9, // Tăng cho background chân thật
   enableBackground = false,
@@ -22,11 +22,7 @@ export function HDREnvironment({
 
   // Load HDR texture with maximum quality settings
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
-    if (mobile.isMobile) {
-      loader.setDataType(THREE.HalfFloatType); // Sử dụng half float cho mobile quality tốt hơn
-    } else {
-      loader.setDataType(THREE.FloatType); // Full float cho desktop maximum quality
-    }
+    loader.setDataType(THREE.FloatType);
   });
 
   useEffect(() => {
@@ -35,7 +31,7 @@ export function HDREnvironment({
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = 0.4; // Cân bằng giữa chân thật và không chói
+      gl.toneMappingExposure = 0.35; // Tăng exposure trên mobile để tránh tối
       gl.outputEncoding = THREE.sRGBEncoding;
       
       // Additional renderer settings for maximum quality
@@ -52,13 +48,9 @@ export function HDREnvironment({
     // Enable shadows with high quality
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = true;
+    gl.shadowMap.autoUpdate = false;
 
-    // Optimize pixel ratio for 4K quality
-    const pixelRatio = mobile.isMobile 
-      ? Math.min(window.devicePixelRatio, 2) 
-      : Math.min(window.devicePixelRatio, 3); // Cho phép pixel ratio cao hơn
-    gl.setPixelRatio(pixelRatio);
+  
 
     // PMREM generator with high-quality settings
     if (!pmremGeneratorRef.current) {
@@ -69,6 +61,8 @@ export function HDREnvironment({
     const pmremGenerator = pmremGeneratorRef.current;
     
     // Generate environment map with enhanced quality
+    hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+    hdrTexture.needsUpdate = true;
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
     
     // Apply environment with high intensity for maximum realism
@@ -82,16 +76,16 @@ export function HDREnvironment({
       scene.backgroundRotation = new THREE.Euler(0, 0, 0); // Cho phép xoay background nếu cần
     }
 
-    // Ensure proper color space
+    // Ensure proper encoding for Three.js r149
     if (envMap) {
-      envMap.colorSpace = THREE.SRGBColorSpace;
+      envMap.encoding = THREE.sRGBEncoding;
       envMap.needsUpdate = true;
     }
 
     return () => {
       envMap?.dispose();
     };
-  }, [gl, scene, hdrTexture, intensity, backgroundIntensity, enableBackground, enableToneMapping, mobile.isMobile]);
+  }, [gl, scene, hdrTexture, intensity, backgroundIntensity, enableBackground, enableToneMapping,]);
 
   useEffect(() => {
     return () => {
@@ -103,7 +97,7 @@ export function HDREnvironment({
   return (
     <>
       {/* High-quality soft shadows for realism */}
-      <SoftShadows samples={mobile.isMobile ? 17 : 25} size={2.5} focus={0} />
+      <SoftShadows samples={mobile.isMobile ? 8 : 16} size={2.0} focus={0} />
     </>
   );
 }
@@ -117,6 +111,7 @@ export function EnhancedLighting({
   shadowQuality = 'ultra'
 }) {
   const hdrConfig = useHDRConfig();
+  const mobile = useMobile();
 
   const config = {
     ambientIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 0.6 : hdrConfig.hdr.intensity * 0.4,
@@ -124,7 +119,7 @@ export function EnhancedLighting({
     hdrIntensity: type === 'detail' ? hdrConfig.hdr.intensity * 3.0 : hdrConfig.hdr.intensity * 2.5,
   };
 
-  const shadowMapSize = shadowQuality === 'ultra' ? 4096 : shadowQuality === 'high' ? 2048 : 1024;
+  const shadowMapSize = mobile.isMobile ? 1024 : shadowQuality === 'ultra' ? 4096 : shadowQuality === 'high' ? 2048 : 1024;
 
   return (
     <>
@@ -133,9 +128,9 @@ export function EnhancedLighting({
 
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
-        intensity={7.5} // Khôi phục intensity cao nhưng không quá chói
+        intensity={7.5}
         position={[15, 12, 8]} 
-        castShadow
+        castShadow={true}
         shadow-mapSize={shadowMapSize}
         shadow-camera-top={60}
         shadow-camera-bottom={-60}

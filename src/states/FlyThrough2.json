@@ -127,7 +127,7 @@
                       0.5
                     ],
                     "type": "bezier",
-                    "value": 30.190719990521675
+                    "value": 29.290719990521666
                   },
                   {
                     "id": "FjrRV8_A_R",
@@ -140,7 +140,7 @@
                       0.5
                     ],
                     "type": "bezier",
-                    "value": 30.190719990521675
+                    "value": 29.3
                   },
                   {
                     "id": "gxPA0ORYT9",
@@ -153,7 +153,7 @@
                       0.5
                     ],
                     "type": "bezier",
-                    "value": 30.190719990521675
+                    "value": 29.3
                   },
                   {
                     "id": "iX5dDykYf7",
@@ -2322,7 +2322,7 @@
                       0.5
                     ],
                     "type": "bezier",
-                    "value": -4.4899999999999975
+                    "value": -4.7099999999999955
                   },
                   {
                     "id": "UEyyatd8Pq",
@@ -3056,6 +3056,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "xV3tfZ7KCiuJkDM8",
     "Uzbg1l9fUc_TKvk1",
     "1jjgNEQCBxK2eYxw",
     "7t8jV30t5Hcb29TI",

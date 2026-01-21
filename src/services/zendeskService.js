@@ -4,7 +4,7 @@
 export async function createZendeskTicket({ name, email, subject, comment, requester, attachment, body: messageBody, file }) {
   // Ưu tiên các trường mới: name, email, subject, body, file
   // Nếu không có thì fallback sang các trường cũ
-  const apiUrl = 'https://api2.heartstribute.com/zendesk/ticket';
+  const apiUrl = 'https://api.airsmart.com/zendesk/ticket';
 //   const apiUrl = 'http://localhost:4000/zendesk/ticket';
 
   // Nếu có file (PDF), gửi form-data

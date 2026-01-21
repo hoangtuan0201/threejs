@@ -15,12 +15,9 @@ export function RenderingOptimizer() {
   useEffect(() => {
     if (!gl) return;
 
-    // Tone mapping cải thiện cho màu sắc realistic hơn
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 1.0; // 1.0 là trung tính, bạn có thể chỉnh 0.8 - 1.2 tùy cảnh
-
-    // Color space
-    gl.outputColorSpace = THREE.SRGBColorSpace;
+   
+    // Output encoding for Three.js r149
+    gl.outputEncoding = THREE.sRGBEncoding;
 
     // Antialias
     gl.antialias = true;
@@ -28,7 +25,7 @@ export function RenderingOptimizer() {
     // Pixel ratio
     const pixelRatio = mobile.isMobile
       ? Math.min(window.devicePixelRatio, 2)
-      : window.devicePixelRatio;
+      : Math.min(window.devicePixelRatio, 1.5);
     gl.setPixelRatio(pixelRatio);
 
     // Shadows
@@ -72,7 +69,7 @@ export function useMaterialEnhancer() {
     const originalName = material.name;
 
     // Tăng environment map intensity cho reflections realistic hơn
-    material.envMapIntensity = mobile.isMobile ? 1.8 : 2.2; // Tăng từ 1.2/1.5 lên 1.8/2.2
+    material.envMapIntensity = mobile.isMobile ? 2 : 2; // Tăng từ 1.2/1.5 lên 1.8/2.2
 
     if (material.isMeshStandardMaterial || material.isMeshPhysicalMaterial) {
       // Điều chỉnh PBR properties cho realistic look
@@ -85,10 +82,7 @@ export function useMaterialEnhancer() {
         material.clearcoatRoughness = 0.1;
       }
 
-      // Mobile vẫn giữ chất lượng cao
-      if (mobile.isMobile) {
-        material.envMapIntensity *= 0.9; // Giảm ít hơn, từ 0.8 lên 0.9
-      }
+  
     }
 
     // RESTORE MATERIAL NAME AFTER ENHANCEMENT

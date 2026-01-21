@@ -43,14 +43,14 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
   };
 
   const ChevronLeft = () => (
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
+    <svg width={mobile.isMobile ? "28" : "34"} height={mobile.isMobile ? "28" : "34"} viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15,18 9,12 15,6"></polyline>
     </svg>
   );
 
   const ChevronRight = () => (
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
+    <svg width={mobile.isMobile ? "28" : "34"} height={mobile.isMobile ? "28" : "34"} viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9,18 15,12 9,6"></polyline>
     </svg>
@@ -60,13 +60,13 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
     position: "fixed",
     top: "50%",
     transform: "translateY(-50%)",
-    width: "80px",
-    height: "75px",
+    width: mobile.isMobile ? "56px" : "80px",
+    height: mobile.isMobile ? "56px" : "75px",
     borderRadius: "50%",
     border: "2px solid rgba(255, 255, 255, 0.3)",
     background: "rgba(0, 0, 0, 0.6)",
     color: "white",
-    fontSize: mobile.isMobile ? "20px" : "16px",
+    fontSize: mobile.isMobile ? "18px" : "16px",
     fontWeight: "bold",
     cursor: "pointer",
     display: "flex",
@@ -96,7 +96,7 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
         onClick={handlePrevious}
         style={{
           ...buttonStyle,
-          left: mobile.isMobile ? "15px" : "20px",
+          left: mobile.isMobile ? "10px" : "20px",
           ...(canGoBack ? (isLocked ? lockedStyle : {}) : disabledStyle),
         }}
       >
@@ -108,7 +108,7 @@ const ChapterNavigation = ({ currentPosition, onNavigate, mobile, isVisible, isL
         onClick={handleNext}
         style={{
           ...buttonStyle,
-          right: mobile.isMobile ? "15px" : "20px",
+          right: mobile.isMobile ? "10px" : "20px",
           ...(canGoForward ? (isLocked ? lockedStyle : {}) : disabledStyle),
         }}
       >

@@ -1,45 +1,41 @@
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { useTheme } from './ThemeContext';
-import { IconButton, Tooltip } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 export default function ColorModeSelect(props) {
   const { isDark, toggleTheme } = useTheme();
 
-  const [mode, setMode] = useState(() => {
-    const saved = localStorage.getItem('airsmart-theme');
-    if (saved !== null) {
-      return JSON.parse(saved) ? 'dark' : 'light';
-    }
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return systemDark ? 'dark' : 'light';
-  });
-
-  useEffect(() => {
-    const saved = localStorage.getItem('airsmart-theme');
-    if (saved === null) {
-      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (systemDark !== isDark) toggleTheme();
-    }
-    // eslint-disable-next-line
-  }, []);
-
   const handleToggle = () => {
-    const newMode = mode === 'dark' ? 'light' : 'dark';
-    setMode(newMode);
-    const shouldBeDark = newMode === 'dark';
-    if (shouldBeDark !== isDark) toggleTheme();
-    localStorage.setItem('airsmart-theme', JSON.stringify(shouldBeDark));
+    toggleTheme();
   };
 
-  const Icon = mode === 'dark' ? LightModeIcon : DarkModeIcon;
-  const tooltip = mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  const Icon = isDark ? LightModeIcon : DarkModeIcon;
+  const tooltip = isDark ? 'Switch to light mode' : 'Switch to dark mode';
 
   return (
     <Tooltip title={tooltip}>
-      <IconButton onClick={handleToggle} {...props}>
-        <Icon />
+      <IconButton
+        onClick={handleToggle}
+        {...props}
+        sx={{
+          borderRadius: '10px',
+          border: '1px solid',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          color: isDark ? '#fff' : '#333',
+          width: 44,
+          height: 44,
+          bgcolor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+          '&:hover': {
+            bgcolor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+          },
+          ...props.sx
+        }}
+      >
+        <Icon fontSize="small" />
       </IconButton>
     </Tooltip>
   );
