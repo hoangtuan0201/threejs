@@ -92,12 +92,12 @@ export default function CompareSystem() {
   useEffect(() => {
     setDisplayProgress(0);
     setIsLoading(true);
-    
+
     // Force reset drei progress by clearing its cache
     if (window.__drei_progress_cache) {
       window.__drei_progress_cache = null;
     }
-    
+
     return () => {
       // Clean up on unmount
       setDisplayProgress(0);
@@ -395,26 +395,7 @@ export default function CompareSystem() {
 
             {/* Right Side - Color Mode Select and Back Button */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <ColorModeSelect
-                size="small"
-                sx={{
-                  minWidth: 100,
-                  '& .MuiSelect-select': {
-                    color: theme.colors.text.primary,
-                    fontSize: '14px',
-                    fontWeight: 500,
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: theme.colors.border.medium,
-                  },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: theme.colors.border.dark,
-                  },
-                  '& .MuiSvgIcon-root': {
-                    color: theme.colors.text.secondary,
-                  }
-                }}
-              />
+              <ColorModeSelect />
               <Button
                 onClick={() => navigate("/")}
                 sx={{
@@ -468,7 +449,7 @@ export default function CompareSystem() {
               fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem" },
               fontWeight: 700,
               lineHeight: 1.1,
-              mb: { xs: 1, sm: 1.5, md: 2},
+              mb: { xs: 1, sm: 1.5, md: 2 },
               mt: { xs: 1, sm: 1.5, md: 2 },
               color: theme.colors.text.primary,
               textAlign: "center",
@@ -477,45 +458,45 @@ export default function CompareSystem() {
           >
             {currentData.title}
           </Typography>
-           {/* Subtitle */}
-                   <Typography
-                      variant="h5"
-                      sx={{
-                        fontFamily: '"Untitled Sans", sans-serif',
-                        color: theme.colors.text.secondary,
-                        fontWeight: 400,
-                        mb: { xs: 2, sm: 3, md: 4},
-                        maxWidth: { xs: "100%", sm: "600px" },
-                        mx: "auto",
-                        lineHeight: 1.6,
-                        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.2rem", lg: "1.4rem" },
-                        px: { xs: 0.5, sm: 0 },
-                        textTransform: "none",
-                      }}
-                    >
-                      Compare AirSmart's intelligent solutions with traditional systems
-                      <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
-                        <br />
-                      </Box>
+          {/* Subtitle */}
+          <Typography
+            variant="h5"
+            sx={{
+              fontFamily: '"Untitled Sans", sans-serif',
+              color: theme.colors.text.secondary,
+              fontWeight: 400,
+              mb: { xs: 2, sm: 3, md: 4 },
+              maxWidth: { xs: "100%", sm: "600px" },
+              mx: "auto",
+              lineHeight: 1.6,
+              fontSize: { xs: "0.9rem", sm: "1rem", md: "1.2rem", lg: "1.4rem" },
+              px: { xs: 0.5, sm: 0 },
+              textTransform: "none",
+            }}
+          >
+            Compare AirSmart's intelligent solutions with traditional systems
+            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+              <br />
+            </Box>
 
-                    </Typography>
+          </Typography>
 
-            {/* Comparison Cards */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                alignItems: "center",
-                justifyContent: "center",
-                gap: { xs: 2, sm: 3, md: 4 },
-                mb: { xs: 2, sm: 4, md: 6 },
-                mt: { xs: 1, sm: 2, md: 3, lg: 4 },
-                px: { xs: 1, sm: 2, md: 4 },
-                maxWidth: "1400px",
-                mx: "auto", // Center the container
-              }}
-            >
-              {/* Desktop Left Navigation Arrow */}
+          {/* Comparison Cards */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: "center",
+              justifyContent: "center",
+              gap: { xs: 2, sm: 3, md: 4 },
+              mb: { xs: 2, sm: 4, md: 6 },
+              mt: { xs: 1, sm: 2, md: 3, lg: 4 },
+              px: { xs: 1, sm: 2, md: 4 },
+              maxWidth: "1400px",
+              mx: "auto", // Center the container
+            }}
+          >
+            {/* Desktop Left Navigation Arrow */}
             <IconButton
               onClick={prevSlide}
               disabled={currentSlide === 0}
@@ -1053,7 +1034,7 @@ export default function CompareSystem() {
               <ArrowForwardIosIcon sx={{ fontSize: { md: "1.4rem", lg: "1.6rem" } }} />
             </IconButton>
 
-        </Box>
+          </Box>
         </Box>
       </Container>
     </Box>
