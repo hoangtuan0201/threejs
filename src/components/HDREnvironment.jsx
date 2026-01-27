@@ -22,7 +22,7 @@ export function HDREnvironment({
 
   // Load HDR texture with maximum quality settings
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
-    loader.setDataType(THREE.FloatType);
+    loader.setDataType(mobile.isMobile ? THREE.HalfFloatType : THREE.FloatType);
   });
 
   useEffect(() => {
