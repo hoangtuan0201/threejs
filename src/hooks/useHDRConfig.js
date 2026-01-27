@@ -46,28 +46,28 @@ export function useHDRConfig() {
     // Base configuration for different performance levels
     const configs = {
       low: {
-        // Mobile/low-end settings
+        // Mid-range settings
         hdr: {
           enabled: true,
-          intensity: 0.7,
+          intensity: 0.8,
           toneMappingExposure: 0,
-          backgroundIntensity: 0.1,
+          backgroundIntensity: 0.2,
         },
         shadows: {
           enabled: true,
-          type: 'basic', // PCFShadowMap
-          mapSize: 512,
-          autoUpdate: false,
-          bias: -0.001,
+          type: 'basic', // PCFSoftShadowMap
+          mapSize: 1024,
+          autoUpdate: true,
+          bias: -0.0005,
         },
         rendering: {
-          pixelRatio: Math.min(window.devicePixelRatio, 1.5),
+          pixelRatio: Math.min(window.devicePixelRatio, 2),
           antialias: false,
           powerPreference: 'high-performance',
         },
         materials: {
-          envMapIntensity: 0.6,
-          roughnessCorrection: 0.1,
+          envMapIntensity: 0.8,
+          roughnessCorrection: 0.05,
         }
       },
       
