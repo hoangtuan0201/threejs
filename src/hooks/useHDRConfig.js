@@ -13,64 +13,64 @@ export function useHDRConfig() {
     const getPerformanceLevel = () => {
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      
+
       if (!gl) return 'low';
-      
+
       const renderer = gl.getParameter(gl.RENDERER);
       const vendor = gl.getParameter(gl.VENDOR);
-      
+
       // High-end mobile devices
       if (mobile.isMobile) {
-        if (renderer.includes('Adreno 6') || 
-            renderer.includes('Mali-G7') || 
-            renderer.includes('Apple A1') ||
-            renderer.includes('Apple M')) {
+        if (renderer.includes('Adreno 6') ||
+          renderer.includes('Mali-G7') ||
+          renderer.includes('Apple A1') ||
+          renderer.includes('Apple M')) {
           return 'medium';
         }
         return 'low';
       }
-      
+
       // Desktop performance detection
-      if (renderer.includes('RTX') || 
-          renderer.includes('GTX 1060') ||
-          renderer.includes('RX 5') ||
-          renderer.includes('Intel Iris')) {
+      if (renderer.includes('RTX') ||
+        renderer.includes('GTX 1060') ||
+        renderer.includes('RX 5') ||
+        renderer.includes('Intel Iris')) {
         return 'high';
       }
-      
+
       return 'medium';
     };
 
     const performanceLevel = getPerformanceLevel();
-    
+
     // Base configuration for different performance levels
     const configs = {
       low: {
-        // Mid-range settings
+        // Mobile/low-end settings
         hdr: {
           enabled: true,
-          intensity: 0.8,
-          toneMappingExposure: 0,
-          backgroundIntensity: 0.2,
+          intensity: 0.7,
+          toneMappingExposure: 1.0,
+          backgroundIntensity: 0.1,
         },
         shadows: {
           enabled: true,
-          type: 'basic', // PCFSoftShadowMap
-          mapSize: 1024,
-          autoUpdate: true,
-          bias: -0.0005,
+          type: 'basic', // PCFShadowMap
+          mapSize: 512,
+          autoUpdate: false,
+          bias: -0.001,
         },
         rendering: {
-          pixelRatio: Math.min(window.devicePixelRatio, 2),
+          pixelRatio: Math.min(window.devicePixelRatio, 1.5),
           antialias: false,
           powerPreference: 'high-performance',
         },
         materials: {
-          envMapIntensity: 0.8,
-          roughnessCorrection: 0.05,
+          envMapIntensity: 0.6,
+          roughnessCorrection: 0.1,
         }
       },
-      
+
       medium: {
         // Mid-range settings
         hdr: {
@@ -96,7 +96,7 @@ export function useHDRConfig() {
           roughnessCorrection: 0.05,
         }
       },
-      
+
       high: {
         // High-end desktop settings
         hdr: {
@@ -141,7 +141,7 @@ export function useHDRConfig() {
  */
 export function useAdaptiveQuality() {
   const config = useHDRConfig();
-  
+
   const adjustQualityForPerformance = (frameTime) => {
     // If frame time is too high (> 33ms = 30fps), reduce quality
     if (frameTime > 40) {
@@ -161,10 +161,10 @@ export function useAdaptiveQuality() {
         }
       };
     }
-    
+
     return config;
   };
-  
+
   return {
     config,
     adjustQualityForPerformance,

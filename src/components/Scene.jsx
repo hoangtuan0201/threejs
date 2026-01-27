@@ -33,18 +33,18 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   const [activeSequence, setActiveSequence] = useState(null); // For hiding mesh when hotspot is clicked
   const [orbitControlEnabled, setOrbitControlEnabled] = useState(false); // Control orbit control activation
   const orbitControlsRef = useRef(); // Reference to OrbitControls
-  
 
-  
+
+
   // Enhanced reset view function - reset everything
   const resetView = () => {
 
-    
+
     // Reset sequence position to beginning
     if (sheet && sheet.sequence) {
       sheet.sequence.position = 0.1;
     }
-    
+
     // Reset all states completely
     setActiveChapter(0);
     setSelectedHotspot(null);
@@ -52,33 +52,33 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     setActiveSequence(null);
     setOrbitControlEnabled(false);
     setTargetPosition(0);
-    
+
     // Notify parent about hotspot change
     if (onSelectedHotspotChange) {
       onSelectedHotspotChange(null);
     }
-    
-    
-    
+
+
+
     // Reset navigation guide state
     setHasShownNavigationGuide(false);
     hasTriggeredGuideRef.current = false;
-    
 
-    
+
+
     // Call onPositionChange to update parent state
     if (onPositionChange) {
       onPositionChange(0);
     }
-    
+
   };
 
   const [isRestoring, setIsRestoring] = useState(false); // Flag to prevent auto-reset during restore
   const [hasShownNavigationGuide, setHasShownNavigationGuide] = useState(false); // Track if guide was shown in current session
   const [justCompletedRestore, setJustCompletedRestore] = useState(false); // Track recent restore completion
   const hasTriggeredGuideRef = useRef(false); // Ref to prevent multiple triggers
-  
-  
+
+
 
   // Canvas filters for enhanced visuals
   const canvasFilters = useCanvasFilters();
@@ -143,8 +143,8 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
   });
 
   const { gl, camera, controls, scene: threeScene } = useThree();
-  
-  
+
+
 
   // Apply canvas filters for enhanced visuals
   useEffect(() => {
@@ -154,7 +154,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
     }
   }, [gl, canvasFilters]);
 
-  
+
 
   // Raycaster for mesh selection
   const raycaster = new THREE.Raycaster();
@@ -267,7 +267,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
   // Show navigation guide when entering explore mode for the first time
   useEffect(() => {
-    
+
     if (isExploreMode && !hasTriggeredGuideRef.current && !hasVisitedDetailScene) {
       if (onShowNavigationGuide) {
         hasTriggeredGuideRef.current = true; // Mark as triggered
@@ -530,11 +530,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
       // Reduced touch sensitivity for mobile
       const touchSensitivity = mobile.isMobile ? 0.008 : 0.004; // Tăng sensitivity cho mobile
-      
+
       // Giảm threshold detection (dòng 462)
       if (deltaX < 30 && Math.abs(deltaY) > 1) { // Threshold thấp hơn
         hasMovedSignificantly = true;
-      
+
         // Only prevent default when we're actually scrolling
         event.preventDefault();
         event.stopPropagation();
@@ -633,11 +633,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       // Get canvas and calculate mouse position
       const canvas = gl.domElement;
       const rect = canvas.getBoundingClientRect();
-      
+
       // Create mouse vector and raycaster
       const mouse = new THREE.Vector2();
       const raycaster = new THREE.Raycaster();
-      
+
       // Calculate mouse position in normalized device coordinates
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -653,7 +653,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         const intersectedMesh = intersects.find(intersect => intersect.object.name);
         if (intersectedMesh) {
           console.log('Clicked mesh name:', intersectedMesh.object.name);
-          
+
         }
       }
     };
@@ -677,22 +677,25 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         fallbackColor="#84a4f4"
         enableIndustrial={true}
       />
-  
 
 
-      
+
+
 
       {/* Enhanced HDR lighting setup for photorealistic PBR rendering (Game 4K quality) */}
-      <HDREnvironment 
+      <HDREnvironment
         hdrUrl="/textures/empty_play_room_1k.hdr"
         intensity={2.8}
         backgroundIntensity={0.9}
         enableBackground={false}
         enableToneMapping={true}
       />
-      
+
       {/* Enhanced lighting system for maximum quality */}
       <EnhancedLighting type="main" enableHDR={false} shadowQuality="medium" />
+
+      {/* Mobile fallback ambient light - ensures visibility if HDR fails */}
+      {mobile.isMobile && <ambientLight intensity={0.6} color="#ffffff" />}
 
       {/* Enhanced ground plane with realistic materials for maximum reflections */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
@@ -718,24 +721,24 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
             onModelLoaded?.();
           }}
         />
-        
+
         {/* Linear Grille Manager - handles grille switching */}
         <LinearGrilleManager
           scene={threeScene}
           currentGrille={currentGrille}
           selectedHotspot={selectedHotspot}
         />
-        
+
         {/* Door animation controller */}
         <DoorAnimation />
-        
+
         {/* Grass Floor - sàn cỏ xung quanh nhà */}
         <GrassFloor size={[100, 100]} position={[29, -0.77, -25]} />
-        
+
         {/* Tree Group - nhóm cây xung quanh nhà */}
         {/* <TreeGroup /> */}
       </Suspense>
-    
+
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}
       <HotspotsRenderer
         sequenceChapters={sequenceChapters}
@@ -746,7 +749,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
           setSelectedHotspot(null);
           setShowVideoScreen(null);
           setOrbitControlEnabled(false); // Disable orbit control when switching areas
-          
+
           // Find the chapter and show hotspot details + video screen
           const chapter = sequenceChapters.find(ch => ch.id === chapterId);
           if (chapter && chapter.hotspot) {
@@ -808,11 +811,11 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         enableRotate={orbitControlEnabled}
         enableZoom={orbitControlEnabled}
         minDistance={0.3}
-        
+
         maxDistance={2.5}
         dampingFactor={0.05}
         enableDamping={true}
-        
+
         target={selectedHotspot?.hotspot?.targetPosition || [0, 0, 0]}
         makeDefault={orbitControlEnabled}
         // Giới hạn góc xoay dọc (polar) - chỉ một chút
@@ -851,7 +854,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         }}
       />
 
-      
+
 
     </>
   );

@@ -64,9 +64,8 @@ export function HDREnvironment({
     hdrTexture.needsUpdate = true;
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
 
-    // Apply environment with high intensity for maximum realism
+    // Apply environment
     scene.environment = envMap;
-    scene.environmentIntensity = intensity * 3.2; // Khôi phục intensity cao cho độ chân thật
 
     if (enableBackground) {
       scene.background = envMap;

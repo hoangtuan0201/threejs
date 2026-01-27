@@ -7,13 +7,13 @@ import * as THREE from 'three';
  * Industrial Background Component
  * Sử dụng hình industrial.jpg làm background cho scene 3D
  */
-export function Background({ 
+export function Background({
   imageUrl = '/industrial.jpg',
   opacity = 1.0,
-  enableBackground = true 
+  enableBackground = true
 }) {
   const { scene } = useThree();
-  
+
   // Load texture từ file industrial.jpg
   const backgroundTexture = useLoader(TextureLoader, imageUrl);
 
@@ -21,14 +21,14 @@ export function Background({
     if (!scene || !backgroundTexture) return;
 
     // Cấu hình texture
-    backgroundTexture.mapping = THREE.EquirectangularReflectionMapping;
+    backgroundTexture.mapping = THREE.UVMapping;
     backgroundTexture.wrapS = THREE.RepeatWrapping;
     backgroundTexture.wrapT = THREE.RepeatWrapping;
-    
+
     // Thiết lập background cho scene
     if (enableBackground) {
       scene.background = backgroundTexture;
-      
+
       // Nếu muốn điều chỉnh opacity, có thể tạo material với opacity
       if (opacity < 1.0) {
         // Tạo một sphere lớn với texture làm background với opacity
@@ -39,14 +39,14 @@ export function Background({
           transparent: true,
           opacity: opacity
         });
-        
+
         const backgroundSphere = new THREE.Mesh(geometry, material);
         backgroundSphere.name = 'industrial-background-sphere';
         scene.add(backgroundSphere);
-        
+
         // Không set scene.background nếu dùng sphere với opacity
         scene.background = null;
-        
+
         return () => {
           scene.remove(backgroundSphere);
           geometry.dispose();
@@ -85,11 +85,11 @@ export function EnhancedBackground({
   fallbackColor = '#84a4f4',
   enableIndustrial = true
 }) {
-  
+
   if (type === 'industrial' && enableIndustrial) {
     return (
       <>
-        <Background 
+        <Background
           opacity={industrialOpacity}
           enableBackground={true}
         />
@@ -100,7 +100,7 @@ export function EnhancedBackground({
       </>
     );
   }
-  
+
   // Fallback to color background
   return <color attach="background" args={[fallbackColor]} />;
 }
