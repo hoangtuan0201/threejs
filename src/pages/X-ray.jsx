@@ -16,7 +16,6 @@ import { VideoScreen } from '../components/VideoScreen';
 import { sequenceChaptersXray } from '../data/sequenceChaptersXray';
 import { Background, EnhancedBackground } from '../components/Background';
 import { EnhancedLighting, HDREnvironment } from '../components/HDREnvironment';
-import { EnhancedPostProcessing, useCanvasFilters } from '../components/PostProcessing';
 import { RenderingOptimizer } from '../components/RenderingOptimizer';
 import GrassFloor from '../components/GrassFloor';
 import LoadingScreen from '../components/LoadingScreen';

@@ -2,6 +2,7 @@ import { useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 
 import { useMaterialEnhancer } from "./RenderingOptimizer";
+import { useMobile } from "../hooks/useMobile";
 import { useFrame, useThree } from "@react-three/fiber";
 import SequenceMeshController from "./SequenceMeshController";
 import * as THREE from "three";
@@ -14,31 +15,9 @@ export function Model({ activeSequence, onModelLoaded }) {
   const { enhanceMaterial } = useMaterialEnhancer();
   const { scene, error } = useGLTF(MODEL_URL);
   const { scene: globalScene } = useThree();
+  const mobile = useMobile();
 
-  // // Shader Enhance: Fresnel + Rim Light + AO Boost (subtle)
-  // const applyRealisticShader = (material) => {
-  //   material.onBeforeCompile = (shader) => {
-  //     shader.uniforms.uTime = { value: 0 };
-  //     shader.uniforms.uAOBoost = { value: 0.2 };       // tăng AO boost để tăng độ tương phản
 
-  //     shader.fragmentShader = shader.fragmentShader.replace(
-  //       `#include <dithering_fragment>`,
-  //       `
-  //         // 🔹 Fresnel rim lighting subtle
-  //         vec3 rimColor = vec3(0.08, 0.1, 0.12); // tăng nhẹ để rim rõ hơn
-  //         gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb + rimColor, fresnel * 0.4);
-
-  //         // 🔹 Subtle AO boost (darken crevices more)
-  //         gl_FragColor.rgb *= 1.0 - (uAOBoost * fresnel * 0.5);
-
-  //         #include <dithering_fragment>
-  //       `
-  //     );
-
-  //     material.userData.shader = shader;
-  //   };
-  //   material.needsUpdate = true;
-  // };
 
 
   // Update shader uniforms for dynamic effects
@@ -71,24 +50,24 @@ export function Model({ activeSequence, onModelLoaded }) {
         // Moderate clearcoat for natural surfaces
         src.clearcoat = Math.max(src.clearcoat ?? 0, 0.5);
         src.clearcoatRoughness = Math.min(src.clearcoatRoughness ?? 0.08, 0.1);
-        
+
         // Balanced environment mapping for natural reflections
         src.envMapIntensity = Math.max(src.envMapIntensity ?? 1.0, 1.5);
-        
+
         // Balanced metalness and roughness for natural look
         src.metalness = Math.min(Math.max(src.metalness ?? 0.3, 0.4), 0.7);
         src.roughness = Math.max(Math.min(src.roughness ?? 0.2, 0.4), 0.05);
-        
+
         // Advanced IOR for realistic refractions
         src.ior = src.ior ?? 1.5;
-        
+
         // Sheen for fabric-like materials
         if (src.roughness > 0.7) {
           src.sheen = 0.5;
           src.sheenRoughness = 0.8;
           src.sheenColor = new THREE.Color(0.95, 0.95, 0.95);
         }
-        
+
         src.needsUpdate = true;
         return src;
       }
@@ -105,37 +84,37 @@ export function Model({ activeSequence, onModelLoaded }) {
         emissiveMap: src.emissiveMap || null,
         envMap: src.envMap || null,
         emissive: src.emissive ? src.emissive.clone() : new THREE.Color(0x000000),
-        
+
         // Photorealistic metalness and roughness values
         metalness: typeof src.metalness === 'number' ? Math.max(src.metalness, 0.7) : 0.85,
         roughness: typeof src.roughness === 'number' ? Math.max(src.roughness * 0.4, 0.01) : 0.03,
-        
+
         transparent: src.transparent || false,
         opacity: typeof src.opacity === 'number' ? src.opacity : 1.0,
         side: src.side ?? THREE.FrontSide,
         reflectivity: src.reflectivity ?? 1.0,
-        
+
         // Moderate clearcoat for natural finish
         clearcoat: 0.4,
         clearcoatRoughness: 0.1,
-        
+
         // Natural IOR for realistic refractions
         ior: 1.3,
-        
+
         // Balanced environment mapping for natural realism
         envMapIntensity: 1.2, // Giảm intensity để tránh chói lóa
-        
+
         // Advanced transmission for glass materials
         transmission: src.transmission ?? 0,
         thickness: src.thickness ?? 0.5,
-        
+
         // Note: anisotropy is not available in all Three.js versions
         // anisotropy: 0.1,
         // anisotropyRotation: 0,
       };
 
       const mat = new THREE.MeshPhysicalMaterial(params);
-      
+
       // ENSURE NAME IS PRESERVED
       mat.name = src.name || '';
 
@@ -158,9 +137,9 @@ export function Model({ activeSequence, onModelLoaded }) {
 
     scene.traverse((child) => {
       if (child.isMesh) {
-        // Enable soft shadows
-        child.castShadow = true;
-        child.receiveShadow = true;
+        // Enable soft shadows only on desktop
+        child.castShadow = !mobile.isMobile;
+        child.receiveShadow = !mobile.isMobile;
         child.geometry?.computeBoundingSphere();
         child.material.shadowSide = THREE.FrontSide;
 
@@ -195,14 +174,14 @@ export function Model({ activeSequence, onModelLoaded }) {
           if (child.material.isMeshPhysicalMaterial) {
             child.material.clearcoat = Math.max(child.material.clearcoat ?? 0, 0.3);
             child.material.clearcoatRoughness = Math.min(child.material.clearcoatRoughness ?? 0.02, 0.15);
-            
+
             // Balanced metalness for natural metal surfaces
             child.material.metalness = Math.min(Math.max(child.material.metalness ?? 0.3, 0.3), 0.5);
             child.material.roughness = Math.max(child.material.roughness ?? 0.03, 0.1);
-            
+
             // Advanced IOR for glass-like materials
             child.material.ior = child.material.ior ?? 1.5;
-            
+
             // Note: Add subtle anisotropy for brushed metal effects if supported
             // if (child.material.metalness > 0.8 && child.material.anisotropy !== undefined) {
             //   child.material.anisotropy = 0.1;
@@ -232,7 +211,7 @@ export function Model({ activeSequence, onModelLoaded }) {
   return (
     <group>
       <primitive object={scene} />
-      <SequenceMeshController 
+      <SequenceMeshController
         scene={scene}
         activeSequence={activeSequence}
       />

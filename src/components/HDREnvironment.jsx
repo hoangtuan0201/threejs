@@ -30,7 +30,7 @@ export function HDREnvironment({
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = mobile.isMobile ? 1.0 : 0.35; // Tăng exposure trên mobile để tránh tối
+      gl.toneMappingExposure = mobile.isMobile ? 1 : 0.35; // Tăng exposure trên mobile để tránh tối
       gl.outputEncoding = THREE.sRGBEncoding;
       // Additional renderer settings for maximum quality
       gl.physicallyCorrectLights = true;
@@ -39,7 +39,7 @@ export function HDREnvironment({
       gl.shadowMap.autoUpdate = true;
 
       // Advanced anti-aliasing for crisp edges
-      gl.antialias = true;
+      gl.antialias = mobile.isMobile ? false : true;
       gl.powerPreference = "high-performance";
     }
 
@@ -93,8 +93,8 @@ export function HDREnvironment({
 
   return (
     <>
-      {/* High-quality soft shadows for realism */}
-      <SoftShadows samples={mobile.isMobile ? 8 : 16} size={2.0} focus={0} />
+      {/* High-quality soft shadows for realism - only on desktop */}
+      {!mobile.isMobile && <SoftShadows samples={16} size={2.0} focus={0} />}
     </>
   );
 }
@@ -127,7 +127,7 @@ export function EnhancedLighting({
       <directionalLight
         intensity={7.5}
         position={[15, 12, 8]}
-        castShadow={true}
+        castShadow={!mobile.isMobile}
         shadow-mapSize={shadowMapSize}
         shadow-camera-top={60}
         shadow-camera-bottom={-60}
