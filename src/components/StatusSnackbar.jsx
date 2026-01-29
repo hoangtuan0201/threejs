@@ -19,7 +19,7 @@ const StatusSnackbar = ({ mode }) => {
         // Auto-hide after 5 seconds
         const timer = setTimeout(() => {
             setIsVisible(false);
-        }, 5000);
+        }, 7000);
 
         return () => clearTimeout(timer);
     }, [mode]);
