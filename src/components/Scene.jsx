@@ -12,9 +12,7 @@ import { HotspotsRenderer } from "./Hotspot";
 import DoorAnimation from "./DoorAnimation";
 import { EnhancedLighting, HDREnvironment } from "./HDREnvironment";
 import { EnhancedBackground } from "./Background";
-import { useCanvasFilters } from "./PostProcessing";
 import GrassFloor from "./GrassFloor";
-// import Tree, { TreeGroup } from "./XRayMode/Tree";
 import { LinearGrilleManager } from "./LinearGrilleManager";
 
 import { sequenceChapters } from "../data/sequenceChapters";
@@ -80,8 +78,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
 
 
-  // Canvas filters for enhanced visuals
-  const canvasFilters = useCanvasFilters();
+
 
   // Send resetView function to parent component
   useEffect(() => {
@@ -146,13 +143,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
 
 
 
-  // Apply canvas filters for enhanced visuals
-  useEffect(() => {
-    if (gl && gl.domElement) {
-      const canvas = gl.domElement;
-      Object.assign(canvas.style, canvasFilters);
-    }
-  }, [gl, canvasFilters]);
+
 
 
 
@@ -732,8 +723,7 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
         {/* Grass Floor - sàn cỏ xung quanh nhà */}
         <GrassFloor size={[100, 100]} position={[29, -0.77, -25]} />
 
-        {/* Tree Group - nhóm cây xung quanh nhà */}
-        {/* <TreeGroup /> */}
+
       </Suspense>
 
       {/* Render all hotspots from sequenceChapters - always visible when model loads */}

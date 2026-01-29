@@ -18,6 +18,7 @@ import ChapterNavigation from "./components/ChapterNavigation";
 import NavigationGuide from "./components/NavigationGuide";
 import MobileHomeButton from "./components/MobileHomeButton";
 import { LinearGrilleSelector } from "./components/LinearGrilleSelector";
+import StatusSnackbar from "./components/StatusSnackbar";
 import { ThemeProvider } from "./theme/ThemeContext";
 
 // Hooks
@@ -56,12 +57,12 @@ export default function App({ isChatFocused = false }) {
     setDisplayProgress(0);
     setIsLoading(true);
     setModelLoaded(false);
-    
+
     // Force reset drei progress by clearing its cache
     if (window.__drei_progress_cache) {
       window.__drei_progress_cache = null;
     }
-    
+
     return () => {
       // Clean up on unmount
       setDisplayProgress(0);
@@ -116,7 +117,7 @@ export default function App({ isChatFocused = false }) {
     if (resetViewFunction) {
       resetViewFunction();
     }
-    
+
     // Force refresh page to completely reset state and prevent model lighting issues
     window.location.href = "/";
   };
@@ -125,14 +126,14 @@ export default function App({ isChatFocused = false }) {
     setModelLoaded(true);
     // Only hide loading when both model is loaded AND progress is complete
     if (displayProgress >= 100) {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   // Hide loading screen when both conditions are met
   useEffect(() => {
     if (modelLoaded && displayProgress >= 100) {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }, [modelLoaded, displayProgress]);
 
@@ -158,6 +159,13 @@ export default function App({ isChatFocused = false }) {
   // }
   return (
     <ThemeProvider>
+      <StatusSnackbar
+        mode={
+          selectedHotspot ? 'focusing' :
+            (sceneNavigating || sceneLocked) ? 'navigating' :
+              null
+        }
+      />
       {isLoading && <LoadingScreen progress={displayProgress >= 100 ? 1 : displayProgress / 100} />}
 
       {!showControlPanel && !showCompareSystem && (
@@ -178,7 +186,7 @@ export default function App({ isChatFocused = false }) {
             opacity: modelLoaded ? 1 : 0,
             transition: "opacity 0.3s ease",
           }}
-          shadows
+          shadows={!mobile.isMobile}
           dpr={[1, 1.5]}
           camera={{
             position: mobile.getCameraPosition(),
@@ -216,37 +224,37 @@ export default function App({ isChatFocused = false }) {
         >
           {/* Realistic Lighting */}
 
-            <SceneManager
-              onTourEnd={endTour}
-              onHideControlPanel={() => setShowControlPanel(false)}
-              onShowControlPanel={() => setShowControlPanel(true)}
-              isExploreMode={!showControlPanel}
-              onModelLoaded={handleModelLoaded}
-              onPositionChange={setCurrentSequencePosition}
-              isNavigating={sceneLocked}
-              scrollSensitivity={scrollSensitivity}
-              onShowNavigationGuide={useCallback(() => setShowNavigationGuide(true), [])}
-              onHideNavigationGuide={useCallback(() => setShowNavigationGuide(false), [])}
-              showNavigationGuide={showNavigationGuide}
-              isChatFocused={isChatFocused}
-              onResetView={setResetViewFunction}
-              currentGrille={currentGrille}
-              navigationData={{
-                isNavigating: sceneNavigating,
-                targetPosition: sceneTargetPosition,
-                startPosition: sceneStartPosition,
-                startTime: sceneStartTime,
-                duration: sceneDuration,
-                onComplete: completeNavigation,
-              }}
-              onCurrentSheetChange={setCurrentSheet}
-              onCurrentSceneChange={setCurrentScene}
-              onSelectedHotspotChange={setSelectedHotspot}
-              project={project}
-            />
+          <SceneManager
+            onTourEnd={endTour}
+            onHideControlPanel={() => setShowControlPanel(false)}
+            onShowControlPanel={() => setShowControlPanel(true)}
+            isExploreMode={!showControlPanel}
+            onModelLoaded={handleModelLoaded}
+            onPositionChange={setCurrentSequencePosition}
+            isNavigating={sceneLocked}
+            scrollSensitivity={scrollSensitivity}
+            onShowNavigationGuide={useCallback(() => setShowNavigationGuide(true), [])}
+            onHideNavigationGuide={useCallback(() => setShowNavigationGuide(false), [])}
+            showNavigationGuide={showNavigationGuide}
+            isChatFocused={isChatFocused}
+            onResetView={setResetViewFunction}
+            currentGrille={currentGrille}
+            navigationData={{
+              isNavigating: sceneNavigating,
+              targetPosition: sceneTargetPosition,
+              startPosition: sceneStartPosition,
+              startTime: sceneStartTime,
+              duration: sceneDuration,
+              onComplete: completeNavigation,
+            }}
+            onCurrentSheetChange={setCurrentSheet}
+            onCurrentSceneChange={setCurrentScene}
+            onSelectedHotspotChange={setSelectedHotspot}
+            project={project}
+          />
 
-            {/* Realistic Effects */}
-            {/* <Effects /> */}
+          {/* Realistic Effects */}
+          {/* <Effects /> */}
         </Canvas>
       )}
 
