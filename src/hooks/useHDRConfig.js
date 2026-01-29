@@ -13,36 +13,36 @@ export function useHDRConfig() {
     const getPerformanceLevel = () => {
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-
+      
       if (!gl) return 'low';
-
+      
       const renderer = gl.getParameter(gl.RENDERER);
       const vendor = gl.getParameter(gl.VENDOR);
-
+      
       // High-end mobile devices
       if (mobile.isMobile) {
-        if (renderer.includes('Adreno 6') ||
-          renderer.includes('Mali-G7') ||
-          renderer.includes('Apple A1') ||
-          renderer.includes('Apple M')) {
+        if (renderer.includes('Adreno 6') || 
+            renderer.includes('Mali-G7') || 
+            renderer.includes('Apple A1') ||
+            renderer.includes('Apple M')) {
           return 'medium';
         }
         return 'low';
       }
-
+      
       // Desktop performance detection
-      if (renderer.includes('RTX') ||
-        renderer.includes('GTX 1060') ||
-        renderer.includes('RX 5') ||
-        renderer.includes('Intel Iris')) {
+      if (renderer.includes('RTX') || 
+          renderer.includes('GTX 1060') ||
+          renderer.includes('RX 5') ||
+          renderer.includes('Intel Iris')) {
         return 'high';
       }
-
+      
       return 'medium';
     };
 
     const performanceLevel = getPerformanceLevel();
-
+    
     // Base configuration for different performance levels
     const configs = {
       low: {
@@ -50,7 +50,7 @@ export function useHDRConfig() {
         hdr: {
           enabled: true,
           intensity: 0.7,
-          toneMappingExposure: 1.0,
+          toneMappingExposure: 0.8,
           backgroundIntensity: 0.1,
         },
         shadows: {
@@ -70,13 +70,13 @@ export function useHDRConfig() {
           roughnessCorrection: 0.1,
         }
       },
-
+      
       medium: {
         // Mid-range settings
         hdr: {
           enabled: true,
           intensity: 0.9,
-          toneMappingExposure: 0,
+          toneMappingExposure: 0.9,
           backgroundIntensity: 0.2,
         },
         shadows: {
@@ -96,13 +96,13 @@ export function useHDRConfig() {
           roughnessCorrection: 0.05,
         }
       },
-
+      
       high: {
         // High-end desktop settings
         hdr: {
           enabled: true,
           intensity: 1.0,
-          toneMappingExposure: 0,
+          toneMappingExposure: 1.0,
           backgroundIntensity: 0.3,
         },
         shadows: {
@@ -141,7 +141,7 @@ export function useHDRConfig() {
  */
 export function useAdaptiveQuality() {
   const config = useHDRConfig();
-
+  
   const adjustQualityForPerformance = (frameTime) => {
     // If frame time is too high (> 33ms = 30fps), reduce quality
     if (frameTime > 40) {
@@ -161,10 +161,10 @@ export function useAdaptiveQuality() {
         }
       };
     }
-
+    
     return config;
   };
-
+  
   return {
     config,
     adjustQualityForPerformance,

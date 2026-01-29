@@ -694,9 +694,6 @@ export function Scene({ onTourEnd, onHideControlPanel, onShowControlPanel, isExp
       {/* Enhanced lighting system for maximum quality */}
       <EnhancedLighting type="main" enableHDR={false} shadowQuality="medium" />
 
-      {/* Mobile fallback ambient light - ensures visibility if HDR fails */}
-      {mobile.isMobile && <ambientLight intensity={0.6} color="#ffffff" />}
-
       {/* Enhanced ground plane with realistic materials for maximum reflections */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
         <planeGeometry args={[200, 200]} />

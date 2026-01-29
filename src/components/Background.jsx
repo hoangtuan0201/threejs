@@ -21,7 +21,7 @@ export function Background({
     if (!scene || !backgroundTexture) return;
 
     // Cấu hình texture
-    backgroundTexture.mapping = THREE.UVMapping;
+    backgroundTexture.mapping = THREE.EquirectangularReflectionMapping;
     backgroundTexture.wrapS = THREE.RepeatWrapping;
     backgroundTexture.wrapT = THREE.RepeatWrapping;
 
