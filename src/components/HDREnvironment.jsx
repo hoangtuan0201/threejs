@@ -24,24 +24,22 @@ export function HDREnvironment({
   const hdrTexture = useLoader(RGBELoader, hdrUrl, (loader) => {
     loader.setDataType(THREE.FloatType);
   });
-
   useEffect(() => {
     if (!gl || !scene || !hdrTexture) return;
 
     // Advanced tone mapping with glare reduction while maintaining realism
     if (enableToneMapping) {
       gl.toneMapping = THREE.ACESFilmicToneMapping; // ACES cho màu sắc tự nhiên nhất
-      gl.toneMappingExposure = 0.35; // Tăng exposure trên mobile để tránh tối
+      gl.toneMappingExposure = mobile.isMobile ? 1 : 0.35; // Tăng exposure trên mobile để tránh tối
       gl.outputEncoding = THREE.sRGBEncoding;
-      
       // Additional renderer settings for maximum quality
       gl.physicallyCorrectLights = true;
       gl.shadowMap.enabled = true;
       gl.shadowMap.type = THREE.PCFSoftShadowMap;
       gl.shadowMap.autoUpdate = true;
-      
+
       // Advanced anti-aliasing for crisp edges
-      gl.antialias = true;
+      gl.antialias = mobile.isMobile ? false : true;
       gl.powerPreference = "high-performance";
     }
 
@@ -50,7 +48,7 @@ export function HDREnvironment({
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
     gl.shadowMap.autoUpdate = false;
 
-  
+
 
     // PMREM generator with high-quality settings
     if (!pmremGeneratorRef.current) {
@@ -59,15 +57,14 @@ export function HDREnvironment({
     }
 
     const pmremGenerator = pmremGeneratorRef.current;
-    
+
     // Generate environment map with enhanced quality
     hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
     hdrTexture.needsUpdate = true;
     const envMap = pmremGenerator.fromEquirectangular(hdrTexture).texture;
-    
-    // Apply environment with high intensity for maximum realism
+
+    // Apply environment
     scene.environment = envMap;
-    scene.environmentIntensity = intensity * 3.2; // Khôi phục intensity cao cho độ chân thật
 
     if (enableBackground) {
       scene.background = envMap;
@@ -96,8 +93,8 @@ export function HDREnvironment({
 
   return (
     <>
-      {/* High-quality soft shadows for realism */}
-      <SoftShadows samples={mobile.isMobile ? 8 : 16} size={2.0} focus={0} />
+      {/* High-quality soft shadows for realism - only on desktop */}
+      {!mobile.isMobile && <SoftShadows samples={16} size={2.0} focus={0} />}
     </>
   );
 }
@@ -129,8 +126,8 @@ export function EnhancedLighting({
       {/* Key Light - ánh sáng chính với độ sáng cao cho realism */}
       <directionalLight
         intensity={7.5}
-        position={[15, 12, 8]} 
-        castShadow={true}
+        position={[15, 12, 8]}
+        castShadow={!mobile.isMobile}
         shadow-mapSize={shadowMapSize}
         shadow-camera-top={60}
         shadow-camera-bottom={-60}
@@ -145,14 +142,11 @@ export function EnhancedLighting({
 
 
       {/* Ambient Light thấp để giữ contrast cao */}
-      {/* <ambientLight 
-        intensity={0.18} // Giữ ambient thấp để contrast cao
-        color="#ffffff"
-      /> */}
+
 
       {/* Point lights để tạo highlights cục bộ */}
       {/* <pointLight
-        intensity={10} 
+        intensity={10}
         position={[5, 8, 5]}
         color="#ffffff"
         distance={25}

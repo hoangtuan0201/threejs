@@ -15,7 +15,7 @@ export function RenderingOptimizer() {
   useEffect(() => {
     if (!gl) return;
 
-   
+
     // Output encoding for Three.js r149
     gl.outputEncoding = THREE.sRGBEncoding;
 
@@ -24,14 +24,16 @@ export function RenderingOptimizer() {
 
     // Pixel ratio
     const pixelRatio = mobile.isMobile
-      ? Math.min(window.devicePixelRatio, 2)
+      ? Math.min(window.devicePixelRatio, 1.5) // Giảm pixel ratio cho mobile
       : Math.min(window.devicePixelRatio, 1.5);
     gl.setPixelRatio(pixelRatio);
 
     // Shadows
-    gl.shadowMap.enabled = true;
-    gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    gl.shadowMap.autoUpdate = true;
+    gl.shadowMap.enabled = !mobile.isMobile; // Tắt shadow map trên mobile
+    if (!mobile.isMobile) {
+      gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      gl.shadowMap.autoUpdate = true;
+    }
 
     // Lighting physically correct
     gl.physicallyCorrectLights = true;
@@ -40,17 +42,10 @@ export function RenderingOptimizer() {
 
 
   // Auto-update shadows on mobile when needed
+  // Auto-update shadows on mobile removed as shadows are disabled
   useEffect(() => {
-    if (mobile.isMobile && gl?.shadowMap) {
-      const updateShadows = () => {
-        gl.shadowMap.needsUpdate = true;
-      };
-      
-      // Update shadows periodically on mobile
-      const interval = setInterval(updateShadows, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [gl, mobile.isMobile]);
+    // Cleanup if needed
+  }, []);
 
   return null;
 }
@@ -61,7 +56,7 @@ export function RenderingOptimizer() {
  */
 export function useMaterialEnhancer() {
   const mobile = useMobile();
-  
+
   const enhanceMaterial = (material) => {
     if (!material) return;
 
@@ -75,14 +70,14 @@ export function useMaterialEnhancer() {
       // Điều chỉnh PBR properties cho realistic look
       material.metalness = material.metalness || 0.2; // Giảm từ 0.3 xuống 0.2
       material.roughness = material.roughness || 0.3; // Giảm từ 0.5 xuống 0.3 cho bóng hơn
-      
+
       // Thêm clearcoat cho materials cao cấp
       if (material.isMeshPhysicalMaterial) {
         material.clearcoat = 0.3;
         material.clearcoatRoughness = 0.1;
       }
 
-  
+
     }
 
     // RESTORE MATERIAL NAME AFTER ENHANCEMENT
@@ -90,6 +85,6 @@ export function useMaterialEnhancer() {
     material.needsUpdate = true;
     return material;
   };
-  
+
   return { enhanceMaterial };
 }

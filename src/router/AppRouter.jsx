@@ -13,7 +13,7 @@ const AppRouter = () => {
   useEffect(() => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.onload = function() {
+    script.onload = function () {
       window.voiceflow.chat.load({
         verify: { projectID: '6933ce37ed72408e2affe876' },
         url: 'https://general-runtime.voiceflow.com',

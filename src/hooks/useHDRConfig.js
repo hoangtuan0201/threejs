@@ -50,7 +50,7 @@ export function useHDRConfig() {
         hdr: {
           enabled: true,
           intensity: 0.7,
-          toneMappingExposure: 0,
+          toneMappingExposure: 0.8,
           backgroundIntensity: 0.1,
         },
         shadows: {
@@ -76,7 +76,7 @@ export function useHDRConfig() {
         hdr: {
           enabled: true,
           intensity: 0.9,
-          toneMappingExposure: 0,
+          toneMappingExposure: 0.9,
           backgroundIntensity: 0.2,
         },
         shadows: {
@@ -102,7 +102,7 @@ export function useHDRConfig() {
         hdr: {
           enabled: true,
           intensity: 1.0,
-          toneMappingExposure: 0,
+          toneMappingExposure: 1.0,
           backgroundIntensity: 0.3,
         },
         shadows: {
